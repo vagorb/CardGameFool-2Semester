@@ -31,3 +31,11 @@ Kaardi saab tappa ainult kaart, mis on sama masti ning mille väärtus on suurem
 Ründkaardi, kui ta pole trumbimastist, saab tappa ükskõik mis trumbimastist kaardiga.
 Trumbimasti ründkaardi saab tappa ainult kõrgema väärtusega trumbimastist kaart.
 Kaartide value (6<7<8<9<10<J<Q<K<A).
+AI:
+*AI oskab sama asju, mis mängija.
+*Tema sammud baseeruvad informatsioonile PILEist, oma mälust,kus on olemas kõik mängija võetud kaardid ebaõnnestunud kaitsmisel ning kaardid, mida mängija ei saanud tappa.
+MENU:
+*START GAME -> REŽIIMID
+*OPTIONS -> MUSIC(ÕPETAJA AGO LOENGUD)
+*EKSMATRIKULEERIMINE(EXIT)
+INTERFACE
