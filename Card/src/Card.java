@@ -3,6 +3,8 @@ import java.util.Random;
 
 public class Card {
 
+
+
     private String name;
     // Card name "6 of Spades" etc.
     private Integer value;
