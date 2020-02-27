@@ -4,6 +4,7 @@ import java.util.List;
 public class Hand {
     private List<Card> cardsInHand = new ArrayList<>();
 
+
     //Owner of the hand
 //    Player player;
     public void addCard(Card card) {

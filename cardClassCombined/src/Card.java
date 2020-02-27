@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Card {
+
     String suit;
     Integer value;
     Visibility visibility;

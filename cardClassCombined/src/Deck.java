@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class Deck {
+
     ArrayList<Card> deck;
     public Deck(){
         this.deck = createDeck();
