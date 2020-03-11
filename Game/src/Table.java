@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Set;
 
 public class Table {
+//Table(cards on the table) defence attack
+//when card get on table, they removed from hand of player.
+//comparing cards( can kill or not attack card)
+//put card on table from hand for attacking or defence. the card must be removed from hand.
+
 
     private List<Card> deckForThisGame;
     private List<Player> listOfPlayers = new ArrayList<>();
@@ -56,32 +61,33 @@ public class Table {
         pileOfCardsForThisGame.add(card);
         deckForThisGame.remove(card);
     }
+}
 
 
 
 
 
 
-    // not sure about this either right now
+//     not sure about this either right now
 //    private Set<Card> defenseAndAttackCards = new HashSet<>();
-    // Okey i am retarded
+//     Okey i am retarded
 //    private Set<Card> pileOfCards = new HashSet<>();
-    // We should probably have a Player class after all
+//     We should probably have a Player class after all
 //    private Set<Player> playersAtThisTable = new HashSet<>();
-    // Table class description
-    // Class that holds information about everything on the table
-    // Deck info
-    // Cards that are put against the player
-    // Cards we defend with
-    // Pile ( cards that were discarded (Successful defense against attacking player(es)
-    // Info about players sitting(playing) at this table ( NOT SURE IF THIS CLASS SHOULD DO IT)
-
-    // We should probably use table as a getter/setter for info
-
+//     Table class description
+//     Class that holds information about everything on the table
+//     Deck info
+//     Cards that are put against the player
+//     Cards we defend with
+//     Pile ( cards that were discarded (Successful defense against attacking player(es)
+//     Info about players sitting(playing) at this table ( NOT SURE IF THIS CLASS SHOULD DO IT)
+//
+//     We should probably use table as a getter/setter for info
+//
 //    public List<Card> getPileOfCards() {
 //        return Pile.getPileOfCards;
 //    }
-//
+
 //
 //    public Set<Players> getPlayersAtThisTable() {
 //        return playersAtThisTable;
@@ -93,10 +99,10 @@ public class Table {
 
 
 
-
+//
 //    public void addGameDeckToTable() {
 //
 //        deckForThisGame.add(Deck.createDeck())
 //    }
-
-}
+//
+//}

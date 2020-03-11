@@ -23,6 +23,10 @@ public class Deck {
         return deck;
     }
 
+    public void removeCard(Card card) {
+        deck.remove(card);
+    }
+
     public static void main(String[] args) {
         Deck deckTest = new Deck();
         createDeck();
