@@ -1,12 +1,17 @@
 public class Player {
-    Hand hand;
-    String name;
-    Integer score;
+    private Hand hand;
+    private String name;
+    private Integer score;
+    private PlayerState playerState;
 
     public Player(String name, Integer score, Hand hand) {
         this.name = name;
         this.score = score;
         this.hand = hand;
+    }
+
+    public enum PlayerState {
+        ATTACK, DEFENSE
     }
 
     public Hand getHand() {
@@ -27,6 +32,10 @@ public class Player {
         } else {
             this.score = 0;
         }
+    }
+
+    public void setPlayerState(PlayerState playerState) {
+        this.playerState = playerState;
     }
 
 
