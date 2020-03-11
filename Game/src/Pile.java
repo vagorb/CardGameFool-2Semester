@@ -6,6 +6,8 @@ public class Pile {
     // Pile class, should have all cards that were discarded after successful defense of a player
     //
     private List<Card> listOfDiscardedCards;
+    // Currently it seems like this class is very useless to me. All it does is existing, and it servers a purpose of an ArrayList<Card>
+    // which we can implement with 1 private List<Card> pile = new ArrayList<>() variable.
 //
 //
 //    public void addCardsToPile(Table table.getPileOfCards){
