@@ -9,7 +9,7 @@ public class Hand {
 
 
     //Owner of the hand
-//    Player player;
+//    Player player;z
     public void addCard(Card card) {
         cardsInHand.add(card);
     }

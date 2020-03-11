@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameStart {
@@ -11,14 +12,14 @@ public class GameStart {
         Player player3 = new Player("Tvorog18", 0, hand3);
         Player player4 = new Player("Tvorog19", 0, hand4);
         Table table2 = new Table(player, player2);
-        List<Card> variables = table2.getGameDeck();
+        ArrayList<Card> variables = table2.getGameDeck();
         List<Player>  variable = table2.getPlayers();
 //        System.out.println(variable);
 //        System.out.println(variables);
 //        List<Card> pile = table2.getPile();
         Card card = new Card("Hearts", 9);
         table2.addToPile(card);
-        List<Card> pile = table2.getPile();
+        //List<Card> pile = table2.getPile();
         System.out.println(table2.getPile());
         System.out.println(table2.getGameDeck());
 //        Table table3 = new Table(player, player2, player3);
@@ -27,5 +28,4 @@ public class GameStart {
 
 
     }
-
-    }
+}

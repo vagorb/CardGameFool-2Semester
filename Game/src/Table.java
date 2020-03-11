@@ -11,12 +11,15 @@ public class Table {
 //put card on table from hand for attacking or defence. the card must be removed from hand.
 
 
-    private List<Card> deckForThisGame;
+    public Deck deckForThisGame;
     private List<Player> listOfPlayers = new ArrayList<>();
     private List<Card> pileOfCardsForThisGame;
+    private List<Card> table = new ArrayList<>();
+
 
     public Table(Player player1, Player player2) {
-        deckForThisGame = Deck.createDeck();
+        this.table = new ArrayList<>();
+        this.deckForThisGame = new Deck();
         Pile pile = new Pile();
         pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
@@ -25,7 +28,7 @@ public class Table {
     }
 
     public Table(Player player1, Player player2, Player player3) {
-        deckForThisGame = Deck.createDeck();
+        //deckForThisGame = Deck.createDeck();
         Pile pile = new Pile();
         pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
@@ -35,7 +38,7 @@ public class Table {
     }
 
     public Table(Player player1, Player player2, Player player3, Player player4) {
-        deckForThisGame = Deck.createDeck();
+        //deckForThisGame = Deck.createDeck();
         Pile pile = new Pile();
         pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
@@ -49,8 +52,8 @@ public class Table {
         return listOfPlayers;
     }
 
-    public List<Card> getGameDeck() {
-        return deckForThisGame;
+    public ArrayList<Card> getGameDeck() {
+        return deckForThisGame.getDeck();
     }
 
     public List<Card> getPile() {
@@ -58,8 +61,8 @@ public class Table {
     }
 
     public void addToPile(Card card) {
+        deckForThisGame.removeCard(card);
         pileOfCardsForThisGame.add(card);
-        deckForThisGame.remove(card);
     }
 }
 
