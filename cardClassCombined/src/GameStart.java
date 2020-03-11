@@ -16,10 +16,10 @@ public class GameStart {
 //        System.out.println(variable);
 //        System.out.println(variables);
 //        List<Card> pile = table2.getPile();
-        Card card = new Card("Hearts", 5);
+        Card card = new Card("Hearts", 9);
         table2.addToPile(card);
         List<Card> pile = table2.getPile();
-        System.out.println(pile);
+        System.out.println(table2.getPile());
         System.out.println(table2.getGameDeck());
 //        Table table3 = new Table(player, player2, player3);
 //        Table table4 = new Table(player, player2, player3, player4);
