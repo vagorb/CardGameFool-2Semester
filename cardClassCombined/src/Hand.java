@@ -11,6 +11,12 @@ public class Hand {
         cardsInHand.add(card);
     }
 
+    //public void addCardsInHandFromTable(Table, Player player) {
+    //    for (Card card : Table) {
+    //        player.hand.addCard(card);
+    //    }
+    // }
+
     public List<Card> getCardsInHand() {
         return cardsInHand;
     }
