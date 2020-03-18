@@ -16,6 +16,7 @@ public class Table {
     private List<Card> pileOfCardsForThisGame;
     private List<Card> table = new ArrayList<>();
     private boolean currentDefenseState;
+    private String trumpSuit;
     // This is a default value i guess(atleast for coding purposes)
 //    private List<Card> attackAndDefenseCards = new ArrayList<>();
 
@@ -74,32 +75,54 @@ public class Table {
         pileOfCardsForThisGame.add(card);
     }
 
-
-    public void putAttackOrDefenseCards(Player player , Card card) {
-        table.add(player.getHand().putCardOnTable(card));
-        player.getHand().removeCard(card);
+    public void addCardOnTable(Card card) {
+        table.add(card);
     }
 
-
-    public void addAttackAndDefenseCardsToPileOrPlayer(Player player) {
-        if (currentDefenseState) {
-            pileOfCardsForThisGame.addAll(table);
-        } else {
-            for (Card card : table) {
-                player.getHand().addCard(card);
-            }
-        }
-        table.removeAll(table);
+    public Card getLastCardPutOnTable() {
+        int lastCardOnTable = table.size() - 1;
+        return table.get(lastCardOnTable);
     }
 
-    public void compareCards() {
-        int tableSize = table.size() - 1;
-        if (table.get(tableSize).value > table.get(tableSize - 1).value) {
-            currentDefenseState = true;
-        } else {
-            currentDefenseState = false;
-        }
+    public List<Card> getTable() {
+        return table;
     }
+
+    public void assignTrumpCard() {
+        // This method should be changed, currently serves a purpose of assigning a trump card ( not the way it should be in final game)
+        trumpSuit = deckForThisGame.getDeck().get(0).getSuit();
+    }
+
+    public String getTrumpSuit() {
+        return trumpSuit;
+    }
+
+//
+//    public void putAttackOrDefenseCards(Player player , Card card) {
+//        table.add(player.getHand().putCardOnTable(card));
+//        player.getHand().removeCard(card);
+//    }
+//
+//
+//    public void addAttackAndDefenseCardsToPileOrPlayer(Player player) {
+//        if (currentDefenseState) {
+//            pileOfCardsForThisGame.addAll(table);
+//        } else {
+//            for (Card card : table) {
+//                player.getHand().addCard(card);
+//            }
+//        }
+//        table.removeAll(table);
+//    }
+//
+//    public void compareCards() {
+//        int tableSize = table.size() - 1;
+//        if (table.get(tableSize).value > table.get(tableSize - 1).value) {
+//            currentDefenseState = true;
+//        } else {
+//            currentDefenseState = false;
+//        }
+//    }
 
 
 
