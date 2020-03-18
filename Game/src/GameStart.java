@@ -1,31 +1,55 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class GameStart {
+    private Table playingTable;
+//    private Deck playingDeck;
+//    private List<Player> playingPlayers = new ArrayList<>();
+    private List<Card> trumpCard = new ArrayList<>();
+
     public static void main(String[] args) {
-        Hand hand = new Hand();
+        Scanner input = new Scanner(System.in);
+        System.out.println("Please enter your name : ");
+        String s = input.next();
+        Hand hand1 = new Hand();
+        Player player1 = new Player(s, 0, hand1);
+
+        System.out.println("Please enter your name : ");
+        String x = input.next();
         Hand hand2 = new Hand();
-        Hand hand3 = new Hand();
-        Hand hand4 = new Hand();
-        Player player = new Player("Tvorog16", 0, hand);
-        Player player2 = new Player("Tvorog17", 0, hand2);
-        Player player3 = new Player("Tvorog18", 0, hand3);
-        Player player4 = new Player("Tvorog19", 0, hand4);
-        Table table2 = new Table(player, player2);
-        ArrayList<Card> variables = table2.getGameDeck();
-        List<Player>  variable = table2.getPlayers();
-//        System.out.println(variable);
-//        System.out.println(variables);
-//        List<Card> pile = table2.getPile();
-        Card card = new Card("Hearts", 9);
-        table2.addToPile(card);
-        //List<Card> pile = table2.getPile();
-        System.out.println(table2.getPile());
-        System.out.println(table2.getGameDeck());
-//        Table table3 = new Table(player, player2, player3);
-//        Table table4 = new Table(player, player2, player3, player4);
-//        Pile pile = new Pile();
+        Player player2 = new Player(x, 0, hand2);
 
-
+        Table table = new Table(player1, player2);
     }
+
+
+
+
+//    public void putAttackOrDefenseCards(Player player , Card card) {
+//        table.add(player.getHand().putCardOnTable(card));
+//        player.getHand().removeCard(card);
+//    }
+//
+//
+//    public void addAttackAndDefenseCardsToPileOrPlayer(Player player) {
+//        if (currentDefenseState) {
+//            pileOfCardsForThisGame.addAll(table);
+//        } else {
+//            for (Card card : table) {
+//                player.getHand().addCard(card);
+//            }
+//        }
+//        table.removeAll(table);
+//    }
+//
+//    public void compareCards() {
+//        int tableSize = table.size() - 1;
+//        if (table.get(tableSize).value > table.get(tableSize - 1).value) {
+//            currentDefenseState = true;
+//        } else {
+//            currentDefenseState = false;
+//        }
+//    }
+
 }
