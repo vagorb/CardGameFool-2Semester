@@ -19,7 +19,6 @@ public class Hand {
 //    Player player;z
     public void addCard(Card card) {
         cardsInHand.add(card);
-
     }
 
 

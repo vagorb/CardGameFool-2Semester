@@ -101,6 +101,12 @@ public class Table {
         }
     }
 
+    public Card getLastCardOnTable() {
+        return table.get(table.size() - 1);
+    }
+
+
+
 
 
 }
