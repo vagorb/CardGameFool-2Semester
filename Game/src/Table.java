@@ -2,7 +2,9 @@ import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Table {
 //Table(cards on the table) defence and attack . - Implemented
@@ -105,7 +107,13 @@ public class Table {
         return table.get(table.size() - 1);
     }
 
+    public List<Card> getTable() {
+        return this.table;
+    }
 
+    public Map<Integer, List<Card>> mapOfCardsInTable() {
+        return getTable().stream().collect(Collectors.groupingBy(Card::getValue));
+    }
 
 
 
