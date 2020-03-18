@@ -13,17 +13,15 @@ import javafx.scene.paint.Paint;
 public class Buttons {
     public Button exit() {
         Button exitButton = new Button("", new Icons("black").exit());
-
+        exitButton.setAlignment(Pos.CENTER);
         exitButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("orange"),
                 new CornerRadii(5d, 5d, 5d, 5d, false), Insets.EMPTY)));
         return exitButton;
     }
 
-    public Button fullscreen(double windowWidth, double windowHeight) {
+    public Button fullscreen() {
         Button fullscreenButton = new Button("Fullscreen", new Icons("black").fullscreenEnter());
         fullscreenButton.setAlignment(Pos.CENTER);
-        fullscreenButton.setPrefHeight(windowHeight / 20);
-        fullscreenButton.setPrefWidth(windowWidth / 5);
         fullscreenButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("lightblue"),
                 CornerRadii.EMPTY, Insets.EMPTY)));
         return fullscreenButton;
@@ -47,7 +45,6 @@ public class Buttons {
         playButton.setAlignment(Pos.CENTER);
         playButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("green"),
                 new CornerRadii(50, 0, 50, 0, false), Insets.EMPTY)));
-        playButton.setDisable(true);
         return playButton;
     }
 

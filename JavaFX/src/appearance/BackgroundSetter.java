@@ -1,9 +1,9 @@
 package appearance;
 
 import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 
 public class BackgroundSetter {
@@ -11,4 +11,10 @@ public class BackgroundSetter {
         return new Background(new BackgroundFill(Paint.valueOf(color), CornerRadii.EMPTY, Insets.EMPTY));
     }
 
+    public Background setImage(String img, Button element) {
+        return new Background(new BackgroundImage(
+                new Image(img, element.getMaxHeight(), element.getMaxHeight(), true, true),
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER, BackgroundSize.DEFAULT));
+    }
 }
