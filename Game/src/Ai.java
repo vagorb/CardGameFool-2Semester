@@ -5,10 +5,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// What could be done:
+// AI can watch how many cards of every suit are already in pile and start attack with card with most popular suit in pile
+// Moves after 0 cards in deck
+
 public class Ai {
     private Hand hand;
     private Table table;
     private Pile pile;
+    private Deck deck;
 
     public Ai(Hand hand) {
         this.hand = hand;
@@ -22,33 +27,30 @@ public class Ai {
         return hand.getCardsInHand().stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
-    public ArrayList<Card> suitableForDefCards() {
-        ArrayList<Card> suitableCards = new ArrayList<>();
+    public List<Card> suitableForDefCards() {
         Card lastCard = table.getLastCardOnTable();
-        for (Card card : hand.getCardsInHand()) {
-            if (lastCard.getTrump().equals(false)) {
-                if (card.getSuit().equals(lastCard.getSuit()) && card.value > lastCard.getValue()
-                        && card.getTrump().equals(false)) {
-                    suitableCards.add(card);
-                } else if (card.getTrump().equals(true)) {
-                    suitableCards.add(card);
-                }
-            } else if (lastCard.getTrump().equals(true)) {
-                if (card.getSuit().equals(lastCard.getSuit()) && card.value > lastCard.getValue()) {
-                    suitableCards.add(card);
-                }
-            }
+        if (lastCard.getTrump()) {
+            return hand.getCardsInHand().stream().filter(card -> card.getValue() > lastCard.getValue()
+                    && card.getTrump()).collect(Collectors.toList());
+        } else {
+            return hand.getCardsInHand().stream().filter(card -> card.getTrump()
+                    || (card.getSuit().equals(lastCard.getSuit())
+                    && card.getValue() > lastCard.getValue())).collect(Collectors.toList());
         }
-        return suitableCards;
     }
 
     public Optional<Card> mostSuitableCardForDef() {
-        ArrayList<Card> cards = suitableForDefCards();
+        List<Card> cards = suitableForDefCards();
         if (cards.size() < 1) {
             return Optional.empty();
         }
         if (cards.size() == 1) {
             return Optional.of(cards.get(0));
+        }
+        for (Card card : cards) {
+            if (table.mapOfCardsInTable().containsKey(card.getValue())) {
+                return Optional.of(card);
+            }
         }
         if (pile.getPile().size() > 1) {
             for (Card card : cards) {
@@ -64,22 +66,34 @@ public class Ai {
     public Optional<Card> firstCardAttackMove() {
         if (table.getTable().size() == 0) {
             for (Card card : getAiHand().getCardsInHand()) {
-                if (mapOfCardsInHand().get(card.value).size() >= 2 && card.getTrump().equals(false)) {
+                if (mapOfCardsInHand().get(card.value).size() >= 2 && !card.getTrump()) {
                     return Optional.of(card);
                 }
+            }
+            return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue));
+        }
+        return Optional.empty();
+    }
+
+    public List<Card> suitableCardsForAttackMoves() {
+        return hand.getCardsInHand().stream().filter(card -> table.mapOfCardsInTable().containsKey(card.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Card> suitableAttackMoveBeforeEndOfDeck() {
+        List<Card> cards = suitableCardsForAttackMoves();
+        if (cards.size() == 0) {
+            return Optional.empty();
+        }
+        if (cards.size() == 1) {
+            if (!cards.get(0).getTrump()) {
+                return Optional.of(cards.get(0));
             }
         }
         return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue));
     }
 
-    public Optional<Card> nextMoves() {
-        for (Card card : hand.getCardsInHand()) {
-            if (table.mapOfCardsInTable().containsKey(card.value)) {
-                if (card.getTrump().equals(false)) {
-                    return Optional.of(card);
-                }
-            }
-        }
+    public Optional<Card> suitableAttackMoveWhenDeckEnds() {
         return Optional.empty();
     }
 }
