@@ -64,7 +64,19 @@ public class TableTest {
         cards.add(card);
         assertEquals(cards, tableForTwo.getPile());
     }
-
+    
+    // Need to make it work
+//    @Test
+//    public void getTable() {
+//        Hand hand1 = new Hand();
+//        Player player1 = new Player("Ja", 0, hand1);
+//        Hand hand2 = new Hand();
+//        Player player2 = new Player("Ochen", 0, hand2);
+//        Table tableForTwo = new Table(player1, player2);
+//        Card card = new Card("Hearts", 9);
+//        tableForTwo.addToPile(card);
+//        System.out.println(tableForTwo.getTable());;
+//    }
 //    @Test
 //    public void putAttackOrDefenseCards() {
 //
