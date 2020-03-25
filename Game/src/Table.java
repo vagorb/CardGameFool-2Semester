@@ -2,7 +2,9 @@ import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Table {
 //Table(cards on the table) defence and attack . - Implemented
@@ -97,6 +99,14 @@ public class Table {
         return trumpSuit;
     }
 
+
+    public Card getLastCardOnTable() {
+        return table.get(table.size() - 1);
+    }
+
+    public Map<Integer, List<Card>> mapOfCardsInTable() {
+        return getTable().stream().collect(Collectors.groupingBy(Card::getValue));
+    }
 //
 //    public void putAttackOrDefenseCards(Player player , Card card) {
 //        table.add(player.getHand().putCardOnTable(card));

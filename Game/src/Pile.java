@@ -1,6 +1,8 @@
 import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Pile {
     // Pile class, should have all cards that were discarded after successful defense of a player
@@ -38,6 +40,11 @@ public class Pile {
 
     public List<Card> getPile() {
         return listOfDiscardedCards;
+    }
+
+    public Map<Integer, List<Card>> mapOfCardsAndValues() {
+        List<Card> pile = getPile();
+        return pile.stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
     public static void main(String[] args) {
