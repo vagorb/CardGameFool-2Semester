@@ -1,4 +1,4 @@
-package sample;
+package game;
 
 import appearance.*;
 import javafx.application.*;
@@ -19,17 +19,8 @@ public class Menu extends Application {
     private double windowWidth;
     private Scene menuScene;
 
-    public Scene getMenuScene() {
-        return menuScene;
-    }
-
-    public void setMenuScene(Scene menuScene) {
-        this.menuScene = menuScene;
-    }
-
     @Override
     public void start(Stage window) {
-        window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         /// avamenüü
         StackPane openingStackpane = new StackPane();
         StackPane settingsStackpane = new StackPane();
@@ -48,6 +39,8 @@ public class Menu extends Application {
         // akna sätted
         window.setX(0.0);
         window.setY(0.0);
+        window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        window.initStyle(StageStyle.UNDECORATED);
         window.setTitle("Menu.exe");
         window.setScene(menuScene);
         window.setResizable(false);
@@ -71,9 +64,7 @@ public class Menu extends Application {
 
         /// nuppude ja klahvide tegevused
         menuScene.setOnKeyPressed(button -> {
-            if (button.getCode() == KeyCode.ESCAPE) {
-                window.close();
-            } else if (button.getCode() == KeyCode.F) {
+            if (button.getCode() == KeyCode.F) {
                 fullscreenBoolean = !fullscreenBoolean;
                 window.setFullScreen(fullscreenBoolean);
 
@@ -81,16 +72,8 @@ public class Menu extends Application {
                 windowHeight = window.getScene().getHeight();
 
                 menu.setMaxSize(windowWidth / 2, windowHeight / 1.5);
-
             }
         });
-
-        exitButton.setOnAction(actionEvent -> window.close());
-
-        backButton.setOnAction(actionEvent -> menuScene.setRoot(openingStackpane));
-
-        settingsButton.setOnAction(actionEvent -> menuScene.setRoot(settingsStackpane));
-
         fullscreenButton.setOnAction(actionEvent -> {
             fullscreenBoolean = !fullscreenBoolean;
             window.setFullScreen(fullscreenBoolean);
@@ -104,12 +87,21 @@ public class Menu extends Application {
             fullscreenButton.setPrefHeight(windowHeight / 20);
         });
 
+        openingStackpane.setOnKeyPressed(button -> {
+            if (button.getCode() == KeyCode.ESCAPE) {
+                window.close();
+            }
+        });
+
+        exitButton.setOnAction(actionEvent -> window.close());
+        backButton.setOnAction(actionEvent -> menuScene.setRoot(openingStackpane));
+        settingsButton.setOnAction(actionEvent -> menuScene.setRoot(settingsStackpane));
+
         playButton.setOnAction(actionEvent -> {
             Play play = new Play();
             try {
                 window.hide();
                 play.setFullscreenStatus(fullscreenBoolean);
-                play.setWindowResolution(windowWidth, windowHeight);
                 play.setMenu(menuScene);
                 play.start(window);
             } catch (Exception ignore) {
@@ -119,19 +111,17 @@ public class Menu extends Application {
         /// tausta lisamine
         menuScene.setFill(Paint.valueOf("red"));
         openingStackpane.setBackground(background.setColor("green"));
-        menu.setBackground(background.setColor("yellow"));
+        menu.setBackground(background.setColor(Color.NAVY));
         settingsStackpane.setBackground(background.setColor("lightgreen"));
         settingsMenu.setBackground(background.setColor("lightgreen"));
 
+        /// nuppude suuruste omavaheline kopeerimine
         backButton.prefWidthProperty().bind(fullscreenButton.widthProperty());
-
         exitButton.prefWidthProperty().bind(Bindings.divide(window.widthProperty(), 10.0));
         exitButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 15.0));
-
         settingsButton.prefWidthProperty().bind(exitButton.widthProperty());
 
         window.show();
-
     }
 
     public static void main(String[] args) {

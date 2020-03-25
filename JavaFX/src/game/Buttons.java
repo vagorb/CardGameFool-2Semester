@@ -1,4 +1,4 @@
-package sample;
+package game;
 
 import appearance.Icons;
 import javafx.geometry.Insets;
@@ -47,5 +47,4 @@ public class Buttons {
                 new CornerRadii(50, 0, 50, 0, false), Insets.EMPTY)));
         return playButton;
     }
-
 }
