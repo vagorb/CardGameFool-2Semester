@@ -9,16 +9,16 @@ public class DeckTest {
 
 
     @Test
-    public void getDeck() {
+    public void TestGetDeck() {
         Deck deck = new Deck();
         assertEquals(36, deck.getDeck().size());
     }
 
     @Test
-    public void removeCard() {
+    public void TestRemoveCard() {
         Deck deck = new Deck();
-        Card card = new Card("Hearts", 9);
-        Card card2 = new Card("Hearts", 12);
+        Card card = new Card("Hearts", 9, false);
+        Card card2 = new Card("Hearts", 12, false);
         deck.removeCard(card);
         assertEquals(35, deck.getDeck().size());
         deck.removeCard(card2);
@@ -26,7 +26,7 @@ public class DeckTest {
     }
 
     @Test
-    public void shuffle() {
+    public void TestShuffle() {
         // Tested with debugger
         Deck deck = new Deck();
         System.out.println(deck);
