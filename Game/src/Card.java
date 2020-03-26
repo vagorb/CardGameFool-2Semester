@@ -9,6 +9,7 @@ public class Card {
     String suit;
     Integer value;
     Visibility visibility;
+    Boolean trump;
     private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
             9, "9", 10, "10", 11, "JACK", 12, "QUEEN", 13, "KING",
             14, "ACE"));
@@ -40,10 +41,11 @@ public class Card {
         }
     }
 
-    public Card(String suit, Integer value) {
+    public Card(String suit, Integer value, Boolean trump) {
         this.suit = suit;
         this.value = value;
         this.visibility = Visibility.NOONE;
+        this.trump = false;
     }
 
 
@@ -58,6 +60,14 @@ public class Card {
 
     public Visibility getVisibility() {
         return visibility;
+    }
+
+    public void setTrump(Boolean trump) {
+        this.trump = trump;
+    }
+
+    public Boolean getTrump() {
+        return this.trump;
     }
 
     @Override

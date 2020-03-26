@@ -43,5 +43,5 @@ public class Player {
         return this.playerState;
     }
 
-    
+
 }
