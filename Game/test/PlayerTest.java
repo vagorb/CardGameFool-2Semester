@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class PlayerTest {
 
     @Test
-    public void player() {
+    public void TestPlayer() {
         Hand hand = new Hand();
         Player player = new Player("SW", 0, hand);
         assertEquals(hand, player.getHand());
@@ -20,7 +20,7 @@ public class PlayerTest {
     }
 
     @Test
-    public void playerAddScore() {
+    public void TestPlayerAddScore() {
         Hand hand = new Hand();
         Player player = new Player("SW", 0, hand);
         player.addScore(497675);
@@ -30,8 +30,18 @@ public class PlayerTest {
         Player player1 = new Player("SW", 0, hand1);
         player1.addScore(-46476);
         assertEquals(0, player1.getScore());
+    }
 
-
+    @Test
+    public void TestGetSetPlayerState() {
+        Hand hand = new Hand();
+        Hand hand2 = new Hand();
+        Player player = new Player("SW", 0, hand);
+        Player player2 = new Player("SWS", 0, hand2);
+        player.setPlayerState(Player.PlayerState.ATTACK);
+        player2.setPlayerState(Player.PlayerState.DEFENSE);
+        assertEquals(Player.PlayerState.ATTACK, player.getPlayerState());
+        assertEquals(Player.PlayerState.DEFENSE, player2.getPlayerState());
     }
 
 

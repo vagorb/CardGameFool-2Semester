@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class HandTest {
 
     @Test
-    public void HandInitialSize() {
+    public void TestHandInitialSize() {
         Hand hand = new Hand();
         assertEquals(0, hand.getCardsInHand().size());
     }
 
     @Test
-    public void addCard() {
+    public void TestAddCard() {
         Hand hand = new Hand();
         Card card1 = new Card("Hearts", 6, false);
         Card card2 = new Card("Hearts", 7, false);
@@ -43,7 +43,7 @@ public class HandTest {
     }
 
     @Test
-    public void removeCard() {
+    public void TestRemoveCard() {
         Hand hand = new Hand();
         Card card1 = new Card("Hearts", 6, false);
         Card card2 = new Card("Hearts", 7, false);
@@ -69,7 +69,7 @@ public class HandTest {
     }
 
     @Test
-    public void putCardOnTable() {
+    public void TestPutCardOnTable() {
         Hand hand = new Hand();
         Card card1 = new Card("Hearts", 6, false);
         hand.addCard(card1);
