@@ -27,19 +27,19 @@ public class Card {
     */
 
 
-    public enum Suite {
-        DIAMONDS("Diamonds"), HEARTS("Hearts"), SPADES("Spades"), CLUBS("Clubs");
-        private final String suiteString;
-
-        Suite(String suite) {
-            suiteString = suite;
-        }
-
-        @Override
-        public String toString() {
-            return suiteString;
-        }
-    }
+//    public enum Suite {
+//        DIAMONDS("Diamonds"), HEARTS("Hearts"), SPADES("Spades"), CLUBS("Clubs");
+//        private final String suiteString;
+//
+//        Suite(String suite) {
+//            suiteString = suite;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return suiteString;
+//        }
+//    }
 
     public Card(String suit, Integer value, Boolean trump) {
         this.suit = suit;
