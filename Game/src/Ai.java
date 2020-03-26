@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class Ai {
     private Hand hand;
-    private Table table;
+    Table table;
     private Pile pile;
     private Deck deck;
 
@@ -27,8 +27,7 @@ public class Ai {
         return hand.getCardsInHand().stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
-    public List<Card> suitableForDefCards() {
-        Card lastCard = table.getLastCardOnTable();
+    public List<Card> suitableForDefCards(Card lastCard) { ;
         if (lastCard.getTrump()) {
             return hand.getCardsInHand().stream().filter(card -> card.getValue() > lastCard.getValue()
                     && card.getTrump()).collect(Collectors.toList());
@@ -40,7 +39,9 @@ public class Ai {
     }
 
     public Optional<Card> mostSuitableCardForDef() {
-        List<Card> cards = suitableForDefCards();
+        Card lastCard = table.getLastCardOnTable();
+        System.out.println(lastCard);
+        List<Card> cards = suitableForDefCards(lastCard);
         if (cards.size() < 1) {
             return Optional.empty();
         }

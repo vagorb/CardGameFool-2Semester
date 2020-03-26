@@ -17,8 +17,8 @@ public class DeckTest {
     @Test
     public void removeCard() {
         Deck deck = new Deck();
-        Card card = new Card("Hearts", 9);
-        Card card2 = new Card("Hearts", 12);
+        Card card = new Card("Hearts", 9, false);
+        Card card2 = new Card("Hearts", 12, false);
         deck.removeCard(card);
         assertEquals(35, deck.getDeck().size());
         deck.removeCard(card2);

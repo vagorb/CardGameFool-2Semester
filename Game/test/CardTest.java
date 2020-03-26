@@ -11,7 +11,7 @@ public class CardTest {
 
     @Test
     public void CardClassConstructorValues() {
-        Card card = new Card("Hearts", 9);
+        Card card = new Card("Hearts", 9, false);
         assertEquals("Hearts", card.getSuit());
         assertEquals(9, card.getValue());
         assertEquals(Card.Visibility.NOONE, card.getVisibility());

@@ -22,42 +22,51 @@ public class Table {
     // This is a default value i guess(atleast for coding purposes)
 //    private List<Card> attackAndDefenseCards = new ArrayList<>();
 
-    public Table(Player player1, Player player2) {
-        this.table = new ArrayList<>();
-        this.deckForThisGame = new Deck();
-        this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile();
-        pileOfCardsForThisGame = pile.createPile();
-        listOfPlayers.add(player1);
-        listOfPlayers.add(player2);
-        System.out.println(deckForThisGame);
-    }
+//    public Table(Player player1, Player player2) {
+//        this.table = new ArrayList<>();
+//        this.deckForThisGame = new Deck();
+//        this.deckForThisGame.shuffleDeck();
+//        Pile pile = new Pile();
+//        pileOfCardsForThisGame = pile.createPile();
+//        listOfPlayers.add(player1);
+//        listOfPlayers.add(player2);
+//        System.out.println(deckForThisGame);
+//    }
+//
+//    public Table(Player player1, Player player2, Player player3) {
+//        //deckForThisGame = Deck.createDeck();
+//        this.table = new ArrayList<>();
+//        this.deckForThisGame = new Deck();
+//        this.deckForThisGame.shuffleDeck();
+//        Pile pile = new Pile();
+//        pileOfCardsForThisGame = pile.createPile();
+//        listOfPlayers.add(player1);
+//        listOfPlayers.add(player2);
+//        listOfPlayers.add(player3);
+//        System.out.println(deckForThisGame);
+//    }
+//
+//    public Table(Player player1, Player player2, Player player3, Player player4) {
+//        //deckForThisGame = Deck.createDeck();
+//        this.table = new ArrayList<>();
+//        this.deckForThisGame = new Deck();
+//        this.deckForThisGame.shuffleDeck();
+//        Pile pile = new Pile();
+//        pileOfCardsForThisGame = pile.createPile();
+//        listOfPlayers.add(player1);
+//        listOfPlayers.add(player2);
+//        listOfPlayers.add(player3);
+//        listOfPlayers.add(player4);
+//        System.out.println(deckForThisGame);
+//    }
 
-    public Table(Player player1, Player player2, Player player3) {
-        //deckForThisGame = Deck.createDeck();
+    public Table(Player player1, Ai ai) {
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
         Pile pile = new Pile();
         pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
-        listOfPlayers.add(player2);
-        listOfPlayers.add(player3);
-        System.out.println(deckForThisGame);
-    }
-
-    public Table(Player player1, Player player2, Player player3, Player player4) {
-        //deckForThisGame = Deck.createDeck();
-        this.table = new ArrayList<>();
-        this.deckForThisGame = new Deck();
-        this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile();
-        pileOfCardsForThisGame = pile.createPile();
-        listOfPlayers.add(player1);
-        listOfPlayers.add(player2);
-        listOfPlayers.add(player3);
-        listOfPlayers.add(player4);
-        System.out.println(deckForThisGame);
     }
 
     public List<Player> getPlayers() {

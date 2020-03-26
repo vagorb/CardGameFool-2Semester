@@ -18,9 +18,9 @@ public class GameStart {
         System.out.println("Please enter your name : ");
         String x = input.next();
         Hand hand2 = new Hand();
-        Player player2 = new Player(x, 0, hand2);
+        Ai ai = new Ai(hand2);
 
-        Table table = new Table(player1, player2);
+        Table table = new Table(player1, ai);
     }
 
 

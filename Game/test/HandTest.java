@@ -19,12 +19,12 @@ public class HandTest {
     @Test
     public void addCard() {
         Hand hand = new Hand();
-        Card card1 = new Card("Hearts", 6);
-        Card card2 = new Card("Hearts", 7);
-        Card card3 = new Card("Hearts", 8);
-        Card card4 = new Card("Hearts", 9);
-        Card card5 = new Card("Hearts", 10);
-        Card card6 = new Card("Hearts", 11);
+        Card card1 = new Card("Hearts", 6, false);
+        Card card2 = new Card("Hearts", 7, false);
+        Card card3 = new Card("Hearts", 8, false);
+        Card card4 = new Card("Hearts", 9, false);
+        Card card5 = new Card("Hearts", 10, false);
+        Card card6 = new Card("Hearts", 11, false);
         hand.addCard(card1);
         hand.addCard(card2);
         hand.addCard(card3);
@@ -45,12 +45,12 @@ public class HandTest {
     @Test
     public void removeCard() {
         Hand hand = new Hand();
-        Card card1 = new Card("Hearts", 6);
-        Card card2 = new Card("Hearts", 7);
-        Card card3 = new Card("Hearts", 8);
-        Card card4 = new Card("Hearts", 9);
-        Card card5 = new Card("Hearts", 10);
-        Card card6 = new Card("Hearts", 11);
+        Card card1 = new Card("Hearts", 6, false);
+        Card card2 = new Card("Hearts", 7, false);
+        Card card3 = new Card("Hearts", 8, false);
+        Card card4 = new Card("Hearts", 9, false);
+        Card card5 = new Card("Hearts", 10, false);
+        Card card6 = new Card("Hearts", 11, false);
         hand.addCard(card1);
         hand.addCard(card2);
         hand.addCard(card3);
@@ -71,7 +71,7 @@ public class HandTest {
     @Test
     public void putCardOnTable() {
         Hand hand = new Hand();
-        Card card1 = new Card("Hearts", 6);
+        Card card1 = new Card("Hearts", 6, false);
         hand.addCard(card1);
         assertEquals(card1, hand.putCardOnTable(card1));
         // Point is it should return a proper card . Because we are supposingly are going to use this return in future
