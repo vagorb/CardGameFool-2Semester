@@ -120,7 +120,8 @@ class AiTest {
     @Test
     void mostSuitableCardForDef() {
         tableFor.addCardOnTable(card9);
-       // assertEquals(Optional.of(card3), ai.mostSuitableCardForDef());
+        System.out.println(tableFor);
+        assertEquals(Optional.of(card3), ai.mostSuitableCardForDef());
     }
 
     @Test

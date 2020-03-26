@@ -8,20 +8,20 @@ public class GameStart {
 //    private List<Player> playingPlayers = new ArrayList<>();
     private List<Card> trumpCard = new ArrayList<>();
 
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        System.out.println("Please enter your name : ");
-        String s = input.next();
-        Hand hand1 = new Hand();
-        Player player1 = new Player(s, 0, hand1);
-
-        System.out.println("Please enter your name : ");
-        String x = input.next();
-        Hand hand2 = new Hand();
-        Ai ai = new Ai(hand2);
-
-        Table table = new Table(player1, ai);
-    }
+//    public static void main(String[] args) {
+//        Scanner input = new Scanner(System.in);
+//        System.out.println("Please enter your name : ");
+//        String s = input.next();
+//        Hand hand1 = new Hand();
+//        Player player1 = new Player(s, 0, hand1);
+//
+//        System.out.println("Please enter your name : ");
+//        String x = input.next();
+//        Hand hand2 = new Hand();
+//        Player player2 = new Player(x, 0, hand2);
+//
+//        Table table = new Table(player1, player2);
+//    }
 
 
 

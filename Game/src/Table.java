@@ -16,7 +16,7 @@ public class Table {
     public Deck deckForThisGame;
     private List<Player> listOfPlayers = new ArrayList<>();
     private List<Card> pileOfCardsForThisGame;
-    private List<Card> table = new ArrayList<>();
+    List<Card> table = new ArrayList<>();
     private boolean currentDefenseState;
     private String trumpSuit;
     // This is a default value i guess(atleast for coding purposes)
@@ -61,7 +61,6 @@ public class Table {
 //    }
 
     public Table(Player player1, Ai ai) {
-        this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
         Pile pile = new Pile();
