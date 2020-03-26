@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class GameStart {
@@ -7,8 +8,14 @@ public class GameStart {
 //    private Deck playingDeck;
 //    private List<Player> playingPlayers = new ArrayList<>();
     private List<Card> trumpCard = new ArrayList<>();
+//    private boolean gameIsBeingPlayed = true;
 
     public static void main(String[] args) {
+        // This is a rough idea that could make sense.
+        boolean firstOffense = true;
+        Card cardThatDecidesTrump = null;
+        boolean trumpChosen = false;
+        boolean gameIsBeingPlayed = true;
         Scanner input = new Scanner(System.in);
         System.out.println("Please enter your name : ");
         String s = input.next();
@@ -21,6 +28,52 @@ public class GameStart {
         Player player2 = new Player(x, 0, hand2);
 
         Table table = new Table(player1, player2);
+        TurnCalculation turnCalculation = new TurnCalculation(table);
+
+        while (gameIsBeingPlayed)  {
+            if (!trumpChosen) {
+                Random generator = new Random();
+
+                // The code here represents the idea that this card from deck is not a part of the deck ( I GUESS ? )
+                // because it is being shown face up as the bottom card of the deck.
+                cardThatDecidesTrump = table.getGameDeck().get(generator.nextInt(36));
+                table.getGameDeck().remove(cardThatDecidesTrump);
+
+
+//                String suit = table.getGameDeck().get(generator.nextInt(37)).getSuit();
+                String trumpSuit = cardThatDecidesTrump.getSuit();
+                for (Card card : table.getGameDeck()) {
+                    if (card.getSuit().equals(trumpSuit)) {
+                        card.setTrump(true);
+                    }
+                }
+                trumpChosen = true;
+            }
+            while (player1.getHand().getCardsInHand().size() < 6 && player2.getHand().getCardsInHand().size() < 6) {
+                Card cardForPlayer1 = table.getGameDeck().get(table.getGameDeck().size() - 1);
+                table.getPlayers().get(0).getHand().addCard(cardForPlayer1);
+                table.getGameDeck().remove(cardForPlayer1);
+                Card cardForPlayer2 = table.getGameDeck().get(table.getGameDeck().size() - 1);
+                table.getPlayers().get(1).getHand().addCard(cardForPlayer2);
+                table.getGameDeck().remove(cardForPlayer2);
+            }
+            // Because of what i added a bit earlier we need to check for the existence of cardThatDecidesTrump because it goes towards the deck size
+            while (table.getGameDeck().size() > 0
+                    && (player1.getHand().getCardsInHand().size() > 0 && player2.getHand().getCardsInHand().size() > 0)) {
+                while (firstOffense) {
+                    player1.setPlayerState(Player.PlayerState.ATTACK);
+                    player2.setPlayerState(Player.PlayerState.DEFENSE);
+                    for (Player attacker : table.getPlayers()) {
+                        if (attacker.getPlayerState() == Player.PlayerState.ATTACK) {
+                            // for testing purpose i will try to add just basic random i guess?? no clue how to test otherwise right now
+                            Random generator = new Random();
+                            turnCalculation.putAttackCard(attacker, attacker.getHand().getCardsInHand().get(generator.nextInt(6)));
+
+                        }
+                    }
+                }
+            }
+        }
     }
 //    while (someStatement == true) {
         // Decide a trump card, give every player in the game (in this exact table) 6 cards from Deck to they're Hand
@@ -33,39 +86,11 @@ public class GameStart {
         // If defense is unsuccessful skip the player that was defending and make another player Attacker ( and the next one a defender )
         //
         //
-        // All this happens continuously untill deck size becomes 0
+        // All this happens continuously until deck size becomes 0
         // When it becomes zero any player who has 0 cards in Hand finishes the game as a (partial) winner
         // Last player in the game with cards is declared a loser ( FOOL )
         // When loser is declared someStatement == false
         // Program ( game ) ends
-//    }
-
-
-
-//    public void putAttackOrDefenseCards(Player player , Card card) {
-//        table.add(player.getHand().putCardOnTable(card));
-//        player.getHand().removeCard(card);
-//    }
-//
-//
-//    public void addAttackAndDefenseCardsToPileOrPlayer(Player player) {
-//        if (currentDefenseState) {
-//            pileOfCardsForThisGame.addAll(table);
-//        } else {
-//            for (Card card : table) {
-//                player.getHand().addCard(card);
-//            }
-//        }
-//        table.removeAll(table);
-//    }
-//
-//    public void compareCards() {
-//        int tableSize = table.size() - 1;
-//        if (table.get(tableSize).value > table.get(tableSize - 1).value) {
-//            currentDefenseState = true;
-//        } else {
-//            currentDefenseState = false;
-//        }
 //    }
 
 }
