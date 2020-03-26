@@ -12,7 +12,7 @@ public class TableTest {
 
 
     @Test
-    public void tableCreatedWithDifferentConstructors() {
+    public void TestTableCreatedWithDifferentConstructors() {
         Hand hand1 = new Hand();
         Player player1 = new Player("Ja", 0, hand1);
         Hand hand2 = new Hand();
@@ -33,7 +33,7 @@ public class TableTest {
     }
 
     @Test
-    public void tableGetters() {
+    public void TestTableGetters() {
         Hand hand1 = new Hand();
         Player player1 = new Player("Ja", 0, hand1);
         Hand hand2 = new Hand();
@@ -51,20 +51,32 @@ public class TableTest {
     }
 
     @Test
-    public void addToPile() {
+    public void TestAddToPile() {
         Hand hand1 = new Hand();
         Player player1 = new Player("Ja", 0, hand1);
         Hand hand2 = new Hand();
         Player player2 = new Player("Ochen", 0, hand2);
         Table tableForTwo = new Table(player1, player2);
-        Card card = new Card("Hearts", 9);
+        Card card = new Card("Hearts", 9, false);
         tableForTwo.addToPile(card);
         assertEquals(1, tableForTwo.getPile().size());
         List<Card> cards = new ArrayList<>();
         cards.add(card);
         assertEquals(cards, tableForTwo.getPile());
     }
-
+    
+    // Need to make it work
+//    @Test
+//    public void getTable() {
+//        Hand hand1 = new Hand();
+//        Player player1 = new Player("Ja", 0, hand1);
+//        Hand hand2 = new Hand();
+//        Player player2 = new Player("Ochen", 0, hand2);
+//        Table tableForTwo = new Table(player1, player2);
+//        Card card = new Card("Hearts", 9);
+//        tableForTwo.addToPile(card);
+//        System.out.println(tableForTwo.getTable());;
+//    }
 //    @Test
 //    public void putAttackOrDefenseCards() {
 //
