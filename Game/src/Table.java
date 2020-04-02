@@ -107,6 +107,7 @@ public class Table {
         trumpSuit = deckForThisGame.getDeck().get(0).getSuit();
     }
 
+    
     public String getTrumpSuit() {
         return trumpSuit;
     }

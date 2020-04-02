@@ -91,6 +91,7 @@ public class Ai {
                 return Optional.of(cards.get(0));
             }
         }
+
         return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
