@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +62,9 @@ class AiTest {
         cardPile5 = new Card("Clubs", 9, false);
         cardPile6 = new Card("Clubs", 10, false);
         hand1 = new Hand();
-        hand.addCard(card1);
-        hand.addCard(card2);
         hand.addCard(card3);
+        hand.addCard(card2);
+        hand.addCard(card1);
         hand.addCard(card4);
         hand.addCard(card5);
         hand.addCard(card6);
@@ -88,9 +89,9 @@ class AiTest {
     @Test
     void getAiHand() {
         Hand hand2 = new Hand();
-        hand2.addCard(card1);
-        hand2.addCard(card2);
         hand2.addCard(card3);
+        hand2.addCard(card2);
+        hand2.addCard(card1);
         hand2.addCard(card4);
         hand2.addCard(card5);
         hand2.addCard(card6);
@@ -114,26 +115,35 @@ class AiTest {
         tableFor.addCardOnTable(card9);
         System.out.println(tableFor.getTable());
         System.out.println(tableFor.getLastCardOnTable().getTrump());
-        assertEquals(List.of(card3, card4, card5) , ai.suitableForDefCards(tableFor.getLastCardOnTable()));
+        assertEquals(List.of(card3, card4, card5) , ai.suitableForDefCards(tableFor));
     }
 
     @Test
     void mostSuitableCardForDef() {
         tableFor.addCardOnTable(card9);
-        System.out.println(tableFor);
-        assertEquals(Optional.of(card3), ai.mostSuitableCardForDef());
+        System.out.println(tableFor.getPile().getPile());
+        assertEquals(Optional.of(card3), ai.mostSuitableCardForDef(tableFor));
     }
 
     @Test
     void firstCardAttackMove() {
+        assertEquals(Optional.of(card1), ai.firstCardAttackMove(tableFor));
     }
 
     @Test
     void suitableCardsForAttackMoves() {
+        tableFor.addCardOnTable(card7);
+        tableFor.addCardOnTable(card8);
+        tableFor.addCardOnTable(card9);
+        tableFor.addCardOnTable(card10);
+        System.out.println(ai.suitableCardsForAttackMoves(tableFor));
+        assertEquals(List.of(), ai.suitableCardsForAttackMoves(tableFor));
     }
 
     @Test
     void suitableAttackMoveBeforeEndOfDeck() {
+        tableFor.addCardOnTable(cardPile4);
+        assertEquals(Optional.of(card1), ai.suitableAttackMoveBeforeEndOfDeck(tableFor));
     }
 
     @Test

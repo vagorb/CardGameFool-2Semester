@@ -28,9 +28,12 @@ public class Pile {
 
 
     public void addDiscardedCards(Card cardToAddToDiscard) {
-        if (isDiscardable()) {
-            listOfDiscardedCards.add(cardToAddToDiscard);
-        }
+        listOfDiscardedCards.add(cardToAddToDiscard);
+
+    }
+
+    public List<Card> getPileByList() {
+        return listOfDiscardedCards;
     }
 
 

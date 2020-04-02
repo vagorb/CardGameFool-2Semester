@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,10 +9,10 @@ import java.util.stream.Collectors;
 // What could be done:
 // AI can watch how many cards of every suit are already in pile and start attack with card with most popular suit in pile
 // Moves after 0 cards in deck
+// method in table getAi move
 
 public class Ai {
     private Hand hand;
-    Table table;
     private Pile pile;
     private Deck deck;
 
@@ -27,7 +28,8 @@ public class Ai {
         return hand.getCardsInHand().stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
-    public List<Card> suitableForDefCards(Card lastCard) { ;
+    public List<Card> suitableForDefCards(Table table) {
+        Card lastCard = table.getLastCardOnTable();
         if (lastCard.getTrump()) {
             return hand.getCardsInHand().stream().filter(card -> card.getValue() > lastCard.getValue()
                     && card.getTrump()).collect(Collectors.toList());
@@ -38,10 +40,8 @@ public class Ai {
         }
     }
 
-    public Optional<Card> mostSuitableCardForDef() {
-        Card lastCard = table.getLastCardOnTable();
-        System.out.println(lastCard);
-        List<Card> cards = suitableForDefCards(lastCard);
+    public Optional<Card> mostSuitableCardForDef(Table table) {
+        List<Card> cards = suitableForDefCards(table);
         if (cards.size() < 1) {
             return Optional.empty();
         }
@@ -53,9 +53,9 @@ public class Ai {
                 return Optional.of(card);
             }
         }
-        if (pile.getPile().size() > 1) {
+        if (table.getPile().getPile().size() > 1) {
             for (Card card : cards) {
-                if (pile.mapOfCardsAndValues().containsKey(card.value) && pile.mapOfCardsAndValues().get(card.value)
+                if (table.getPile().mapOfCardsAndValues().containsKey(card.value) && table.getPile().mapOfCardsAndValues().get(card.value)
                             .size() >= 2) {
                         return Optional.of(card);
                 }
@@ -64,7 +64,7 @@ public class Ai {
         return cards.stream().min(Comparator.comparingInt(Card::getValue));
     }
 
-    public Optional<Card> firstCardAttackMove() {
+    public Optional<Card> firstCardAttackMove(Table table) {
         if (table.getTable().size() == 0) {
             for (Card card : getAiHand().getCardsInHand()) {
                 if (mapOfCardsInHand().get(card.value).size() >= 2 && !card.getTrump()) {
@@ -76,13 +76,13 @@ public class Ai {
         return Optional.empty();
     }
 
-    public List<Card> suitableCardsForAttackMoves() {
+    public List<Card> suitableCardsForAttackMoves(Table table) {
         return hand.getCardsInHand().stream().filter(card -> table.mapOfCardsInTable().containsKey(card.getValue()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    public Optional<Card> suitableAttackMoveBeforeEndOfDeck() {
-        List<Card> cards = suitableCardsForAttackMoves();
+    public Optional<Card> suitableAttackMoveBeforeEndOfDeck(Table table) {
+        List<Card> cards = suitableCardsForAttackMoves(table);
         if (cards.size() == 0) {
             return Optional.empty();
         }
@@ -91,7 +91,7 @@ public class Ai {
                 return Optional.of(cards.get(0));
             }
         }
-        return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue));
+        return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
     public Optional<Card> suitableAttackMoveWhenDeckEnds() {

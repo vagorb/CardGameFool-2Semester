@@ -16,55 +16,59 @@ public class Table {
     public Deck deckForThisGame;
     private List<Player> listOfPlayers = new ArrayList<>();
     private List<Card> pileOfCardsForThisGame;
+    Pile pile;
+    Ai ai;
     List<Card> table = new ArrayList<>();
     private boolean currentDefenseState;
     private String trumpSuit;
     // This is a default value i guess(atleast for coding purposes)
 //    private List<Card> attackAndDefenseCards = new ArrayList<>();
 
-//    public Table(Player player1, Player player2) {
-//        this.table = new ArrayList<>();
-//        this.deckForThisGame = new Deck();
-//        this.deckForThisGame.shuffleDeck();
-//        Pile pile = new Pile();
-//        pileOfCardsForThisGame = pile.createPile();
-//        listOfPlayers.add(player1);
-//        listOfPlayers.add(player2);
-//        System.out.println(deckForThisGame);
-//    }
-//
-//    public Table(Player player1, Player player2, Player player3) {
-//        //deckForThisGame = Deck.createDeck();
-//        this.table = new ArrayList<>();
-//        this.deckForThisGame = new Deck();
-//        this.deckForThisGame.shuffleDeck();
-//        Pile pile = new Pile();
-//        pileOfCardsForThisGame = pile.createPile();
-//        listOfPlayers.add(player1);
-//        listOfPlayers.add(player2);
-//        listOfPlayers.add(player3);
-//        System.out.println(deckForThisGame);
-//    }
-//
-//    public Table(Player player1, Player player2, Player player3, Player player4) {
-//        //deckForThisGame = Deck.createDeck();
-//        this.table = new ArrayList<>();
-//        this.deckForThisGame = new Deck();
-//        this.deckForThisGame.shuffleDeck();
-//        Pile pile = new Pile();
-//        pileOfCardsForThisGame = pile.createPile();
-//        listOfPlayers.add(player1);
-//        listOfPlayers.add(player2);
-//        listOfPlayers.add(player3);
-//        listOfPlayers.add(player4);
-//        System.out.println(deckForThisGame);
-//    }
-
-    public Table(Player player1, Ai ai) {
+    public Table(Player player1, Player player2) {
+        this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
         Pile pile = new Pile();
         pileOfCardsForThisGame = pile.createPile();
+        listOfPlayers.add(player1);
+        listOfPlayers.add(player2);
+        System.out.println(deckForThisGame);
+    }
+
+    public Table(Player player1, Player player2, Player player3) {
+        //deckForThisGame = Deck.createDeck();
+        this.table = new ArrayList<>();
+        this.deckForThisGame = new Deck();
+        this.deckForThisGame.shuffleDeck();
+        Pile pile = new Pile();
+        pileOfCardsForThisGame = pile.createPile();
+        listOfPlayers.add(player1);
+        listOfPlayers.add(player2);
+        listOfPlayers.add(player3);
+        System.out.println(deckForThisGame);
+    }
+
+    public Table(Player player1, Player player2, Player player3, Player player4) {
+        //deckForThisGame = Deck.createDeck();
+        this.table = new ArrayList<>();
+        this.deckForThisGame = new Deck();
+        this.deckForThisGame.shuffleDeck();
+        Pile pile = new Pile();
+        pileOfCardsForThisGame = pile.createPile();
+        listOfPlayers.add(player1);
+        listOfPlayers.add(player2);
+        listOfPlayers.add(player3);
+        listOfPlayers.add(player4);
+        System.out.println(deckForThisGame);
+    }
+
+    public Table(Player player1, Ai ai) {
+        this.ai = ai;
+        this.pile = new Pile();
+        pile.createPile();
+        this.deckForThisGame = new Deck();
+        this.deckForThisGame.shuffleDeck();
+
         listOfPlayers.add(player1);
     }
 
@@ -76,13 +80,13 @@ public class Table {
         return deckForThisGame.getDeck();
     }
 
-    public List<Card> getPile() {
-        return pileOfCardsForThisGame;
+    public Pile getPile() {
+        return pile;
     }
 
     public void addToPile(Card card) {
-        deckForThisGame.removeCard(card);
-        pileOfCardsForThisGame.add(card);
+        //deckForThisGame.removeCard(card);
+        pile.addDiscardedCards(card);
     }
 
     public void addCardOnTable(Card card) {
@@ -115,6 +119,8 @@ public class Table {
     public Map<Integer, List<Card>> mapOfCardsInTable() {
         return getTable().stream().collect(Collectors.groupingBy(Card::getValue));
     }
+
+
 //
 //    public void putAttackOrDefenseCards(Player player , Card card) {
 //        table.add(player.getHand().putCardOnTable(card));
