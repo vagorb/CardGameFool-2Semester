@@ -39,7 +39,7 @@ public class Icons {
             iconColor = Color.valueOf(color.toUpperCase()).toString();
         } catch (IllegalArgumentException ignore) {
         }
-        return new ImageView(new Image("appearance/icons/" + iconColor + "/" + imageName,
+        return new ImageView(new Image(getClass().getResource("/icons/" + iconColor + "/" + imageName).toString(),
                 width, height, false, false));
     }
 

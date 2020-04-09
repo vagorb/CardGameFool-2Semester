@@ -1,4 +1,4 @@
-package game;
+package game.help;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -13,7 +13,7 @@ import java.util.Map;
 public class PlayField {
     double playfieldCardUnit;
 
-    PlayField(double playfieldCardUnit) {
+    public PlayField(double playfieldCardUnit) {
         this.playfieldCardUnit = playfieldCardUnit;
     }
 

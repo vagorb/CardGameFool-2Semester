@@ -1,6 +1,7 @@
 package game;
 
 import appearance.*;
+import game.help.Buttons;
 import javafx.application.*;
 import javafx.beans.binding.*;
 import javafx.geometry.*;
@@ -11,15 +12,18 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.stage.*;
 
-public class Menu extends Application {
+import java.util.Arrays;
+
+public class Menu extends Application{
     private static boolean fullscreenBoolean = false;
     private Buttons buttons = new Buttons();
     private BackgroundSetter background = new BackgroundSetter();
     private double windowHeight;
     private double windowWidth;
     private Scene menuScene;
+    private int playerHumanCount = 1;
+    private int playerAIcount = 0;
 
-    @Override
     public void start(Stage window) {
         /// avamenüü
         StackPane openingStackpane = new StackPane();
@@ -32,9 +36,11 @@ public class Menu extends Application {
         /// nupud
         Button exitButton = buttons.exit();
         Button backButton = buttons.back();
-        Button settingsButton = buttons.settings();
         Button playButton = buttons.play();
+
         Button fullscreenButton = buttons.fullscreen();
+
+
 
         // akna sätted
         window.setX(0.0);
@@ -47,12 +53,35 @@ public class Menu extends Application {
         window.show();
         window.hide();
 
-        /// menüü riba
+        /// peamenüü
         VBox menu = new VBox(25);
-        menu.getChildren().addAll(playButton, settingsButton, exitButton);
+        Button startButton = buttons.play();
+        Button settingsButton = buttons.settings();
+        menu.getChildren().addAll(startButton, settingsButton, exitButton);
         menu.setMaxSize(windowWidth / 2, windowHeight / 1.5);
         menu.setAlignment(Pos.CENTER);
 
+        /// vahemenüü
+        Slider sliderAI = new Slider(0, 5, 0);
+        Slider sliderHuman = new Slider(0, 5, 1);
+        for (Slider slider : Arrays.asList(sliderAI, sliderHuman)) {
+            slider.setBlockIncrement(1);
+            slider.setMinorTickCount(0);
+            slider.setMajorTickUnit(1);
+            slider.setShowTickLabels(true);
+            slider.setSnapToTicks(true);
+            slider.getStylesheets().add(getClass().getResource("/css/slider.css").toString());
+            slider.setOnMouseDragReleased(mouseEvent -> {
+                playerHumanCount = (int) sliderHuman.getValue();
+                playerAIcount = (int) sliderAI.getValue();
+            });
+        }
+        VBox sliderMenu = new VBox(25);
+        sliderMenu.getChildren().addAll(sliderAI, sliderHuman, playButton);
+        sliderMenu.setMaxSize(windowWidth / 1.5, windowHeight / 2);
+        sliderMenu.setAlignment(Pos.CENTER);
+
+        /// sätete menu
         VBox settingsMenu = new VBox(25);
         settingsMenu.getChildren().addAll(fullscreenButton, backButton);
         settingsMenu.setPadding(new Insets(100, 0, 0, 100));
@@ -61,6 +90,7 @@ public class Menu extends Application {
         settingsStackpane.getChildren().addAll(settingsMenu);
         openingStackpane.setAlignment(Pos.BOTTOM_CENTER);
         openingStackpane.getChildren().addAll(menu);
+        playStackpane.getChildren().add(sliderMenu);
 
         /// nuppude ja klahvide tegevused
         menuScene.setOnKeyPressed(button -> {
@@ -74,6 +104,7 @@ public class Menu extends Application {
                 menu.setMaxSize(windowWidth / 2, windowHeight / 1.5);
             }
         });
+
         fullscreenButton.setOnAction(actionEvent -> {
             fullscreenBoolean = !fullscreenBoolean;
             window.setFullScreen(fullscreenBoolean);
@@ -96,24 +127,47 @@ public class Menu extends Application {
         exitButton.setOnAction(actionEvent -> window.close());
         backButton.setOnAction(actionEvent -> menuScene.setRoot(openingStackpane));
         settingsButton.setOnAction(actionEvent -> menuScene.setRoot(settingsStackpane));
+        startButton.setOnAction(actionEvent -> menuScene.setRoot(playStackpane));
+
+        sliderAI.setOnMouseExited(mouseEvent -> {
+            if (sliderAI.getValue() + sliderHuman.getValue() > 5) {
+                sliderHuman.setValue(5 - (int) sliderAI.getValue());
+            } else if (sliderAI.getValue() + sliderHuman.getValue() == 0) {
+                sliderHuman.setValue(1);
+            }
+        });
+        sliderHuman.setOnMouseExited(mouseEvent -> {
+            if (sliderAI.getValue() + sliderHuman.getValue() > 5) {
+                sliderAI.setValue(5 - (int) sliderHuman.getValue());
+            } else if (sliderAI.getValue() + sliderHuman.getValue() == 0) {
+                sliderAI.setValue(1);
+            }
+        });
 
         playButton.setOnAction(actionEvent -> {
-            Play play = new Play();
+            Game play = new Game();
             try {
                 window.hide();
                 play.setFullscreenStatus(fullscreenBoolean);
                 play.setMenu(menuScene);
                 play.start(window);
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                System.out.println(Arrays.toString(e.getStackTrace()));
             }
+        });
+
+        playStackpane.setOnKeyPressed(keyEvent -> {
+            System.out.println(windowWidth);
+            System.out.println("BOT: " + playerAIcount);
+            System.out.println("HUMAN: "+playerHumanCount);
         });
 
         /// tausta lisamine
         menuScene.setFill(Paint.valueOf("red"));
-        openingStackpane.setBackground(background.setColor("green"));
-        menu.setBackground(background.setColor(Color.NAVY));
-        settingsStackpane.setBackground(background.setColor("lightgreen"));
-        settingsMenu.setBackground(background.setColor("lightgreen"));
+        openingStackpane.setBackground(background.setByColor("green"));
+        menu.setBackground(background.setByColor(Color.NAVY));
+        settingsStackpane.setBackground(background.setByColor("lightgreen"));
+        settingsMenu.setBackground(background.setByColor("lightgreen"));
 
         /// nuppude suuruste omavaheline kopeerimine
         backButton.prefWidthProperty().bind(fullscreenButton.widthProperty());

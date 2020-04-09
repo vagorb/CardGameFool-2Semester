@@ -1,4 +1,4 @@
-package game;
+package game.help;
 
 import appearance.Icons;
 import javafx.geometry.Insets;
