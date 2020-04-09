@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AiTest {
+
+
     Card card1;
     Card card2;
     Card card3;
@@ -30,8 +32,6 @@ class AiTest {
     Card cardPile5;
     Card cardPile6;
     Hand hand;
-    Pile pile;
-    Deck deck;
     Hand hand1;
     Player player1;
     Ai ai;
@@ -95,6 +95,7 @@ class AiTest {
         hand2.addCard(card4);
         hand2.addCard(card5);
         hand2.addCard(card6);
+        System.out.println(tableFor.getPile().getPile());
         assertEquals(hand2.getCardsInHand(), ai.getAiHand().getCardsInHand());
     }
 
@@ -146,7 +147,63 @@ class AiTest {
         assertEquals(Optional.of(card1), ai.suitableAttackMoveBeforeEndOfDeck(tableFor));
     }
 
+
     @Test
-    void suitableAttackMoveWhenDeckEnds() {
+    void playerCardsInTheEnd() {
+        Deck deck = new Deck();
+        deck.makeCardsTrump(tableFor.getTrumpSuit());
+        for (Card card : deck.getDeck()) {
+            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+                tableFor.addToPile(card);
+            }
+        }
+        System.out.println(ai.playerCardsInTheEnd(tableFor));
+        assertEquals(List.of(card7, card8, card11, card10, card9, card12), ai.playerCardsInTheEnd(tableFor));
+    }
+
+    @Test
+    void playerCardsInTheEndBySuit() {
+    }
+
+    @Test
+    void playerCardsInTheEndByValue() {
+    }
+
+    @Test
+    void testSuitableAttackMoveWhenDeckEnds() {
+        //tableFor.setTrumpSuit("Spades");
+        System.out.println(tableFor.getTrumpSuit());
+        Deck deck = new Deck();
+        System.out.println(card3.getTrump());
+        //tableFor.setTrumpSuit((tableFor.getTrumpSuit());
+        for (Card card : deck.getDeck()) {
+            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+                tableFor.addToPile(card);
+            }
+        }
+        System.out.println(tableFor.getPile().getPile());
+        assertEquals(Optional.of(card4), ai.suitableAttackMoveWhenDeckEnds(tableFor));
+    }
+
+    @Test
+    void maxValueBySuit() {
+    }
+
+    @Test
+    void suitableDefMoveWhenDeckEnds() {
+        Deck deck = new Deck();
+        Card cardForDef = new Card("Diamonds", 14, false);
+        player1.getHand().addCard(cardForDef);
+        for (Card card : deck.getDeck()) {
+            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+                tableFor.addToPile(card);
+            }
+        }
+        tableFor.addCardOnTable(cardForDef);
+        assertEquals(Optional.of(card3), ai.suitableDefMoveWhenDeckEnds(tableFor));
+    }
+
+    @Test
+    void getAiMove() {
     }
 }
