@@ -1,6 +1,6 @@
+
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 public class Ai {
     private Hand hand;
-    private Pile pile;
-    private Deck deck;
 
     public Ai(Hand hand) {
         this.hand = hand;
@@ -65,20 +63,17 @@ public class Ai {
     }
 
     public Optional<Card> firstCardAttackMove(Table table) {
-        if (table.getTable().size() == 0) {
-            for (Card card : getAiHand().getCardsInHand()) {
-                if (mapOfCardsInHand().get(card.value).size() >= 2 && !card.getTrump()) {
-                    return Optional.of(card);
-                }
+        for (Card card : getAiHand().getCardsInHand()) {
+            if (mapOfCardsInHand().get(card.value).size() >= 2 && !card.getTrump()) {
+                return Optional.of(card);
             }
-            return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue));
         }
-        return Optional.empty();
+        return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue));
     }
 
     public List<Card> suitableCardsForAttackMoves(Table table) {
         return hand.getCardsInHand().stream().filter(card -> table.mapOfCardsInTable().containsKey(card.getValue()))
-                .collect(Collectors.toCollection(LinkedList::new));
+                .collect(Collectors.toList());
     }
 
     public Optional<Card> suitableAttackMoveBeforeEndOfDeck(Table table) {
@@ -91,11 +86,108 @@ public class Ai {
                 return Optional.of(cards.get(0));
             }
         }
-
         return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
-    public Optional<Card> suitableAttackMoveWhenDeckEnds() {
-        return Optional.empty();
+    public  List<Card> playerCardsInTheEnd(Table table) {
+        List<Card> playerCards = new ArrayList<>();
+        Deck deck = new Deck();
+        deck.makeCardsTrump(table.getTrumpSuit());
+        for (Card card : deck.getDeck()) {
+            if (!getAiHand().getCardsInHand().contains(card) && !table.getPile().getPile().contains(card)) {
+                playerCards.add(card);
+            }
+        }
+        return playerCards;
+    }
+
+    public Map<String, List<Card>> playerCardsInTheEndBySuit(Table table) {
+        List<Card> playerCards = playerCardsInTheEnd(table);
+        return playerCards.stream().collect(Collectors.groupingBy(Card::getSuit));
+    }
+
+    public Map<Integer, List<Card>> playerCardsInTheEndByValue(Table table) {
+        List<Card> playerCards = playerCardsInTheEnd(table);
+        return playerCards.stream().collect(Collectors.groupingBy(Card::getValue));
+    }
+
+
+
+    public Optional<Card> suitableAttackMoveWhenDeckEnds(Table table) {
+        Map<String, List<Card>> playerCards = playerCardsInTheEndBySuit(table);
+        System.out.println(playerCards);
+        for (Card card : getAiHand().getCardsInHand()) {
+            if (!playerCards.containsKey(card.getSuit()) && !card.getTrump()) {
+                return Optional.of(card);
+            }
+        }
+        for (Card card : getAiHand().getCardsInHand()) {
+            if (!card.getTrump()) {
+                if (card.getValue() > maxValueBySuit(table, card.getSuit()).get().getValue())
+                    return Optional.of(card);
+            }
+        }
+        for (Card card : getAiHand().getCardsInHand()) {
+            if (mapOfCardsInHand().get(card.value).size() >= 2 && !card.getTrump()) {
+                return Optional.of(card);
+            }
+        }
+        for (Card card : getAiHand().getCardsInHand()) {
+            if (!playerCards.containsKey(card.getSuit())) {
+                return Optional.of(card);
+            }
+        }
+        return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
+    }
+
+    public Optional<Card> maxValueBySuit(Table table, String suit) {
+        return playerCardsInTheEnd(table).stream().filter(card -> card.getSuit().equals(suit)).max(Comparator.comparing(Card::getSuit).thenComparing(Card::getValue));
+    }
+
+    public Optional<Card> suitableDefMoveWhenDeckEnds(Table table) {
+        Map<Integer, List<Card>> playerCards = playerCardsInTheEndByValue(table);
+        List<Card> cards = suitableForDefCards(table);
+        if (cards.size() < 1) {
+            return Optional.empty();
+        }
+        if (cards.size() == 1) {
+            return Optional.of(cards.get(0));
+        }
+        for (Card card : cards) {
+            if (!playerCards.containsKey(card.getValue()) && !card.getTrump()) {
+                return Optional.of(card);
+            }
+        }
+        for (Card card : cards) {
+            if (!playerCards.containsKey(card.getValue())) {
+                return Optional.of(card);
+            }
+        }
+        return cards.stream().min(Comparator.comparingInt(Card::getValue));
+    }
+
+
+    public Optional<Card> getAiMove(Table table) {
+        if (table.getPlayers().get(0).getPlayerState().equals(Player.PlayerState.ATTACK)) {
+            if (table.getGameDeck().size() < 1) {
+                return suitableDefMoveWhenDeckEnds(table);
+            } else {
+                return mostSuitableCardForDef(table);
+            }
+        } else {
+            if (table.getGameDeck().size() < 1) {
+                if (table.getTable().size() == 0) {
+                    return suitableAttackMoveWhenDeckEnds(table);
+                } else {
+                    return suitableAttackMoveBeforeEndOfDeck(table);
+                }
+            } else {
+                if (table.getTable().size() == 0) {
+                    return firstCardAttackMove(table);
+                } else {
+                    return suitableAttackMoveBeforeEndOfDeck(table);
+                }
+            }
+        }
     }
 }
