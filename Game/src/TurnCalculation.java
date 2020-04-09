@@ -45,17 +45,17 @@ public class TurnCalculation {
     }
 
 
-    public void addAttackAndDefenseCardsToPileOrPlayer(Player player) {
-        if (currentDefenseState) {
-            playingTable.getPile().addAll(playingTable.getTable());
-        } else {
-            for (Card card : playingTable.getTable()) {
-                player.getHand().addCard(card);
-            }
-        }
-        playingTable.getTable().removeAll(playingTable.getTable());
-//        table.removeAll(table);
-    }
+//    public void addAttackAndDefenseCardsToPileOrPlayer(Player player) {
+//        if (currentDefenseState) {
+//            playingTable.getPile().addAll(playingTable.getTable());
+//        } else {
+//            for (Card card : playingTable.getTable()) {
+//                player.getHand().addCard(card);
+//            }
+//        }
+//        playingTable.getTable().removeAll(playingTable.getTable());
+////        table.removeAll(table);
+//    }
 //
     public void compareCards() {
 //        if (attackCard.getValue() > defenseCard.getValue() && attackCard.getSuit().equals(defenseCard.getSuit())) {

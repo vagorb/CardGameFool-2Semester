@@ -18,19 +18,23 @@ public class Pile {
 //        }
 //    }
 
-    public Pile(){
-
+    public Pile(List<Card> pile){
+        this.listOfDiscardedCards = pile;
     }
 
-    public List<Card> createPile(){
-        return listOfDiscardedCards = new ArrayList<>();
-    }
+
+    //public List<Card> createPile(){
+      //  return listOfDiscardedCards = new ArrayList<>();
+    //}
 
 
     public void addDiscardedCards(Card cardToAddToDiscard) {
-        if (isDiscardable() == true) {
-            listOfDiscardedCards.add(cardToAddToDiscard);
-        }
+        listOfDiscardedCards.add(cardToAddToDiscard);
+
+    }
+
+    public List<Card> getPileByList() {
+        return listOfDiscardedCards;
     }
 
 

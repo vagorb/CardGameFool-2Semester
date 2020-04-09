@@ -27,6 +27,14 @@ public class Deck {
         deck.remove(card);
     }
 
+    public void makeCardsTrump(String suit) {
+        for (Card card : deck) {
+            if (card.getSuit().equals(suit)) {
+                card.setTrump(true);
+            }
+        }
+    }
+
     public ArrayList<Card> getDeck(){
         return this.deck;
     }

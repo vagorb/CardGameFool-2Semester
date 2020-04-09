@@ -45,7 +45,7 @@ public class Card {
         this.suit = suit;
         this.value = value;
         this.visibility = Visibility.NOONE;
-        this.trump = false;
+        this.trump = trump;
     }
 
 
