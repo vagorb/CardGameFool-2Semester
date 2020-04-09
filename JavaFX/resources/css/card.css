@@ -1,0 +1,59 @@
+/* MAKE BACKGROUND FOR ALL CARDS per card*/
+
+.button{-fx-background-size: cover;}
+
+#2_of_Spades.button{-fx-background-image: url("/images/cards/Spades/2_of_Spades.png");}
+#3_of_Spades.button{-fx-background-image: url("/images/cards/Spades/3_of_Spades.png");}
+#4_of_Spades.button{-fx-background-image: url("/images/cards/Spades/4_of_Spades.png");}
+#5_of_Spades.button{-fx-background-image: url("/images/cards/Spades/5_of_Spades.png");}
+#6_of_Spades.button{-fx-background-image: url("/images/cards/Spades/6_of_Spades.png");}
+#7_of_Spades.button{-fx-background-image: url("/images/cards/Spades/7_of_Spades.png");}
+#8_of_Spades.button{-fx-background-image: url("/images/cards/Spades/8_of_Spades.png");}
+#9_of_Spades.button{-fx-background-image: url("/images/cards/Spades/9_of_Spades.png");}
+#10_of_Spades.button{-fx-background-image: url("/images/cards/Spades/10_of_Spades.png");}
+#Jack_of_Spades.button{-fx-background-image: url("/images/cards/Spades/Jack_of_Spades.png");}
+#Queen_of_Spades.button{-fx-background-image: url("/images/cards/Spades/Queen_of_Spades.png");}
+#King_of_Spades.button{-fx-background-image: url("/images/cards/Spades/King_of_Spades.png");}
+#Ace_of_Spades.button{-fx-background-image: url("/images/cards/Spades/Ace_of_Spades.png");}
+
+#2_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/2_of_Clubs.png");}
+#3_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/3_of_Clubs.png");}
+#4_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/4_of_Clubs.png");}
+#5_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/5_of_Clubs.png");}
+#6_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/6_of_Clubs.png");}
+#7_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/7_of_Clubs.png");}
+#8_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/8_of_Clubs.png");}
+#9_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/9_of_Clubs.png");}
+#10_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/10_of_Clubs.png");}
+#Jack_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/Jack_of_Clubs.png");}
+#Queen_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/Queen_of_Clubs.png");}
+#King_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/King_of_Clubs.png");}
+#Ace_of_Clubs.button{-fx-background-image: url("/images/cards/Clubs/Ace_of_Clubs.png");}
+
+#2_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/2_of_Hearts.png")}
+#3_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/3_of_Hearts.png");}
+#4_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/4_of_Hearts.png");}
+#5_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/5_of_Hearts.png");}
+#6_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/6_of_Hearts.png");}
+#7_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/7_of_Hearts.png");}
+#8_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/8_of_Hearts.png");}
+#9_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/9_of_Hearts.png");}
+#10_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/10_of_Hearts.png");}
+#Jack_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/Jack_of_Hearts.png");}
+#Queen_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/Queen_of_Hearts.png");}
+#King_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/King_of_Hearts.png");}
+#Ace_of_Hearts.button{-fx-background-image: url("/images/cards/Hearts/Ace_of_Hearts.png");}
+
+#2_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/2_of_Diamonds.png");}
+#3_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/3_of_Diamonds.png");}
+#4_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/4_of_Diamonds.png");}
+#5_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/5_of_Diamonds.png");}
+#6_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/6_of_Diamonds.png");}
+#7_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/7_of_Diamonds.png");}
+#8_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/8_of_Diamonds.png");}
+#9_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/9_of_Diamonds.png");}
+#10_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/10_of_Diamonds.png");}
+#Jack_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/Jack_of_Diamonds.png");}
+#Queen_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/Queen_of_Diamonds.png");}
+#King_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/King_of_Diamonds.png");}
+#Ace_of_Diamonds.button{-fx-background-image: url("/images/cards/Diamonds/Ace_of_Diamonds.png");}
