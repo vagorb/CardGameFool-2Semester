@@ -15,7 +15,7 @@ public class Table {
 
     public Deck deckForThisGame;
     private List<Player> listOfPlayers = new ArrayList<>();
-    private List<Card> pileOfCardsForThisGame;
+    private List<Card> pileOfCardsForThisGame = new ArrayList<>();
     Pile pile;
     Ai ai;
     List<Card> table = new ArrayList<>();
@@ -28,8 +28,7 @@ public class Table {
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile();
-        pileOfCardsForThisGame = pile.createPile();
+        Pile pile = new Pile(pileOfCardsForThisGame);
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         System.out.println(deckForThisGame);
@@ -40,8 +39,7 @@ public class Table {
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile();
-        pileOfCardsForThisGame = pile.createPile();
+        Pile pile = new Pile(pileOfCardsForThisGame);
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
@@ -53,8 +51,8 @@ public class Table {
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile();
-        pileOfCardsForThisGame = pile.createPile();
+        Pile pile = new Pile(pileOfCardsForThisGame);
+
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
@@ -64,8 +62,8 @@ public class Table {
 
     public Table(Player player1, Ai ai) {
         this.ai = ai;
-        this.pile = new Pile();
-        pile.createPile();
+        this.pile = new Pile(pileOfCardsForThisGame);
+        //pile.createPile();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
 
@@ -89,6 +87,10 @@ public class Table {
         pile.addDiscardedCards(card);
     }
 
+    public void setTrumpSuit(String trumpSuit) {
+        this.trumpSuit = trumpSuit;
+    }
+
     public void addCardOnTable(Card card) {
         table.add(card);
     }
@@ -107,7 +109,7 @@ public class Table {
         trumpSuit = deckForThisGame.getDeck().get(0).getSuit();
     }
 
-    
+
     public String getTrumpSuit() {
         return trumpSuit;
     }
