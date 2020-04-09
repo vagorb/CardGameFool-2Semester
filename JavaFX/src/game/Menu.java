@@ -149,17 +149,11 @@ public class Menu extends Application{
             try {
                 window.hide();
                 play.setFullscreenStatus(fullscreenBoolean);
-                play.setMenu(menuScene);
+                play.setMenu(menuScene, openingStackpane);
                 play.start(window);
             } catch (Exception e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
             }
-        });
-
-        playStackpane.setOnKeyPressed(keyEvent -> {
-            System.out.println(windowWidth);
-            System.out.println("BOT: " + playerAIcount);
-            System.out.println("HUMAN: "+playerHumanCount);
         });
 
         /// tausta lisamine

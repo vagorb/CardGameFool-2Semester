@@ -29,13 +29,15 @@ public class Game extends Application {
     private Button activeCard = null;
     private int AIcount;
     private int humanCount;
+    private StackPane openingMenu;
 
     void setFullscreenStatus(boolean fullscreenStatus) {
         this.fullscreenStatus = fullscreenStatus;
     }
 
-    void setMenu(Scene menu) {
+    void setMenu(Scene menu, StackPane openingMenu) {
         this.menuScene = menu;
+        this.openingMenu = openingMenu;
         windowWidth = menuScene.getWidth();
         windowHeight = menuScene.getHeight();
     }
@@ -79,8 +81,8 @@ public class Game extends Application {
 
         // avatarid
         AvatarBox avatars = new AvatarBox(5, windowWidth);
-        avatars.makeAvatar("123456789012345678901234567890");
-        avatars.makeAvatar("1234567890abcdefghij1234567890");
+        avatars.makeAvatar("playername1");
+        avatars.makeAvatar("playername2");
         avatars.makeAvatar("playername3");
         avatars.makeAvatar("playername4");
         avatars.makeAvatar("playername5");
@@ -193,6 +195,7 @@ public class Game extends Application {
 
         backButton.setOnAction(actionEvent -> {
             window.hide();
+            menuScene.setRoot(openingMenu);
             window.setScene(menuScene);
             window.setFullScreen(fullscreenStatus);
             window.show();
