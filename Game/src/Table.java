@@ -21,38 +21,57 @@ public class Table {
     List<Card> table = new ArrayList<>();
     private boolean currentDefenseState;
     private String trumpSuit;
-    // This is a default value i guess(atleast for coding purposes)
-//    private List<Card> attackAndDefenseCards = new ArrayList<>();
 
+    /**
+     * Constructor
+     * @param player1 that will play in this table
+     * @param player2 that will play in this table
+     */
     public Table(Player player1, Player player2) {
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
         Pile pile = new Pile(pileOfCardsForThisGame);
+        this.pile = pile;
+//        pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         System.out.println(deckForThisGame);
     }
 
+    /**
+     * Constructor
+     * @param player1 that will play in this table
+     * @param player2 that will play in this table
+     * @param player3 that will play in this table
+     */
     public Table(Player player1, Player player2, Player player3) {
         //deckForThisGame = Deck.createDeck();
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile(pileOfCardsForThisGame);
+        this.pile = new Pile(pileOfCardsForThisGame);
+//        pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
         System.out.println(deckForThisGame);
     }
 
+    /**
+     * Constructor
+     * @param player1 that will play in this table
+     * @param player2 that will play in this table
+     * @param player3 that will play in this table
+     * @param player4 that will play in this table
+     */
     public Table(Player player1, Player player2, Player player3, Player player4) {
         //deckForThisGame = Deck.createDeck();
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile(pileOfCardsForThisGame);
-
+        this.pile = new Pile(pileOfCardsForThisGame);
+//        pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
@@ -70,10 +89,18 @@ public class Table {
         listOfPlayers.add(player1);
     }
 
+    /**
+     * Getter
+     * @return list of players that are playing at this table
+     */
     public List<Player> getPlayers() {
         return listOfPlayers;
     }
 
+    /**
+     * Getter
+     * @return the deck of cards that we are playing with at this table
+     */
     public ArrayList<Card> getGameDeck() {
         return deckForThisGame.getDeck();
     }
@@ -83,42 +110,70 @@ public class Table {
     }
 
     public void addToPile(Card card) {
-        //deckForThisGame.removeCard(card);
-        pile.addDiscardedCards(card);
+        deckForThisGame.removeCard(card);
+        pileOfCardsForThisGame.add(card);
     }
 
-    public void setTrumpSuit(String trumpSuit) {
-        this.trumpSuit = trumpSuit;
-    }
-
+    /**
+     * Method that add a specified card on the playing table
+     * @param card to add on the table
+     */
     public void addCardOnTable(Card card) {
         table.add(card);
     }
 
-    public Card getLastCardPutOnTable() {
-        int lastCardOnTable = table.size() - 1;
-        return table.get(lastCardOnTable);
-    }
+//    /**
+//     * Getter
+//     * @return the last card put on table
+//     */
+//    public Card getLastCardPutOnTable() {
+//        int lastCardOnTable = table.size() - 1;
+//        return table.get(lastCardOnTable);
+//    }
 
+    /**
+     * Getter
+     * @return list of cards currently being in-play on this table
+     */
     public List<Card> getTable() {
         return table;
     }
 
-    public void assignTrumpCard() {
-        // This method should be changed, currently serves a purpose of assigning a trump card ( not the way it should be in final game)
-        trumpSuit = deckForThisGame.getDeck().get(0).getSuit();
-    }
 
+//    public void assignTrumpCard() {
+//        // This method should be changed, currently serves a purpose of assigning a trump card ( not the way it should be in final game)
+//        trumpSuit = deckForThisGame.getDeck().get(0).getSuit();
+//    }
 
+    /**
+     * Getter
+     * @return trump suit of the table we are playing on
+     */
     public String getTrumpSuit() {
         return trumpSuit;
     }
 
+    /**
+     * Setter
+     * @param card that we use to set trump suit for the game
+     */
+    public void setTrumpSuit(Card card) {
+        this.trumpSuit = card.getSuit();
+    }
 
+
+    /**
+     * Getter
+     * @return last card that was put on table
+     */
     public Card getLastCardOnTable() {
         return table.get(table.size() - 1);
     }
 
+    /**
+     *
+     * @return map of cards in our table
+     */
     public Map<Integer, List<Card>> mapOfCardsInTable() {
         return getTable().stream().collect(Collectors.groupingBy(Card::getValue));
     }
