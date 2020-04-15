@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 // Moves after 0 cards in deck
 // method in table getAi move
 
-public class Ai {
+public class AI {
     private Hand hand;
 
-    public Ai(Hand hand) {
+    public AI(Hand hand) {
         this.hand = hand;
     }
 
@@ -189,6 +189,7 @@ public class Ai {
                 }
             }
         }
+
         
     }
 }

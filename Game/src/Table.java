@@ -1,9 +1,6 @@
-import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Table {
@@ -17,7 +14,7 @@ public class Table {
     private List<Player> listOfPlayers = new ArrayList<>();
     private List<Card> pileOfCardsForThisGame = new ArrayList<>();
     Pile pile;
-    Ai ai;
+    AI ai;
     List<Card> table = new ArrayList<>();
     private boolean currentDefenseState;
     private String trumpSuit;
@@ -60,7 +57,8 @@ public class Table {
         System.out.println(deckForThisGame);
     }
 
-    public Table(Player player1, Ai ai) {
+    public Table(Player player1, AI ai) {
+        this.table = new ArrayList<>();
         this.ai = ai;
         this.pile = new Pile(pileOfCardsForThisGame);
         //pile.createPile();

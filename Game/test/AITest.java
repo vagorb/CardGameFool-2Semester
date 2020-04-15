@@ -1,16 +1,13 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AiTest {
+class AITest {
 
 
     Card card1;
@@ -34,7 +31,7 @@ class AiTest {
     Hand hand;
     Hand hand1;
     Player player1;
-    Ai ai;
+    AI ai;
     Table tableFor;
 
 //    private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
@@ -68,7 +65,7 @@ class AiTest {
         hand.addCard(card4);
         hand.addCard(card5);
         hand.addCard(card6);
-        ai = new Ai(hand);
+        ai = new AI(hand);
         hand1.addCard(card7);
         hand1.addCard(card8);
         hand1.addCard(card9);
@@ -171,7 +168,7 @@ class AiTest {
 
     @Test
     void testSuitableAttackMoveWhenDeckEnds() {
-        //tableFor.setTrumpSuit("Spades");
+        tableFor.setTrumpSuit("Spades");
         System.out.println(tableFor.getTrumpSuit());
         Deck deck = new Deck();
         System.out.println(card3.getTrump());

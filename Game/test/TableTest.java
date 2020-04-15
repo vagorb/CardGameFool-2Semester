@@ -58,11 +58,11 @@ public class TableTest {
         Player player2 = new Player("Ochen", 0, hand2);
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
-        tableForTwo.addToPile(card);
+        tableForTwo.getPile().addDiscardedCards(card);
         assertEquals(1, tableForTwo.getPile().getPile().size());
         List<Card> cards = new ArrayList<>();
         cards.add(card);
-        assertEquals(cards, tableForTwo.getPile());
+        assertEquals(cards, tableForTwo.getPile().getPile());
     }
     
     // Need to make it work
