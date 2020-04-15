@@ -15,8 +15,12 @@ public class Card {
             14, "ACE"));
 
 
-
-
+    /**
+     * Card visibility state for players
+     * Everyone - everyone can see the cards trump and value
+     * Player - only player can see the cards trump and value
+     * Noone - noone can see the cards trump and value
+     */
     public enum Visibility {
         EVERYONE, PLAYER, NOONE
     }
@@ -41,6 +45,12 @@ public class Card {
 //        }
 //    }
 
+    /**
+     * Class constructor
+     * @param suit Cards suit ( String )
+     * @param value Cards value ( Integer )
+     * @param trump Cards trump state ( Boolean )
+     */
     public Card(String suit, Integer value, Boolean trump) {
         this.suit = suit;
         this.value = value;
@@ -49,36 +59,70 @@ public class Card {
     }
 
 
+    /**
+     * Getter
+     * @return suit of this card
+     */
     public String getSuit() {
         return suit;
     }
 
+    /**
+     * Getter
+     * @return value of the card
+     */
     public Integer getValue() {
         return value;
     }
 
 
+    /**
+     * Getter
+     * @return get card visibility state
+     */
     public Visibility getVisibility() {
         return visibility;
     }
 
+    /**
+     * Setter
+     * @param trump set's the trumps boolean state
+     */
     public void setTrump(Boolean trump) {
         this.trump = trump;
     }
 
+    /**
+     * Getter
+     * @return get boolean state of this card being trump or not
+     */
     public Boolean getTrump() {
         return this.trump;
     }
 
+    /**
+     * Overrided method that prints out all relevant information about the card
+     * @return returns this information in readable text format
+     */
     @Override
     public String toString() {
         return String.format("%s of %s", getValueName(), suit);
     }
 
+    /**
+     *
+     * @return returns name of the card for this value ( Example card with value of 11 is JACK )
+     */
     public String getValueName() {
         return valueMap.get(value);
     }
 
+
+    /**
+     * Overrided equals method, that counts objects as equal if they have the same parameters as another card
+     * @param o our card object
+     * @return proper result for our equals method.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

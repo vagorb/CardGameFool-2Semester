@@ -9,6 +9,9 @@ public class Hand {
 //    private String handName;
 
 
+    /**
+     * Hand class constructor
+     */
     public Hand() {
         // We will name player's Hand after his player name ( I GUESS )
 //        this.handName = playerName;
@@ -17,16 +20,29 @@ public class Hand {
 
     //Owner of the hand
 //    Player player;z
+
+    /**
+     * Add card to hand
+     * @param card to add to the players hand
+     */
     public void addCard(Card card) {
         cardsInHand.add(card);
     }
 
-
+    /**
+     * Method that puts the card on the table and removes it from our hand
+     * @param card to put on the table
+     * @return the card we put on the table
+     */
     public Card putCardOnTable(Card card) {
         removeCard(card);
         return card;
     }
 
+    /**
+     * Method that removes the card from our hand
+     * @param card to remove from our hand
+     */
     public void removeCard(Card card) {
         cardsInHand.remove(card);
     }
@@ -36,8 +52,12 @@ public class Hand {
     //        player.hand.addCard(card);
     //    }
    // }
-    
 
+
+    /**
+     * Getter
+     * @return list of cards in our hand
+     */
     public List<Card> getCardsInHand() {
         return cardsInHand;
     }

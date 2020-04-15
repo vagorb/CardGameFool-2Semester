@@ -7,6 +7,10 @@ public class Deck {
     private ArrayList<Card> deck;
 
 
+    /**
+     * Deck class constructor
+     * Created object automatically has 36 cards in it ( Full deck )
+     */
     public Deck() {
         this.deck = new ArrayList<>();
         ArrayList<String> suits = new ArrayList<>(Arrays.asList("Clubs", "Hearts", "Diamonds", "Spades"));
@@ -19,13 +23,21 @@ public class Deck {
         }
     }
 
+    /**
+     * This method shuffles cards in our deck
+     */
     public void shuffleDeck() {
         Collections.shuffle(this.deck);
     }
 
+    /**
+     * Method that removes the specified card from the deck
+     * @param card to remove from this deck
+     */
     public void removeCard(Card card) {
         deck.remove(card);
     }
+
 
     public void makeCardsTrump(String suit) {
         for (Card card : deck) {
@@ -35,6 +47,12 @@ public class Deck {
         }
     }
 
+
+
+    /**
+     * Method returns list of cards
+     * @return return List of cards in our deck
+     */
     public ArrayList<Card> getDeck(){
         return this.deck;
     }
