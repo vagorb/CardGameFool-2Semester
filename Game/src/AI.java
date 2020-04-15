@@ -190,6 +190,6 @@ public class AI {
             }
         }
 
-        
+
     }
 }
