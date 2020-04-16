@@ -15,24 +15,26 @@ import java.util.List;
 public class AvatarBox {
     private final int playerCount;
     private final double elementSize;
-    private final double gapSize;
     private HBox horizontalPlace = new HBox();
     private VBox leftVerticalPlace = new VBox();
     private VBox rightVerticalPlace = new VBox();
     private List<VBox> avatarList = new ArrayList<>();
+    private int cardCount = 0;
+
+    public int getCardCount() {
+        return cardCount;
+    }
+
+    public void setCardCount(int cardCount) {
+        this.cardCount = cardCount;
+    }
 
     public AvatarBox(int playerCount, double screenWidth) {
         this.playerCount = playerCount;
         elementSize = screenWidth / 8;
-        gapSize = elementSize * 0.7;
-        horizontalPlace.setSpacing(gapSize);
-//        leftVerticalPlace.setSpacing(elementSize);
-//        rightVerticalPlace.setSpacing(elementSize);
+        horizontalPlace.setSpacing(elementSize * 0.7);
         horizontalPlace.setPadding(new Insets(50));
         horizontalPlace.setAlignment(Pos.TOP_CENTER);
-//        leftVerticalPlace.setStyle("-fx-background-color: rgb(150,255,0)");
-//        rightVerticalPlace.setStyle("-fx-background-color: rgb(255,150,0)");
-//        horizontalPlace.setStyle("-fx-background-color: rgb(255,0,0)");
     }
 
     private HBox makeEmptyElement() {
@@ -51,19 +53,19 @@ public class AvatarBox {
         if (avatarList.size() < playerCount) {
             Label name = new Label(playerName);
             HBox nameBox = new HBox(name);
-            Label cardsRemaining = new Label("6");
+            Label cardsRemaining = new Label(String.valueOf(cardCount));
             HBox cardBack = new HBox(cardsRemaining);
             ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
+            //            ImageView avatarImage = new ImageView(image);
             HBox avatarSubBox = new HBox(avatarImage, cardBack);
             VBox avatarBox = new VBox(avatarSubBox, nameBox);
 
             oneSizeForElement(cardBack, elementSize * 0.4, elementSize * 0.6);
             oneSizeForElement(avatarBox, elementSize, elementSize * 0.9);
 
-//            ImageView avatarImage = new ImageView(image);
-            double cardFontSize = cardBack.maxWidthProperty().get();
-            cardBack.setStyle("-fx-background-image: url('/images/back.png');-fx-background-size: cover; -fx-opacity: 0.5");
-            cardsRemaining.setStyle("-fx-font:" + cardFontSize + "px Arial ; -fx-text-fill: rgb(255,0,0)");
+            double cardFontSize = cardBack.maxWidthProperty().get() / 1.1;
+            cardBack.setStyle("-fx-background-image: url('/images/cards/back_of_card.png');-fx-background-size: cover;");
+            cardsRemaining.setStyle("-fx-font:" + cardFontSize + "px Arial ; -fx-text-fill: rgb(255,0,0);");
             avatarImage.setFitWidth(elementSize * 0.6);
             avatarImage.setFitHeight(elementSize * 0.6);
             name.setWrapText(true);

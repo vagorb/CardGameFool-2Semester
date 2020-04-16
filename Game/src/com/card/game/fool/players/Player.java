@@ -1,3 +1,7 @@
+package com.card.game.fool.players;
+
+import com.card.game.fool.cards.Card;
+
 public class Player {
     private Hand hand;
     private String name;
@@ -5,10 +9,10 @@ public class Player {
     private PlayerState playerState;
 
     /**
-     * Player class constructor
+     * com.card.game.fool.players.Player class constructor
      * @param name of the player ( String )
      * @param score of the player ( Integer )
-     * @param hand of the player ( Hand object )
+     * @param hand of the player ( com.card.game.fool.players.Hand object )
      */
     public Player(String name, Integer score, Hand hand) { //PlayerState playerState) {
         //this.playerState = playerState;
@@ -28,7 +32,7 @@ public class Player {
 
     /**
      * Getter
-     * @return Hand of this player
+     * @return com.card.game.fool.players.Hand of this player
      */
     public Hand getHand() {
         return hand;

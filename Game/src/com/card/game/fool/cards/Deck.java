@@ -1,3 +1,6 @@
+package com.card.game.fool.cards;
+
+import com.card.game.fool.cards.Card;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +11,7 @@ public class Deck {
 
 
     /**
-     * Deck class constructor
+     * com.card.game.fool.cards.Deck class constructor
      * Created object automatically has 36 cards in it ( Full deck )
      */
     public Deck() {

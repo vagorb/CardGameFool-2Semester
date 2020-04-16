@@ -35,7 +35,7 @@ public class BackgroundSetter {
                 BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT));
     }
 
-    public Background setImage(String imagePath, HBox element) {
+    public Background setImage(URL imagePath, Pane element) {
         double width = element.getWidth();
         double height = element.getHeight();
         if (element.widthProperty().get() < 1) {
@@ -45,9 +45,10 @@ public class BackgroundSetter {
             height = element.getMaxHeight();
         }
         return new Background(new BackgroundImage(
-                new Image(String.valueOf(imagePath), width, height, true, true),
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT));
+                new Image(String.valueOf(imagePath), width, height, false, true),
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                new BackgroundSize(1.0, 1.0, true, true, false, false)
+        ));
     }
 
 }

@@ -1,6 +1,6 @@
-import org.junit.jupiter.api.DynamicTest;
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
