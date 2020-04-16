@@ -10,36 +10,14 @@ public class Pile {
     private List<Card> listOfDiscardedCards;
     // Currently it seems like this class is very useless to me. All it does is existing, and it servers a purpose of an ArrayList<Card>
     // which we can implement with 1 private List<Card> pile = new ArrayList<>() variable.
-//
-//
-//    public void addCardsToPile(Table table.getPileOfCards){
-//        if (playerTookCards == true) {
-//            listOfDiscardedCards.add(table)
-//        }
-//    }
 
     public Pile(List<Card> pile){
         this.listOfDiscardedCards = pile;
     }
 
-
-    //public List<Card> createPile(){
-      //  return listOfDiscardedCards = new ArrayList<>();
-    //}
-
-
     public void addDiscardedCards(Card cardToAddToDiscard) {
         listOfDiscardedCards.add(cardToAddToDiscard);
 
-    }
-
-    public List<Card> getPileByList() {
-        return listOfDiscardedCards;
-    }
-
-
-    public boolean isDiscardable() {
-        return true;
     }
 
     public List<Card> getPile() {
@@ -51,10 +29,5 @@ public class Pile {
         return pile.stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
-    public static void main(String[] args) {
-//        Deck deckTest = new Deck();
-//        createDeck();
-//        System.out.println(deckTest.getDeck());
-    }
 
 }

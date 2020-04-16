@@ -14,7 +14,7 @@ public class ServerTCP extends Listener {
     static int tcpPort = 5201;
 
     public static void main (String[] args) throws Exception {
-        Server server = new Server();
+        server = new Server();
         server.start();
         server.bind(tcpPort);
         System.out.println(("Creating the server..."));
