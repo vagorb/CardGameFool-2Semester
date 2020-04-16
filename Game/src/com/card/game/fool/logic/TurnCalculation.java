@@ -1,4 +1,8 @@
-import java.util.List;
+package com.card.game.fool.logic;
+
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.players.Player;
+import com.card.game.fool.tables.Table;
 
 public class TurnCalculation {
 
@@ -45,7 +49,7 @@ public class TurnCalculation {
                 player.getHand().removeCard(card);
                 attackCard = card;
             }
-//            for (Card value : playingTable.getTable()) {
+//            for (com.card.game.fool.cards.Card value : playingTable.getTable()) {
 
 //                if (value.getValue().equals(card.getValue())) {
 //                    playingTable.getTable().add(player.getHand().putCardOnTable(card));
@@ -120,15 +124,14 @@ public class TurnCalculation {
         playingTable.getTable().removeAll(playingTable.getTable());
 //        table.removeAll(table);
     }
-//
 
     /**
-     * Card comparison class
+     * com.card.game.fool.cards.Card comparison class
      */
     public void compareCards() {
         if (attackCard != null && defenseCard == null) {
             defenseSuccess = false;
-        } else if (attackCard.getValue() < defenseCard.getValue() && attackCard.getSuit().equals(defenseCard.suit)) {
+        } else if (attackCard.getValue() < defenseCard.getValue() && attackCard.getSuit().equals(defenseCard.getSuit())) {
             defenseSuccess = true;
         }
     }

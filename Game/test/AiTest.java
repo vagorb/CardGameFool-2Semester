@@ -1,3 +1,9 @@
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
+import com.card.game.fool.players.Hand;
+import com.card.game.fool.players.Player;
+import com.card.game.fool.tables.Table;
+import com.card.game.fool.AI.Ai;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AITest {
+class AiTest<AI> {
 
 
     Card card1;
@@ -31,7 +37,7 @@ class AITest {
     Hand hand;
     Hand hand1;
     Player player1;
-    AI ai;
+    Ai ai;
     Table tableFor;
 
 //    private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
@@ -65,7 +71,7 @@ class AITest {
         hand.addCard(card4);
         hand.addCard(card5);
         hand.addCard(card6);
-        ai = new AI(hand);
+        ai = new Ai(hand);
         hand1.addCard(card7);
         hand1.addCard(card8);
         hand1.addCard(card9);

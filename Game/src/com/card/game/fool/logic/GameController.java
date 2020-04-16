@@ -1,3 +1,10 @@
+package com.card.game.fool.logic;
+
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.players.Hand;
+import com.card.game.fool.players.Player;
+import com.card.game.fool.tables.Table;
+
 import java.util.Random;
 import java.util.Scanner;
 
@@ -47,8 +54,6 @@ public class GameController {
      */
     public void createBasic() {
         turnEnded = false;
-        // This is a rough idea that could make sense.
-//        Card cardThatDecidesTrump;
         gameIsBeingPlayed = true;
         input = new Scanner(System.in);
         System.out.println("Please enter your name : ");
@@ -72,16 +77,13 @@ public class GameController {
     /**
      * Method (randomly) decides what card suit will be a trump card suit
      * Method fills hands of 2 players with cards
-     * @param table Table on which this exact MATCH ( Game ) is happening
+     * @param table com.card.game.fool.tables.Table on which this exact MATCH ( Game ) is happening
      */
     public void assignTrumpAndFillHands(Table table) {
         Random generator = new Random();
-        // The code here represents the idea that this card from deck is not a part of the deck ( I GUESS ? )
-        // because it is being shown face up as the bottom card of the deck.
         cardThatDecidesTrump = table.getGameDeck().get(generator.nextInt(36));
         table.setTrumpSuit(cardThatDecidesTrump);
         table.getGameDeck().remove(cardThatDecidesTrump);
-//       String suit = table.getGameDeck().get(generator.nextInt(37)).getSuit();
         String trumpSuit = cardThatDecidesTrump.getSuit();
         for (Card card : table.getGameDeck()) {
             if (card.getSuit().equals(trumpSuit)) {
@@ -144,7 +146,6 @@ public class GameController {
             }
             for (Player playerAttackerOrDefender : table.getPlayers()) {
                 if (playerAttackerOrDefender.getHand().getCardsInHand().size() == 0) {
-//                    System.out.println("You have no cards to play with, refill your hand from the deck. Or get declared as a winner");
                     break;
                 }
                 if (playerAttackerOrDefender.getPlayerState() == Player.PlayerState.ATTACK) {
@@ -159,7 +160,6 @@ public class GameController {
                     Integer integer = Integer.valueOf(attackCard);
                     System.out.println("We will attack with " + playerAttackerOrDefender.getHand().getCardsInHand().get(integer));
                     turnCalculation.putAttackCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer));
-//                        System.out.println("We are attacking with " + playerAttacker.getHand().getCardsInHand().get(integer));
                 }
                 if (playerAttackerOrDefender.getPlayerState() == Player.PlayerState.DEFENSE && table.getTable().size() % 2 == 1) {
                     System.out.println("Choose card for defense from your hand of size " + (playerAttackerOrDefender.getHand().getCardsInHand().size() - 1));
@@ -209,7 +209,7 @@ public class GameController {
                         setCardThatDecidesTrump(null);
                     }
                 }
-                System.out.println("Deck is empty, you will not get 6 cards refilled");
+                System.out.println("com.card.game.fool.cards.Deck is empty, you will not get 6 cards refilled");
                 break;
             }
             if (player1.getHand().getCardsInHand().size() < 6) {
@@ -229,7 +229,7 @@ public class GameController {
                         setCardThatDecidesTrump(null);
                     }
                 }
-                System.out.println("Deck is empty, you will not get 6 cards refilled");
+                System.out.println("com.card.game.fool.cards.Deck is empty, you will not get 6 cards refilled");
                 break;
             }
             if (player2.getHand().getCardsInHand().size() < 6) {
@@ -249,7 +249,7 @@ public class GameController {
                         setCardThatDecidesTrump(null);
                     }
                 }
-                System.out.println("Deck is empty, you will not get 6 cards refilled");
+                System.out.println("com.card.game.fool.cards.Deck is empty, you will not get 6 cards refilled");
                 break;
             }
             if (player1.getHand().getCardsInHand().size() >= 6 && player2.getHand().getCardsInHand().size() >= 6) {
@@ -283,7 +283,6 @@ public class GameController {
         } else {
             System.out.println("Congratulations player2 " + player2.getName() + " you won against player1 who had " + player1.getHand().getCardsInHand().size() + "cards in hand left");
         }
-        // Random question text lol
         System.out.println("Wish to return back to main menu?");
     }
 }
