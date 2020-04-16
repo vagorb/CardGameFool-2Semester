@@ -168,7 +168,7 @@ class AITest {
 
     @Test
     void testSuitableAttackMoveWhenDeckEnds() {
-        tableFor.setTrumpSuit("Spades");
+        //tableFor.setTrumpSuit("Spades");
         System.out.println(tableFor.getTrumpSuit());
         Deck deck = new Deck();
         System.out.println(card3.getTrump());
