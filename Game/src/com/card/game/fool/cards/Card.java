@@ -1,8 +1,7 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+package com.card.game.fool.cards;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Card {
 
@@ -16,9 +15,9 @@ public class Card {
 
 
     /**
-     * Card visibility state for players
+     * com.card.game.fool.cards.Card visibility state for players
      * Everyone - everyone can see the cards trump and value
-     * Player - only player can see the cards trump and value
+     * com.card.game.fool.players.Player - only player can see the cards trump and value
      * Noone - noone can see the cards trump and value
      */
     public enum Visibility {

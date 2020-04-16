@@ -1,3 +1,8 @@
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.logic.TurnCalculation;
+import com.card.game.fool.players.Hand;
+import com.card.game.fool.players.Player;
+import com.card.game.fool.tables.Table;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

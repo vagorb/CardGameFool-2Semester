@@ -1,10 +1,13 @@
+import com.card.game.fool.AI.Ai;
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
+import com.card.game.fool.players.Hand;
+import com.card.game.fool.players.Player;
+import com.card.game.fool.tables.Table;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 

@@ -1,3 +1,7 @@
+package com.card.game.fool.players;
+
+import com.card.game.fool.cards.Card;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +14,16 @@ public class Hand {
 
 
     /**
-     * Hand class constructor
+     * com.card.game.fool.players.Hand class constructor
      */
     public Hand() {
-        // We will name player's Hand after his player name ( I GUESS )
+        // We will name player's com.card.game.fool.players.Hand after his player name ( I GUESS )
 //        this.handName = playerName;
 
     }
 
     //Owner of the hand
-//    Player player;z
+//    com.card.game.fool.players.Player player;z
 
     /**
      * Add card to hand
@@ -47,8 +51,8 @@ public class Hand {
         cardsInHand.remove(card);
     }
 
-    //public void addCardsInHandFromTable(Table, Player player) {
-    //    for (Card card : Table) {
+    //public void addCardsInHandFromTable(com.card.game.fool.tables.Table, com.card.game.fool.players.Player player) {
+    //    for (com.card.game.fool.cards.Card card : com.card.game.fool.tables.Table) {
     //        player.hand.addCard(card);
     //    }
    // }

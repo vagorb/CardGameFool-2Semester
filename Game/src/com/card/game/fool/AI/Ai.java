@@ -1,3 +1,10 @@
+package com.card.game.fool.AI;
+
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
+import com.card.game.fool.players.Hand;
+import com.card.game.fool.players.Player;
+import com.card.game.fool.tables.Table;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -53,7 +60,7 @@ public class Ai {
         }
         if (table.getPile().getPile().size() > 1) {
             for (Card card : cards) {
-                if (table.getPile().mapOfCardsAndValues().containsKey(card.value) && table.getPile().mapOfCardsAndValues().get(card.value)
+                if (table.getPile().mapOfCardsAndValues().containsKey(card.getValue()) && table.getPile().mapOfCardsAndValues().get(card.getValue())
                             .size() >= 2) {
                         return Optional.of(card);
                 }
@@ -64,7 +71,7 @@ public class Ai {
 
     public Optional<Card> firstCardAttackMove(Table table) {
         for (Card card : getAiHand().getCardsInHand()) {
-            if (mapOfCardsInHand().get(card.value).size() >= 2 && !card.getTrump()) {
+            if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
@@ -128,7 +135,7 @@ public class Ai {
             }
         }
         for (Card card : getAiHand().getCardsInHand()) {
-            if (mapOfCardsInHand().get(card.value).size() >= 2 && !card.getTrump()) {
+            if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
