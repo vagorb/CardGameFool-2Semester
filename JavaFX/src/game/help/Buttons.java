@@ -14,7 +14,7 @@ public class Buttons {
     public Button exit() {
         Button exitButton = new Button("", new Icons("black").exit());
         exitButton.setAlignment(Pos.CENTER);
-        exitButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("orange"),
+        exitButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("darkred"),
                 new CornerRadii(5d, 5d, 5d, 5d, false), Insets.EMPTY)));
         return exitButton;
     }
@@ -43,7 +43,7 @@ public class Buttons {
         Button playButton = new Button("PLAY", new Icons("black").play());
         playButton.setMinSize(150, 100);
         playButton.setAlignment(Pos.CENTER);
-        playButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("green"),
+        playButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("orange"),
                 new CornerRadii(50, 0, 50, 0, false), Insets.EMPTY)));
         return playButton;
     }

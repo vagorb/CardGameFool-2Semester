@@ -1,0 +1,25 @@
+#AIcheck.check-box {
+    -fx-background-color: rgb(21, 201, 60);
+    -fx-background-insets: -10 -15 -10 -15, 0, 0;
+    -fx-background-radius: 2em, 2em, 2em;
+    -fx-font: bold 10pt 'Arial Black';
+}
+
+#HumanCount.label {
+    -fx-text-fill: rgb(0, 255, 200);
+    -fx-font: bold 15pt 'Arial';
+}
+
+VBox {
+    -fx-background-color: rgba(33, 137, 80, 0.2);
+}
+
+#Attack.button {
+    -fx-background-color: transparent;
+    -fx-border-color: rgb(255, 0, 0);
+}
+
+#Defence.button {
+    -fx-background-color: transparent;
+    -fx-border-color: rgb(0, 255, 0);
+}
