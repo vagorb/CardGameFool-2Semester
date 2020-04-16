@@ -18,18 +18,18 @@ public class PlayField {
     }
 
     public Map<Integer, Pane> createButtons() {
-        Button attack1 = new Button("attack1");
-        Button attack2 = new Button("attack2");
-        Button attack3 = new Button("attack3");
-        Button attack4 = new Button("attack4");
-        Button attack5 = new Button("attack5");
-        Button attack6 = new Button("attack6");
-        Button defence1 = new Button("defence1");
-        Button defence2 = new Button("defence2");
-        Button defence3 = new Button("defence3");
-        Button defence4 = new Button("defence4");
-        Button defence5 = new Button("defence5");
-        Button defence6 = new Button("defence6");
+        Button attack1 = new Button();
+        Button attack2 = new Button();
+        Button attack3 = new Button();
+        Button attack4 = new Button();
+        Button attack5 = new Button();
+        Button attack6 = new Button();
+        Button defence1 = new Button();
+        Button defence2 = new Button();
+        Button defence3 = new Button();
+        Button defence4 = new Button();
+        Button defence5 = new Button();
+        Button defence6 = new Button();
 
         Pane first = new Pane();
         first.getChildren().addAll(attack1, defence1);
@@ -64,9 +64,6 @@ public class PlayField {
         upperLayer.setMinSize(playZone.getMaxWidth(), playfieldCardUnit * 4);
         lowerLayer.setMinSize(playZone.getMaxWidth(), playfieldCardUnit * 4);
 
-        playZone.setStyle("-fx-background-color: rgb(200, 200, 200, 0.5)");
-        upperLayer.setStyle("-fx-background-color: rgb(200, 0, 100,0.8)");
-        lowerLayer.setStyle("-fx-background-color: rgb(0, 100, 200, 0.8)");
         return Arrays.asList(playZone, upperLayer, lowerLayer);
     }
 }
