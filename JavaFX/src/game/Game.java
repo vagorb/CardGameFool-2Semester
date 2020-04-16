@@ -29,17 +29,15 @@ public class Game extends Application {
     private Button activeCard = null;
     private int AIcount;
     private int humanCount;
-    private Pane openingMenu;
 
     void setFullscreenStatus(boolean fullscreenStatus) {
         this.fullscreenStatus = fullscreenStatus;
     }
 
-    void setMenu(Scene menu, StackPane openingMenu) {
+    void setMenu(Scene menu) {
         this.menuScene = menu;
-        this.openingMenu = openingMenu;
-        windowWidth = menuScene.getWidth();
-        windowHeight = menuScene.getHeight();
+        windowWidth = menu.getWidth();
+        windowHeight = menu.getHeight();
     }
 
     void setPlayerCount(int human, int AI) {
@@ -78,14 +76,14 @@ public class Game extends Application {
         double cardWidth = cardHeight / 900 * 590;
         double playfieldCardUnit = cardWidth * 0.8;
 
-        // avatarid
+        // avatarid (nime max pikkus 22-36 tähemärki)
         AvatarBox avatars = new AvatarBox(humanCount + AIcount, windowWidth);
         avatars.makeAvatar("playername1");
         avatars.makeAvatar("playername2");
         avatars.makeAvatar("playername3");
         avatars.makeAvatar("playername4");
         avatars.makeAvatar("playername5");
-        HBox avaterPage = avatars.showAvatars();
+        HBox avatarPage = avatars.showAvatars();
 
         // kaardi generaator
         List<Button> buttonList = new ArrayList<>();
@@ -105,8 +103,8 @@ public class Game extends Application {
                 } else if (i == 14) {
                     value = "Ace";
                 }
-                button.setId(value + "_of_" + suite);
                 ///// ei saanud button.getStyle() abil background image kätte
+//                button.setId(value + "_of_" + suite);
 //                button.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
                 button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: " +
                         "url('/images/cards/%s/%s_of_%s.png')", suite, value, suite));
@@ -118,6 +116,7 @@ public class Game extends Application {
                         activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                     }
                     activeCard = button;
+                    activeCard.setId(button.getId());
                     activeCard.setStyle(button.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
                 });
             }
@@ -150,23 +149,19 @@ public class Game extends Application {
                 lowerLayer.getChildren().addAll(playFieldButtons.get(i));
             }
 
-            attack.setOnMouseClicked(mouseEvent -> {
-                if (activeCard != null && !attack.isDisable()) {
-                    cardBox.getChildren().remove(activeCard);
-                    attack.setDisable(true);
-                    attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                    defence.setVisible(true);
-                    activeCard = null;
-                }
-            });
-            defence.setOnMouseClicked(mouseEvent -> {
-                if (activeCard != null && !defence.isDisable()) {
-                    cardBox.getChildren().remove(activeCard);
-                    defence.setDisable(true);
-                    defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                    activeCard = null;
-                }
-            });
+            for (Button placableCard : Arrays.asList(attack, defence)) {
+                placableCard.setOnMouseClicked(mouseEvent -> {
+                    if (activeCard != null && !placableCard.isDisable()) {
+                        cardBox.getChildren().remove(activeCard);
+                        placableCard.setDisable(true);
+                        placableCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                        activeCard = null;
+                        if (placableCard == attack) {
+                            defence.setVisible(true);
+                        }
+                    }
+                });
+            }
         }
 
         /// tegevused nuppude ning hiire ja klaviatuuriga
@@ -198,7 +193,6 @@ public class Game extends Application {
 
         backButton.setOnAction(actionEvent -> {
             window.hide();
-            menuScene.setRoot(openingMenu);
             window.setScene(menuScene);
             window.setFullScreen(fullscreenStatus);
             window.show();
@@ -213,7 +207,7 @@ public class Game extends Application {
         cardBoxBase.getChildren().add(cardBoxScroll);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
-        playStackPane.getChildren().addAll(menu, avaterPage, playField, cardBoxBase);
+        playStackPane.getChildren().addAll(menu, avatarPage, playField, cardBoxBase);
 
         window.show();
     }
