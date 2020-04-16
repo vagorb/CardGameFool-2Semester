@@ -30,6 +30,7 @@ public class TableTest {
         Table tableForFour = new Table(player1, player2, player3, player4);
         assertEquals(4, tableForFour.getPlayers().size());
         System.out.println(tableForFour.getGameDeck());
+
     }
 
     @Test
