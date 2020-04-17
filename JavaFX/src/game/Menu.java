@@ -2,6 +2,7 @@ package game;
 
 import appearance.*;
 import game.help.Buttons;
+import game.help.Resolution;
 import javafx.application.*;
 import javafx.beans.binding.*;
 import javafx.geometry.*;
@@ -16,9 +17,7 @@ import java.util.Arrays;
 public class Menu extends Application {
     private static boolean fullscreenBoolean = false;
     private Buttons buttons = new Buttons();
-    private BackgroundSetter background = new BackgroundSetter();
-    private double windowHeight;
-    private double windowWidth;
+    private Resolution resolution = new Resolution();
     private Scene menuScene;
     private int playerHumanCount = 1;
     private int playerAIcount = 0;
@@ -29,8 +28,7 @@ public class Menu extends Application {
         StackPane settingsStackpane = new StackPane();
         StackPane playStackpane = new StackPane();
         menuScene = new Scene(openingStackpane, 1280, 720);
-        windowWidth = menuScene.getWidth();
-        windowHeight = menuScene.getHeight();
+        resolution.change(window, menuScene.getWidth(), menuScene.getHeight());
 
         /// nupud
         Button exitButton = buttons.exit();
@@ -53,7 +51,7 @@ public class Menu extends Application {
         Button startButton = buttons.play();
         Button settingsButton = buttons.settings();
         menu.getChildren().addAll(startButton, settingsButton, exitButton);
-        menu.setMaxSize(windowWidth / 3, windowHeight);
+        menu.setMaxSize(resolution.width() / 3, resolution.height());
         menu.setAlignment(Pos.CENTER);
 
         /// vahemenüü
@@ -73,7 +71,7 @@ public class Menu extends Application {
         sliderHuman.getStylesheets().add(getClass().getResource("/css/slider.css").toString());
         VBox playerChoosingMenu = new VBox(25);
         playerChoosingMenu.getChildren().addAll(backButton, checkBoxAI, humanCountLabel, sliderHuman, playButton);
-        playerChoosingMenu.setMaxSize(windowWidth / 4, windowHeight / 2);
+        playerChoosingMenu.setMaxSize(resolution.width() / 4, resolution.height() / 2);
         playerChoosingMenu.setAlignment(Pos.CENTER);
 
 
@@ -89,7 +87,6 @@ public class Menu extends Application {
         playStackpane.getChildren().addAll(playerChoosingMenu);
 
         /// nuppude ja klahvide tegevused
-
         fullscreenButton.setOnAction(actionEvent -> {
             fullscreenBoolean = !fullscreenBoolean;
             window.setFullScreen(fullscreenBoolean);
@@ -98,10 +95,9 @@ public class Menu extends Application {
             } else {
                 fullscreenButton.setGraphic(new Icons("black").fullscreenEnter());
             }
-            windowWidth = window.getScene().getWidth();
-            windowHeight = window.getScene().getHeight();
-            menu.setMaxSize(windowWidth / 3, windowHeight);
-            fullscreenButton.setPrefHeight(windowHeight / 20);
+            resolution.change(window, window.getScene().getWidth(), window.getScene().getHeight());
+            menu.setMaxSize(resolution.width() / 3, resolution.height());
+            fullscreenButton.setPrefHeight(resolution.height() / 20);
         });
 
         openingStackpane.setOnKeyPressed(button -> {
@@ -143,7 +139,8 @@ public class Menu extends Application {
             try {
                 window.hide();
                 play.setFullscreenStatus(fullscreenBoolean);
-                play.setMenu(menuScene, openingStackpane);
+                menuScene.setRoot(openingStackpane);
+                play.setMenu(menuScene);
                 play.setPlayerCount(playerHumanCount, playerAIcount);
                 play.start(window);
             } catch (Exception e) {
@@ -153,9 +150,10 @@ public class Menu extends Application {
 
         /// tausta lisamine
         for (Pane pane : Arrays.asList(openingStackpane, settingsStackpane, playStackpane)) {
-            pane.setBackground(new BackgroundSetter().setImage(
-                    getClass().getResource("/images/backgrounds/menu_bg.jpg"), pane));
+            pane.setBackground(new BackgroundSetter().setImage(getClass()
+                    .getResource("/images/backgrounds/menu_bg.jpg"), pane));
         }
+        menu.setId("MenuBar");
         menu.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
 
 
