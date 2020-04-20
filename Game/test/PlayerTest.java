@@ -1,9 +1,6 @@
-import org.junit.jupiter.api.DynamicTest;
+import com.card.game.fool.players.Hand;
+import com.card.game.fool.players.Player;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

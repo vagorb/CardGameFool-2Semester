@@ -1,13 +1,17 @@
-import java.lang.management.PlatformLoggingMXBean;
+package com.card.game.fool.tables;
+
+import com.card.game.fool.AI.Ai;
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
+import com.card.game.fool.players.Player;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Table {
-//Table(cards on the table) defence and attack . - Implemented
+//com.card.game.fool.tables.Table(cards on the table) defence and attack . - Implemented
 //when card get on table, they removed from hand of player. - Implemented
 //comparing cards( can kill or not attack card) - Nope
 //put card on table from hand for attacking or defence. the card must be removed from hand. - Implemented
@@ -31,9 +35,7 @@ public class Table {
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
-        Pile pile = new Pile(pileOfCardsForThisGame);
-        this.pile = pile;
-//        pileOfCardsForThisGame = pile.createPile();
+        this.pile = new Pile(pileOfCardsForThisGame);
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         System.out.println(deckForThisGame);
@@ -46,12 +48,10 @@ public class Table {
      * @param player3 that will play in this table
      */
     public Table(Player player1, Player player2, Player player3) {
-        //deckForThisGame = Deck.createDeck();
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
         this.pile = new Pile(pileOfCardsForThisGame);
-//        pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
@@ -66,12 +66,10 @@ public class Table {
      * @param player4 that will play in this table
      */
     public Table(Player player1, Player player2, Player player3, Player player4) {
-        //deckForThisGame = Deck.createDeck();
         this.table = new ArrayList<>();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
         this.pile = new Pile(pileOfCardsForThisGame);
-//        pileOfCardsForThisGame = pile.createPile();
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
@@ -82,7 +80,6 @@ public class Table {
     public Table(Player player1, Ai ai) {
         this.ai = ai;
         this.pile = new Pile(pileOfCardsForThisGame);
-        //pile.createPile();
         this.deckForThisGame = new Deck();
         this.deckForThisGame.shuffleDeck();
 
@@ -126,7 +123,7 @@ public class Table {
 //     * Getter
 //     * @return the last card put on table
 //     */
-//    public Card getLastCardPutOnTable() {
+//    public com.card.game.fool.cards.Card getLastCardPutOnTable() {
 //        int lastCardOnTable = table.size() - 1;
 //        return table.get(lastCardOnTable);
 //    }
@@ -177,35 +174,4 @@ public class Table {
     public Map<Integer, List<Card>> mapOfCardsInTable() {
         return getTable().stream().collect(Collectors.groupingBy(Card::getValue));
     }
-
-
-//
-//    public void putAttackOrDefenseCards(Player player , Card card) {
-//        table.add(player.getHand().putCardOnTable(card));
-//        player.getHand().removeCard(card);
-//    }
-//
-//
-//    public void addAttackAndDefenseCardsToPileOrPlayer(Player player) {
-//        if (currentDefenseState) {
-//            pileOfCardsForThisGame.addAll(table);
-//        } else {
-//            for (Card card : table) {
-//                player.getHand().addCard(card);
-//            }
-//        }
-//        table.removeAll(table);
-//    }
-//
-//    public void compareCards() {
-//        int tableSize = table.size() - 1;
-//        if (table.get(tableSize).value > table.get(tableSize - 1).value) {
-//            currentDefenseState = true;
-//        } else {
-//            currentDefenseState = false;
-//        }
-//    }
-
-
-
 }
