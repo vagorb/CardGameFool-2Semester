@@ -1,9 +1,14 @@
 package game;
 
 import appearance.BackgroundSetter;
+import com.card.game.fool.AI.Ai;
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.players.Hand;
+import com.card.game.fool.players.Player;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.PlayField;
+import game.help.Popup;
 import javafx.application.*;
 import javafx.geometry.*;
 import javafx.scene.*;
@@ -29,6 +34,8 @@ public class Game extends Application {
     private Button activeCard = null;
     private int AIcount;
     private int humanCount;
+    private List<Player> players = new ArrayList<>();
+    public Ai computer;
 
     void setFullscreenStatus(boolean fullscreenStatus) {
         this.fullscreenStatus = fullscreenStatus;
@@ -43,14 +50,33 @@ public class Game extends Application {
     void setPlayerCount(int human, int AI) {
         this.humanCount = human;
         this.AIcount = AI;
+        if (AIcount > 0) {
+            computer = new Ai(new Hand());
+        }
     }
 
     public void start(Stage window) {
         Buttons buttons = new Buttons();
         StackPane playStackPane = new StackPane();
+        StackPane playeradding = new StackPane();
         Scene playScene = new Scene(playStackPane, windowWidth, windowHeight);
         HBox cardBoxBase = new HBox();
         HBox cardBox = new HBox(2);
+
+
+//        //// Mängija nime valik / vaja mingit sorti pausi nime kinnitamise (Submiti vajutamine) ajaks
+//        for (int i = 0; i < humanCount; i++) {
+//            System.out.println(i);
+//            Popup popup = new Popup(playeradding);
+//            if (popup.playerName() == null || popup.playerName().equals(""))
+//                playeradding.getChildren().get(0).setOnMouseClicked(mouseEvent -> {
+//                    Player player = new Player(popup.playerName(), 0, new Hand());
+//                    players.add(player);
+//                    System.out.println("PLAYER " + player.getName());
+//                });
+//        }
+//        System.out.println(players);
+        //        playScene.setRoot(playStackPane);
 
         ScrollPane cardBoxScroll = new ScrollPane(cardBox);
         cardBoxScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -68,26 +94,35 @@ public class Game extends Application {
 
         Button backButton = buttons.back();
         Button exitButton = buttons.exit();
+        Button pickCardsUpButton = buttons.pickCardsUp();
 
-        cardBoxBase.setMaxSize(windowWidth / 3, windowHeight / 12);
+        cardBoxBase.setMaxSize(windowWidth, windowHeight / 12);
+        cardBoxScroll.setMaxSize(windowWidth / 3, windowHeight / 12);
+        pickCardsUpButton.setMaxSize(cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
+
         cardBoxBase.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
+        cardBoxScroll.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
+        pickCardsUpButton.setTranslateX(cardBoxBase.getMaxWidth() / 2 - pickCardsUpButton.getMaxWidth());
 
-        double cardHeight = cardBoxBase.getMaxHeight() * 0.95;
+        double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;
         double cardWidth = cardHeight / 900 * 590;
         double playfieldCardUnit = cardWidth * 0.8;
 
         // avatarid (nime max pikkus 22-36 tähemärki)
         AvatarBox avatars = new AvatarBox(humanCount + AIcount, windowWidth);
-        avatars.makeAvatar("playername1");
-        avatars.makeAvatar("playername2");
-        avatars.makeAvatar("playername3");
-        avatars.makeAvatar("playername4");
-        avatars.makeAvatar("playername5");
+        if (computer != null) {
+            avatars.makeAvatar(new Ai(new Hand()));
+        }
+        players.add(new Player("player1", 0, new Hand()));
+        avatars.makeAvatar(players.get(0));
+//        avatars.makeAvatar("playername");
+//        avatars.makeAvatar("playername");
         HBox avatarPage = avatars.showAvatars();
 
         // kaardi generaator
         List<Button> buttonList = new ArrayList<>();
-        for (String suite : Arrays.asList("Hearts", "Spades", "Diamonds", "Clubs")) {
+        for (
+                String suite : Arrays.asList("Hearts", "Spades", "Diamonds", "Clubs")) {
             for (int i = 2; i <= 14; i++) {
                 buttonList.add(new Button());
                 Button button = buttonList.get(buttonList.size() - 1);
@@ -106,8 +141,8 @@ public class Game extends Application {
                 ///// ei saanud button.getStyle() abil background image kätte
 //                button.setId(value + "_of_" + suite);
 //                button.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
-                button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: " +
-                        "url('/images/cards/%s/%s_of_%s.png')", suite, value, suite));
+                button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
+                        + "url('/images/cards/%s/%s_of_%s.png')", suite, value, suite));
                 cardBox.getChildren().add(button);
 
                 ///   valitud kaardi teeb läbipaistvamaks
@@ -165,22 +200,41 @@ public class Game extends Application {
         }
 
         /// tegevused nuppude ning hiire ja klaviatuuriga
-        cardBoxScroll.setOnScroll(scrollEvent -> cardBoxScroll.
-                setHvalue(cardBoxScroll.getHvalue() - scrollEvent.getDeltaY() / 1000));
+        cardBoxScroll.setOnScroll(scrollEvent -> cardBoxScroll
+                .setHvalue(cardBoxScroll.getHvalue() - scrollEvent.getDeltaY() / 1000));
 
-        cardBoxBase.setOnMouseEntered(actionEvent -> {
-            cardBoxBase.setTranslateY(5.1 * cardHeight);
-            cardBoxBase.setScaleX(2.5);
-            cardBoxBase.setScaleY(2.5);
+        cardBoxScroll.setOnMouseEntered(actionEvent -> {
+            cardBoxScroll.setTranslateY(5.1 * cardHeight);
+            cardBoxScroll.setScaleX(2.5);
+            cardBoxScroll.setScaleY(2.5);
         });
 
-        cardBoxBase.setOnMouseExited(actionEvent -> {
-            cardBoxBase.setTranslateY(5.8 * cardHeight);
-            cardBoxBase.setScaleX(1);
-            cardBoxBase.setScaleY(1);
+        cardBoxScroll.setOnMouseExited(actionEvent -> {
+            cardBoxScroll.setTranslateY(5.8 * cardHeight);
+            cardBoxScroll.setScaleX(1);
+            cardBoxScroll.setScaleY(1);
         });
 
-        playScene.setOnKeyPressed(button -> {
+        Player current = players.get(0);
+        pickCardsUpButton.setOnAction(actionEvent -> playFieldButtons.forEach((integer, pane) -> {
+//            if (current.getPlayerState().equals(Player.PlayerState.DEFENSE)) {
+            if (current.getPlayerState() == null) {
+                for (int i = 0; i < 2; i++) {
+                    Button button = (Button) pane.getChildrenUnmodifiable().get(i);
+                    button.setDisable(false);
+                    button.getStylesheets().clear();
+                    button.setStyle("-fx-background-image: null");
+                    button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+                    if (button.getId().equals("Defence")) {
+                        button.setVisible(false);
+                    }
+                }
+            }
+        }));
+
+        playScene.setOnKeyPressed(button ->
+
+        {
             if (button.getCode() == KeyCode.ESCAPE) {
                 menu.setVisible(!menu.isVisible());
                 playStackPane.getChildren().forEach(child -> {
@@ -191,23 +245,23 @@ public class Game extends Application {
             }
         });
 
-        backButton.setOnAction(actionEvent -> {
+        backButton.setOnAction(actionEvent ->
+
+        {
             window.hide();
             window.setScene(menuScene);
-            window.setFullScreen(fullscreenStatus);
             window.show();
         });
 
         exitButton.setOnAction(actionEvent -> window.close());
 
-        playStackPane.setBackground(new BackgroundSetter().setImage(getClass().
-                getResource("/images/backgrounds/game_bg.jpg"), playStackPane));
+        playStackPane.setBackground(new BackgroundSetter()
+                .setImage(getClass().getResource("/images/backgrounds/game_bg.jpg"), playStackPane));
         cardBoxBase.setBackground(new BackgroundSetter().setByColor(Color.DARKGOLDENROD));
-
-        cardBoxBase.getChildren().add(cardBoxScroll);
+        cardBoxBase.getChildren().add(pickCardsUpButton);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
-        playStackPane.getChildren().addAll(menu, avatarPage, playField, cardBoxBase);
+        playStackPane.getChildren().addAll(menu, avatarPage, playField, cardBoxBase, cardBoxScroll);
 
         window.show();
     }

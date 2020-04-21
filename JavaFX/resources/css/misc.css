@@ -15,11 +15,13 @@
 }
 
 #Attack.button {
+    -fx-background-image: null;
     -fx-background-color: rgba(255,0,0,0.2);
     -fx-border-color: rgb(255, 0, 0);
 }
 
 #Defence.button {
+    -fx-background-image: null;
     -fx-background-color: rgba(0,255,0,0.2);
     -fx-border-color: rgb(0, 255, 0);
 }
