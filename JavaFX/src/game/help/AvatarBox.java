@@ -1,5 +1,7 @@
 package game.help;
 
+import com.card.game.fool.players.Player;
+import com.card.game.fool.players.gamerInterface;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -19,7 +21,7 @@ public class AvatarBox {
     private VBox leftVerticalPlace = new VBox();
     private VBox rightVerticalPlace = new VBox();
     private List<VBox> avatarList = new ArrayList<>();
-    private int cardCount = 0;
+    private int cardCount = 52;
 
     public int getCardCount() {
         return cardCount;
@@ -48,28 +50,28 @@ public class AvatarBox {
         object.setMaxSize(width, height);
     }
 
-    //    public void makeAvatar(Image image, String playerName) {
-    public void makeAvatar(String playerName) {
+    public void makeAvatar(gamerInterface gamer) {
         if (avatarList.size() < playerCount) {
-            Label name = new Label(playerName);
+            Label name = new Label(gamer.getName());
             HBox nameBox = new HBox(name);
+            nameBox.setAlignment(Pos.CENTER);
             Label cardsRemaining = new Label(String.valueOf(cardCount));
             HBox cardBack = new HBox(cardsRemaining);
             ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
-            //            ImageView avatarImage = new ImageView(image);
+//            ImageView avatarImage = new ImageView(image);
             HBox avatarSubBox = new HBox(avatarImage, cardBack);
             VBox avatarBox = new VBox(avatarSubBox, nameBox);
 
             oneSizeForElement(cardBack, elementSize * 0.4, elementSize * 0.6);
             oneSizeForElement(avatarBox, elementSize, elementSize * 0.9);
 
-            double cardFontSize = cardBack.maxWidthProperty().get() / 1.1;
+            double cardFontSize = cardBack.maxWidthProperty().get() * 0.9;
             cardBack.setStyle("-fx-background-image: url('/images/cards/back_of_card.png');-fx-background-size: cover;");
             cardsRemaining.setStyle("-fx-font:" + cardFontSize + "px Arial ; -fx-text-fill: rgb(255,0,0);");
             avatarImage.setFitWidth(elementSize * 0.6);
             avatarImage.setFitHeight(elementSize * 0.6);
             name.setWrapText(true);
-            name.setStyle("-fx-font: 15px Arial;");
+            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: rgb(155,255,0)");
             nameBox.setStyle("-fx-border-color: rgb(0,0,0)");
 
             cardBack.setAlignment(Pos.CENTER);

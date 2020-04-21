@@ -2,6 +2,7 @@ package game;
 
 import appearance.*;
 import game.help.Buttons;
+import game.help.Resolution;
 import javafx.application.*;
 import javafx.beans.binding.*;
 import javafx.geometry.*;
@@ -14,14 +15,11 @@ import javafx.stage.*;
 import java.util.Arrays;
 
 public class Menu extends Application {
-    private static boolean fullscreenBoolean = false;
     private Buttons buttons = new Buttons();
-    private BackgroundSetter background = new BackgroundSetter();
-    private double windowHeight;
-    private double windowWidth;
+    private Resolution resolution = new Resolution();
     private Scene menuScene;
     private int playerHumanCount = 1;
-    private int playerAIcount = 0;
+    private int playerAI = 0;
 
     public void start(Stage window) {
         /// avamenüü
@@ -29,8 +27,7 @@ public class Menu extends Application {
         StackPane settingsStackpane = new StackPane();
         StackPane playStackpane = new StackPane();
         menuScene = new Scene(openingStackpane, 1280, 720);
-        windowWidth = menuScene.getWidth();
-        windowHeight = menuScene.getHeight();
+        resolution.change(menuScene.getWidth(), menuScene.getHeight());
 
         /// nupud
         Button exitButton = buttons.exit();
@@ -53,7 +50,7 @@ public class Menu extends Application {
         Button startButton = buttons.play();
         Button settingsButton = buttons.settings();
         menu.getChildren().addAll(startButton, settingsButton, exitButton);
-        menu.setMaxSize(windowWidth / 3, windowHeight);
+        menu.setMaxSize(resolution.width() / 3, resolution.height());
         menu.setAlignment(Pos.CENTER);
 
         /// vahemenüü
@@ -73,9 +70,8 @@ public class Menu extends Application {
         sliderHuman.getStylesheets().add(getClass().getResource("/css/slider.css").toString());
         VBox playerChoosingMenu = new VBox(25);
         playerChoosingMenu.getChildren().addAll(backButton, checkBoxAI, humanCountLabel, sliderHuman, playButton);
-        playerChoosingMenu.setMaxSize(windowWidth / 4, windowHeight / 2);
+        playerChoosingMenu.setMaxSize(resolution.width() / 4, resolution.height() / 2);
         playerChoosingMenu.setAlignment(Pos.CENTER);
-
 
         /// sätete menu
         VBox settingsMenu = new VBox(25);
@@ -89,19 +85,16 @@ public class Menu extends Application {
         playStackpane.getChildren().addAll(playerChoosingMenu);
 
         /// nuppude ja klahvide tegevused
-
         fullscreenButton.setOnAction(actionEvent -> {
-            fullscreenBoolean = !fullscreenBoolean;
-            window.setFullScreen(fullscreenBoolean);
+            window.setFullScreen(!window.isFullScreen());
             if (window.isFullScreen()) {
                 fullscreenButton.setGraphic(new Icons("black").fullscreenExit());
             } else {
                 fullscreenButton.setGraphic(new Icons("black").fullscreenEnter());
             }
-            windowWidth = window.getScene().getWidth();
-            windowHeight = window.getScene().getHeight();
-            menu.setMaxSize(windowWidth / 3, windowHeight);
-            fullscreenButton.setPrefHeight(windowHeight / 20);
+            resolution.change(menuScene.getWidth(), menuScene.getHeight());
+            menu.setMaxSize(resolution.width() / 3, resolution.height());
+            fullscreenButton.setPrefHeight(resolution.height() / 20);
         });
 
         openingStackpane.setOnKeyPressed(button -> {
@@ -110,7 +103,7 @@ public class Menu extends Application {
             }
         });
 
-        playStackpane.setOnKeyPressed(button -> {
+        window.getScene().setOnKeyPressed(button -> {
             if (button.getCode() == KeyCode.ESCAPE) {
                 window.getScene().setRoot(openingStackpane);
             }
@@ -123,10 +116,10 @@ public class Menu extends Application {
 
         checkBoxAI.setOnAction(actionEvent -> {
             if (checkBoxAI.isSelected()) {
-                playerAIcount = 1;
+                playerAI = 1;
                 sliderHuman.setMax(1);
             } else {
-                playerAIcount = 0;
+                playerAI = 0;
                 sliderHuman.setMax(3);
             }
         });
@@ -142,9 +135,11 @@ public class Menu extends Application {
             Game play = new Game();
             try {
                 window.hide();
-                play.setFullscreenStatus(fullscreenBoolean);
-                play.setMenu(menuScene, openingStackpane);
-                play.setPlayerCount(playerHumanCount, playerAIcount);
+                menuScene.setRoot(openingStackpane);
+                resolution.change(menuScene.getWidth(), menuScene.getHeight());
+                play.setFullscreenStatus(window.isFullScreen());
+                play.setMenu(menuScene);
+                play.setPlayerCount(playerHumanCount, playerAI);
                 play.start(window);
             } catch (Exception e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
@@ -153,9 +148,10 @@ public class Menu extends Application {
 
         /// tausta lisamine
         for (Pane pane : Arrays.asList(openingStackpane, settingsStackpane, playStackpane)) {
-            pane.setBackground(new BackgroundSetter().setImage(
-                    getClass().getResource("/images/backgrounds/menu_bg.jpg"), pane));
+            pane.setBackground(new BackgroundSetter().setImage(getClass()
+                    .getResource("/images/backgrounds/menu_bg.jpg"), pane));
         }
+        menu.setId("MenuBar");
         menu.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
 
 

@@ -10,16 +10,18 @@
     -fx-font: bold 15pt 'Arial';
 }
 
-VBox {
+#MenuBar {
     -fx-background-color: rgba(33, 137, 80, 0.2);
 }
 
 #Attack.button {
-    -fx-background-color: transparent;
+    -fx-background-image: null;
+    -fx-background-color: rgba(255,0,0,0.2);
     -fx-border-color: rgb(255, 0, 0);
 }
 
 #Defence.button {
-    -fx-background-color: transparent;
+    -fx-background-image: null;
+    -fx-background-color: rgba(0,255,0,0.2);
     -fx-border-color: rgb(0, 255, 0);
 }

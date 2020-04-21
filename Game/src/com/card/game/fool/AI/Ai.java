@@ -4,6 +4,7 @@ import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.gamerInterface;
 import com.card.game.fool.tables.Table;
 
 import java.util.ArrayList;
@@ -18,11 +19,16 @@ import java.util.stream.Collectors;
 // Moves after 0 cards in deck
 // method in table getAi move
 
-public class Ai {
+public class Ai implements gamerInterface {
     private Hand hand;
+    private String name = "CPU";
 
     public Ai(Hand hand) {
         this.hand = hand;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Hand getAiHand() {
@@ -61,8 +67,8 @@ public class Ai {
         if (table.getPile().getPile().size() > 1) {
             for (Card card : cards) {
                 if (table.getPile().mapOfCardsAndValues().containsKey(card.getValue()) && table.getPile().mapOfCardsAndValues().get(card.getValue())
-                            .size() >= 2) {
-                        return Optional.of(card);
+                        .size() >= 2) {
+                    return Optional.of(card);
                 }
             }
         }
@@ -96,7 +102,7 @@ public class Ai {
         return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
-    public  List<Card> playerCardsInTheEnd(Table table) {
+    public List<Card> playerCardsInTheEnd(Table table) {
         List<Card> playerCards = new ArrayList<>();
         Deck deck = new Deck();
         deck.makeCardsTrump(table.getTrumpSuit());
@@ -117,7 +123,6 @@ public class Ai {
         List<Card> playerCards = playerCardsInTheEnd(table);
         return playerCards.stream().collect(Collectors.groupingBy(Card::getValue));
     }
-
 
 
     public Optional<Card> suitableAttackMoveWhenDeckEnds(Table table) {
@@ -196,6 +201,6 @@ public class Ai {
                 }
             }
         }
-        
+
     }
 }
