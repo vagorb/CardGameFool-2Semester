@@ -19,7 +19,7 @@ public class AvatarBox {
     private VBox leftVerticalPlace = new VBox();
     private VBox rightVerticalPlace = new VBox();
     private List<VBox> avatarList = new ArrayList<>();
-    private int cardCount = 52;
+    private int cardCount = 6;
 
     public int getCardCount() {
         return cardCount;

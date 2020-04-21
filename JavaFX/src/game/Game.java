@@ -1,6 +1,9 @@
 package game;
 
 import appearance.BackgroundSetter;
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.logic.GameController;
+import com.card.game.fool.players.Player;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.PlayField;
@@ -22,6 +25,9 @@ import java.util.Map;
 public class Game extends Application {
     private Scene menuScene;
     private boolean fullscreenStatus;
+
+    private GameController gameController = new GameController();
+
 
     private double windowHeight;
     private double windowWidth;
@@ -46,6 +52,9 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
+        gameController.createBasic();
+        gameController.assignTrumpAndFillHands();
+        gameController.setPlayerStates();
         Buttons buttons = new Buttons();
         StackPane playStackPane = new StackPane();
         Scene playScene = new Scene(playStackPane, windowWidth, windowHeight);
@@ -86,41 +95,9 @@ public class Game extends Application {
         HBox avatarPage = avatars.showAvatars();
 
         // kaardi generaator
-        List<Button> buttonList = new ArrayList<>();
-        for (String suite : Arrays.asList("Hearts", "Spades", "Diamonds", "Clubs")) {
-            for (int i = 2; i <= 14; i++) {
-                buttonList.add(new Button());
-                Button button = buttonList.get(buttonList.size() - 1);
-                button.setMinSize(cardWidth, cardHeight);
-                button.setMaxSize(cardWidth, cardHeight);
-                String value = String.valueOf(i);
-                if (i == 11) {
-                    value = "Jack";
-                } else if (i == 12) {
-                    value = "Queen";
-                } else if (i == 13) {
-                    value = "King";
-                } else if (i == 14) {
-                    value = "Ace";
-                }
-                ///// ei saanud button.getStyle() abil background image kätte
-//                button.setId(value + "_of_" + suite);
-//                button.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
-                button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: " +
-                        "url('/images/cards/%s/%s_of_%s.png')", suite, value, suite));
-                cardBox.getChildren().add(button);
 
-                ///   valitud kaardi teeb läbipaistvamaks
-                button.setOnAction(actionEvent -> {
-                    if (activeCard != null) {
-                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-                    }
-                    activeCard = button;
-                    activeCard.setId(button.getId());
-                    activeCard.setStyle(button.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
-                });
-            }
-        }
+        List<Button> buttonList = new ArrayList<>();
+        getCardsFromDeckAndCreatePNG(cardWidth, cardHeight, cardBox, buttonList);
 
 
         /// mänguvälja elemendid
@@ -152,6 +129,8 @@ public class Game extends Application {
             for (Button placableCard : Arrays.asList(attack, defence)) {
                 placableCard.setOnMouseClicked(mouseEvent -> {
                     if (activeCard != null && !placableCard.isDisable()) {
+                        gameController.attackDefenseTurn();
+                        gameController.setPlayerStates();
                         cardBox.getChildren().remove(activeCard);
                         placableCard.setDisable(true);
                         placableCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
@@ -210,6 +189,43 @@ public class Game extends Application {
         playStackPane.getChildren().addAll(menu, avatarPage, playField, cardBoxBase);
 
         window.show();
+    }
+
+    public void getCardsFromDeckAndCreatePNG(double cardWidth, double cardHeight, HBox cardBox, List<Button> buttonList) {
+        int i = 0;
+        while(buttonList.size() < 6) {
+//        for (int i = 0; i < 6; i++) {
+            Player player1 = gameController.getTable().getPlayers().get(0);
+            Card card = player1.getHand().getCardsInHand().get(i);
+            buttonList.add(new Button());
+            Button buttonAdding = buttonList.get(buttonList.size() - 1);
+            buttonAdding.setMinSize(cardWidth, cardHeight);
+            buttonAdding.setMaxSize(cardWidth, cardHeight);
+            String value = String.valueOf(card.getValue());
+            if (value.equals("11")) {
+                value = "Jack";
+            } else if (value.equals("12")) {
+                value = "Queen";
+            } else if (value.equals("13")) {
+                value = "King";
+            } else if (value.equals("14")) {
+                value = "Ace";
+            }
+            buttonAdding.setId(value + "_of_" + card.getSuit());
+            buttonAdding.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
+            buttonAdding.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
+                    + "url('/images/cards/%s/%s_of_%s.png')", card.getSuit(), value, card.getSuit()));
+            cardBox.getChildren().add(buttonAdding);
+
+            buttonAdding.setOnAction(actionEvent -> {
+                if (activeCard != null) {
+                    activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                }
+                activeCard = buttonAdding;
+                activeCard.setStyle(buttonAdding.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
+            });
+            i += 1;
+        }
     }
 
     public static void main(String[] args) {
