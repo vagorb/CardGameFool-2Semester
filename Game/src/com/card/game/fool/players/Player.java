@@ -2,7 +2,7 @@ package com.card.game.fool.players;
 
 import com.card.game.fool.cards.Card;
 
-public class Player implements gamerInterface {
+public class Player {
     private Hand hand;
     private String name;
     private Integer score;
@@ -10,10 +10,9 @@ public class Player implements gamerInterface {
 
     /**
      * com.card.game.fool.players.Player class constructor
-     *
-     * @param name  of the player ( String )
+     * @param name of the player ( String )
      * @param score of the player ( Integer )
-     * @param hand  of the player ( com.card.game.fool.players.Hand object )
+     * @param hand of the player ( com.card.game.fool.players.Hand object )
      */
     public Player(String name, Integer score, Hand hand) { //PlayerState playerState) {
         //this.playerState = playerState;
@@ -33,7 +32,6 @@ public class Player implements gamerInterface {
 
     /**
      * Getter
-     *
      * @return com.card.game.fool.players.Hand of this player
      */
     public Hand getHand() {
@@ -42,7 +40,6 @@ public class Player implements gamerInterface {
 
     /**
      * Getter
-     *
      * @return name of this player
      */
     public String getName() {
@@ -51,7 +48,6 @@ public class Player implements gamerInterface {
 
     /**
      * Getter
-     *
      * @return score of this player
      */
     public Integer getScore() {
@@ -60,7 +56,6 @@ public class Player implements gamerInterface {
 
     /**
      * Method that adds score to the player
-     *
      * @param score to add
      */
     public void addScore(int score) {
@@ -73,7 +68,6 @@ public class Player implements gamerInterface {
 
     /**
      * Setter
-     *
      * @param playerState that we set
      */
     public void setPlayerState(PlayerState playerState) {
@@ -82,7 +76,6 @@ public class Player implements gamerInterface {
 
     /**
      * Getter
-     *
      * @return player state
      */
     public PlayerState getPlayerState() {
@@ -91,7 +84,6 @@ public class Player implements gamerInterface {
 
     /**
      * Method that decides what card we will take from our list of cards
-     *
      * @param cardNumber value we give to our list of cards , which we use to take the card with
      * @return card that we plan on taking
      */

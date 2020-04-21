@@ -11,14 +11,6 @@ import javafx.scene.paint.Paint;
 
 
 public class Buttons {
-    public Button pickCardsUp() {
-        Button pickUpButton = new Button("", new Icons("black").pickCardsUp());
-        pickUpButton.setAlignment(Pos.CENTER);
-        pickUpButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("gold"),
-                new CornerRadii(10d, 10d, 10d, 10d, false), Insets.EMPTY)));
-        return pickUpButton;
-    }
-
     public Button exit() {
         Button exitButton = new Button("", new Icons("black").exit());
         exitButton.setAlignment(Pos.CENTER);

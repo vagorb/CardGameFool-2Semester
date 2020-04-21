@@ -15,11 +15,12 @@ import javafx.stage.*;
 import java.util.Arrays;
 
 public class Menu extends Application {
+    private static boolean fullscreenBoolean = false;
     private Buttons buttons = new Buttons();
     private Resolution resolution = new Resolution();
     private Scene menuScene;
     private int playerHumanCount = 1;
-    private int playerAI = 0;
+    private int playerAIcount = 0;
 
     public void start(Stage window) {
         /// avamenüü
@@ -27,7 +28,7 @@ public class Menu extends Application {
         StackPane settingsStackpane = new StackPane();
         StackPane playStackpane = new StackPane();
         menuScene = new Scene(openingStackpane, 1280, 720);
-        resolution.change(menuScene.getWidth(), menuScene.getHeight());
+        resolution.change(window, menuScene.getWidth(), menuScene.getHeight());
 
         /// nupud
         Button exitButton = buttons.exit();
@@ -73,6 +74,7 @@ public class Menu extends Application {
         playerChoosingMenu.setMaxSize(resolution.width() / 4, resolution.height() / 2);
         playerChoosingMenu.setAlignment(Pos.CENTER);
 
+
         /// sätete menu
         VBox settingsMenu = new VBox(25);
         settingsMenu.getChildren().addAll(fullscreenButton, backButton);
@@ -86,13 +88,14 @@ public class Menu extends Application {
 
         /// nuppude ja klahvide tegevused
         fullscreenButton.setOnAction(actionEvent -> {
-            window.setFullScreen(!window.isFullScreen());
+            fullscreenBoolean = !fullscreenBoolean;
+            window.setFullScreen(fullscreenBoolean);
             if (window.isFullScreen()) {
                 fullscreenButton.setGraphic(new Icons("black").fullscreenExit());
             } else {
                 fullscreenButton.setGraphic(new Icons("black").fullscreenEnter());
             }
-            resolution.change(menuScene.getWidth(), menuScene.getHeight());
+            resolution.change(window, window.getScene().getWidth(), window.getScene().getHeight());
             menu.setMaxSize(resolution.width() / 3, resolution.height());
             fullscreenButton.setPrefHeight(resolution.height() / 20);
         });
@@ -103,7 +106,7 @@ public class Menu extends Application {
             }
         });
 
-        window.getScene().setOnKeyPressed(button -> {
+        playStackpane.setOnKeyPressed(button -> {
             if (button.getCode() == KeyCode.ESCAPE) {
                 window.getScene().setRoot(openingStackpane);
             }
@@ -116,10 +119,10 @@ public class Menu extends Application {
 
         checkBoxAI.setOnAction(actionEvent -> {
             if (checkBoxAI.isSelected()) {
-                playerAI = 1;
+                playerAIcount = 1;
                 sliderHuman.setMax(1);
             } else {
-                playerAI = 0;
+                playerAIcount = 0;
                 sliderHuman.setMax(3);
             }
         });
@@ -135,11 +138,10 @@ public class Menu extends Application {
             Game play = new Game();
             try {
                 window.hide();
+                play.setFullscreenStatus(fullscreenBoolean);
                 menuScene.setRoot(openingStackpane);
-                resolution.change(menuScene.getWidth(), menuScene.getHeight());
-                play.setFullscreenStatus(window.isFullScreen());
                 play.setMenu(menuScene);
-                play.setPlayerCount(playerHumanCount, playerAI);
+                play.setPlayerCount(playerHumanCount, playerAIcount);
                 play.start(window);
             } catch (Exception e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));

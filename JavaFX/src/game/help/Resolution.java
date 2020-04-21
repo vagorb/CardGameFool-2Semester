@@ -1,5 +1,7 @@
 package game.help;
 
+import javafx.stage.Stage;
+
 public class Resolution {
     private double windowWidth;
     private double windowHeight;
@@ -12,8 +14,10 @@ public class Resolution {
         return windowHeight;
     }
 
-    public void change(double width, double height) {
+    public void change(Stage window, double width, double height) {
         this.windowWidth = width;
         this.windowHeight = height;
+        window.setWidth(windowWidth);
+        window.setHeight(windowHeight);
     }
 }

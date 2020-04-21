@@ -73,9 +73,4 @@ public class Icons {
         return makeImage(img);
     }
 
-    public ImageView pickCardsUp() {
-        String img = "pickUp.png";
-        return makeImage(img);
-    }
-
 }
