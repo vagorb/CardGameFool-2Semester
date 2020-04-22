@@ -4,6 +4,7 @@ import appearance.BackgroundSetter;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
+import com.card.game.fool.logic.GameController;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.sun.javafx.property.adapter.PropertyDescriptor;
@@ -35,6 +36,17 @@ public class Game extends Application {
     private Scene menuScene;
     private boolean fullscreenStatus;
 
+    private GameController gameController = new GameController();
+    private Button forAttackComparison;
+    private Card attackCard;
+    private List<Integer> listOfCardsOnUITable = new ArrayList<>();
+
+    private Button forDefenseComparison;
+    private Card defenseCard;
+    private String trumpInfo;
+
+
+
     private double windowHeight;
     private double windowWidth;
 
@@ -63,6 +75,11 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
+        gameController.createBasic();
+        gameController.assignTrumpAndFillHands();
+        gameController.setPlayerStates();
+        trumpInfo = gameController.getCardThatDecidesTrump().getSuit();
+//        cardToPng = gameController.getCardToPng();
         Buttons buttons = new Buttons();
         StackPane playStackPane = new StackPane();
         StackPane playeradding = new StackPane();
@@ -125,30 +142,31 @@ public class Game extends Application {
         HBox avatarPage = avatars.showAvatars();
 
         // kaardi generaator
-        Deck deck = new Deck();
+//        Deck deck = new Deck();
         List<Button> buttonList = new ArrayList<>();
         List<Card> cardsInHand = new LinkedList<>();
-        for (Card card : deck.getDeck()) {
-            if (buttonList.size() < 8) {
-                cardsInHand.add(card);
-                buttonList.add(new Button());
-                Button button = buttonList.get(buttonList.size() - 1);
-                button.setMinSize(cardWidth, cardHeight);
-                button.setMaxSize(cardWidth, cardHeight);
-                button.setId(card.getId());
-                button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
-                        + "url('/images/cards/%s/%s.png')", card.getSuit(), card.getId()));
-                cardBox.getChildren().add(button);
-                button.setOnAction(actionEvent -> {
-                    if (activeCard != null) {
-                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-                    }
-                    activeCard = button;
-                    activeCard.setId(button.getId());
-                    activeCard.setStyle(button.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
-                });
-            }
-        }
+        getCardsFromDeckAndCreatePNG(cardWidth, cardHeight, cardBox, buttonList, cardsInHand);
+//        for (Card card : deck.getDeck()) {
+//            if (buttonList.size() < 8) {
+//                cardsInHand.add(card);
+//                buttonList.add(new Button());
+//                Button button = buttonList.get(buttonList.size() - 1);
+//                button.setMinSize(cardWidth, cardHeight);
+//                button.setMaxSize(cardWidth, cardHeight);
+//                button.setId(card.getId());
+//                button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
+//                        + "url('/images/cards/%s/%s.png')", card.getSuit(), card.getId()));
+//                cardBox.getChildren().add(button);
+//                button.setOnAction(actionEvent -> {
+//                    if (activeCard != null) {
+//                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+//                    }
+//                    activeCard = button;
+//                    activeCard.setId(button.getId());
+//                    activeCard.setStyle(button.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
+//                });
+//            }
+//        }
         ///// ei saanud button.getStyle() abil background image kätte
 //                button.setId(value + "_of_" + suite);
 //                button.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
@@ -179,19 +197,63 @@ public class Game extends Application {
                 lowerLayer.getChildren().addAll(playFieldButtons.get(i));
             }
 
-            for (Button placableCard : Arrays.asList(attack, defence)) {
-                placableCard.setOnMouseClicked(mouseEvent -> {
-                    if (activeCard != null && !placableCard.isDisable()) {
+            attack.setOnMouseClicked(mouseEvent -> {
+                if (activeCard != null && !attack.isDisable()) {
+                    forAttackComparison = activeCard;
+                    attackCard = Card.javaFXCardToCard(forAttackComparison.getId());
+                    if (listOfCardsOnUITable.size() == 0) {
+                        listOfCardsOnUITable.add(attackCard.getValue());
                         cardBox.getChildren().remove(activeCard);
-                        placableCard.setDisable(true);
-                        placableCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                        attack.setDisable(true);
+                        attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                        defence.setVisible(true);
                         activeCard = null;
-                        if (placableCard == attack) {
+                    } else {
+                        if (listOfCardsOnUITable.contains(attackCard.getValue())) {
+                            cardBox.getChildren().remove(activeCard);
+                            attack.setDisable(true);
+                            attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                             defence.setVisible(true);
+                            activeCard = null;
+                        } else {
+                            activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                         }
                     }
-                });
-            }
+                }
+            });
+            defence.setOnMouseClicked(mouseEvent -> {
+                if (activeCard != null && !defence.isDisable()) {
+                    forDefenseComparison = activeCard;
+                    defenseCard = Card.javaFXCardToCard(forDefenseComparison.getId());
+                    if (attackCard.getSuit().equals(defenseCard.getSuit())) {
+                        if (defenseCard.getValue() > attackCard.getValue()) {
+                            listOfCardsOnUITable.add(defenseCard.getValue());
+                            cardBox.getChildren().remove(activeCard);
+                            defence.setDisable(true);
+                            defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                            activeCard = null;
+                            forAttackComparison = null;
+                            forDefenseComparison = null;
+                        } else {
+//                            cardBox.getChildren().remove(activeCard);
+                            activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            activeCard = null;
+                        }
+                    } else if (defenseCard.getSuit().equals(trumpInfo)) {
+                        listOfCardsOnUITable.add(defenseCard.getValue());
+                        cardBox.getChildren().remove(activeCard);
+                        defence.setDisable(true);
+                        defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                        activeCard = null;
+                        forAttackComparison = null;
+                        forDefenseComparison = null;
+                    } else {
+                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                    }
+
+
+                }
+            });
         }
 
         /// tegevused nuppude ning hiire ja klaviatuuriga
@@ -270,7 +332,7 @@ public class Game extends Application {
             change.next();
             cardsInHand.removeIf(card -> card.getId().equals(change.getRemoved().get(0).getId()));
             System.out.println(cardsInHand);
-            });
+        });
 
         playStackPane.setBackground(new BackgroundSetter()
                 .setImage(getClass().getResource("/images/backgrounds/game_bg.jpg"), playStackPane));
@@ -281,6 +343,45 @@ public class Game extends Application {
         playStackPane.getChildren().addAll(menu, avatarPage, playField, pileBox, cardBoxBase, cardBoxScroll);
         window.show();
     }
+
+    public void getCardsFromDeckAndCreatePNG(double cardWidth, double cardHeight, HBox cardBox, List<Button> buttonList, List<Card> cardsInHand) {
+        int i = 0;
+        while(buttonList.size() < 6) {
+//        for (int i = 0; i < 6; i++) {
+            Player player1 = gameController.getTable().getPlayers().get(0);
+            Card card = player1.getHand().getCardsInHand().get(i);
+            cardsInHand.add(card);
+            buttonList.add(new Button());
+            Button buttonAdding = buttonList.get(buttonList.size() - 1);
+            buttonAdding.setMinSize(cardWidth, cardHeight);
+            buttonAdding.setMaxSize(cardWidth, cardHeight);
+            String value = String.valueOf(card.getValue());
+            if (value.equals("11")) {
+                value = "Jack";
+            } else if (value.equals("12")) {
+                value = "Queen";
+            } else if (value.equals("13")) {
+                value = "King";
+            } else if (value.equals("14")) {
+                value = "Ace";
+            }
+            buttonAdding.setId(value + "_of_" + card.getSuit());
+            buttonAdding.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
+            buttonAdding.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
+                    + "url('/images/cards/%s/%s_of_%s.png')", card.getSuit(), value, card.getSuit()));
+            cardBox.getChildren().add(buttonAdding);
+
+            buttonAdding.setOnAction(actionEvent -> {
+                if (activeCard != null) {
+                    activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                }
+                activeCard = buttonAdding;
+                activeCard.setStyle(buttonAdding.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
+            });
+            i += 1;
+        }
+    }
+
 
     public static void main(String[] args) {
         launch(args);
