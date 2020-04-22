@@ -8,7 +8,7 @@ import com.card.game.fool.players.Player;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.PlayField;
-import game.help.Popup;
+//import game.help.Popup;
 import javafx.application.*;
 import javafx.geometry.*;
 import javafx.scene.*;
