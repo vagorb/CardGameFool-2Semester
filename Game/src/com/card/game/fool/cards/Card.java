@@ -6,6 +6,7 @@ import java.util.Map;
 public class Card {
 
     String suit;
+    String id;
     Integer value;
     Visibility visibility;
     Boolean trump;
@@ -55,8 +56,16 @@ public class Card {
         this.value = value;
         this.visibility = Visibility.NOONE;
         this.trump = trump;
+        id = getValueName() + "_of_" + getSuit();
     }
 
+    /**
+     * Getter
+     * @return id of this card (purely to connect JavaFX style with this card)
+     */
+    public String getId() {
+        return id;
+    }
 
     /**
      * Getter
