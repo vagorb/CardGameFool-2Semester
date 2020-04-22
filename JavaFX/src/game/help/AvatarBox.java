@@ -1,5 +1,7 @@
 package game.help;
 
+import com.card.game.fool.players.Player;
+import com.card.game.fool.players.gamerInterface;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -48,12 +50,11 @@ public class AvatarBox {
         object.setMaxSize(width, height);
     }
 
-    //    public void makeAvatar(Image image, Player player) {
-    public void makeAvatar(String playerName) {
+    public void makeAvatar(gamerInterface gamer) {
         if (avatarList.size() < playerCount) {
-//            Label name = new Label(player.getName());
-            Label name = new Label(playerName);
+            Label name = new Label(gamer.getName());
             HBox nameBox = new HBox(name);
+            nameBox.setAlignment(Pos.CENTER);
             Label cardsRemaining = new Label(String.valueOf(cardCount));
             HBox cardBack = new HBox(cardsRemaining);
             ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
