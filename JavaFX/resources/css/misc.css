@@ -16,12 +16,26 @@
 
 #Attack.button {
     -fx-background-image: null;
-    -fx-background-color: rgba(255,0,0,0.2);
+    -fx-background-color: rgba(255, 0, 0, 0.2);
     -fx-border-color: rgb(255, 0, 0);
 }
 
 #Defence.button {
     -fx-background-image: null;
-    -fx-background-color: rgba(0,255,0,0.2);
+    -fx-background-color: rgba(0, 255, 0, 0.2);
     -fx-border-color: rgb(0, 255, 0);
+}
+
+#cardBoxBase {
+    -fx-background-size: cover;
+    -fx-background-color: #847c47;
+}
+
+#gameStackPane {
+    -fx-background-size: cover;
+    -fx-background-image: url('/images/backgrounds/game_bg.jpg');
+}
+#menuStackPane {
+    -fx-background-size: cover;
+    -fx-background-image: url('/images/backgrounds/menu_bg.jpg');
 }

@@ -1,6 +1,5 @@
 package game.help;
 
-import com.card.game.fool.players.Player;
 import com.card.game.fool.players.gamerInterface;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
