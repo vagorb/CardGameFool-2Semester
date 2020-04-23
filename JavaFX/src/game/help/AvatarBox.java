@@ -20,15 +20,6 @@ public class AvatarBox {
     private VBox leftVerticalPlace = new VBox();
     private VBox rightVerticalPlace = new VBox();
     private List<VBox> avatarList = new ArrayList<>();
-    private int cardCount = 52;
-
-    public int getCardCount() {
-        return cardCount;
-    }
-
-    public void setCardCount(int cardCount) {
-        this.cardCount = cardCount;
-    }
 
     public AvatarBox(int playerCount, double screenWidth) {
         this.playerCount = playerCount;
@@ -54,10 +45,10 @@ public class AvatarBox {
             Label name = new Label(gamer.getName());
             HBox nameBox = new HBox(name);
             nameBox.setAlignment(Pos.CENTER);
-            Label cardsRemaining = new Label(String.valueOf(cardCount));
+            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().getCardsInHand().size()));
             HBox cardBack = new HBox(cardsRemaining);
-            ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
 //            ImageView avatarImage = new ImageView(image);
+            ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
             HBox avatarSubBox = new HBox(avatarImage, cardBack);
             VBox avatarBox = new VBox(avatarSubBox, nameBox);
 

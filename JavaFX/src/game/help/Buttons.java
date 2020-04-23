@@ -9,6 +9,11 @@ public class Buttons {
     private final int minWidth = 80;
     private final int minHeight = 45;
 
+    public static void oneSizeOnly(Button button, double width, double height) {
+        button.setMinSize(width, height);
+        button.setMaxSize(width, height);
+    }
+
     public Button pickCardsUp() {
         Button pickUpButton = new Button();
         pickUpButton.setAlignment(Pos.CENTER);
@@ -72,7 +77,6 @@ public class Buttons {
         playButton.setAlignment(Pos.CENTER_RIGHT);
         playButton.setId("play");
         playButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
-
         return playButton;
     }
 
