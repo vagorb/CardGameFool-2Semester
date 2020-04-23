@@ -1,5 +1,6 @@
 package game.help;
 
+import com.card.game.fool.players.Player;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -12,6 +13,18 @@ import java.util.Map;
 
 public class PlayField {
     double playfieldCardUnit;
+
+    public void setDefault(Map<Integer, Pane> playFieldButtons) {
+        playFieldButtons.forEach((integer, pane) -> {
+            for (int i = 0; i < 2; i++) {
+                Button button = (Button) pane.getChildrenUnmodifiable().get(i);
+                button.setDisable(false);
+                button.setStyle("-fx-background-image: null");
+                button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+                button.setVisible(!button.getId().equals("Defence"));
+            }
+        });
+    }
 
     public PlayField(double playfieldCardUnit) {
         this.playfieldCardUnit = playfieldCardUnit;
@@ -48,6 +61,7 @@ public class PlayField {
             for (Node child : pane.getChildren())
                 if (child.getClass() == Button.class) {
                     ((Button) child).setMinSize(playfieldCardUnit * 2, playfieldCardUnit * 3);
+                    child.setStyle("-fx-background-image: null");
                 }
         }
         return Map.of(1, first, 2, second, 3, third, 4, fourth, 5, fifth, 6, sixth);

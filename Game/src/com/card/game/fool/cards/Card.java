@@ -1,6 +1,9 @@
 package com.card.game.fool.cards;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Card {
@@ -128,9 +131,26 @@ public class Card {
 
     /**
      * Overrided equals method, that counts objects as equal if they have the same parameters as another card
-     * @param o our card object
+     * @param javafxId our card object
      * @return proper result for our equals method.
      */
+
+    public static Card javaFXCardToCard(String javafxId) {
+        List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
+        int value;
+        if (splitted.get(0).equalsIgnoreCase("Jack")) {
+            value = 11;
+        } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
+            value = 12;
+        } else if (splitted.get(0).equalsIgnoreCase("King")) {
+            value = 13;
+        } else if (splitted.get(0).equalsIgnoreCase("Ace")) {
+            value = 14;
+        } else
+            value = Integer.parseInt(splitted.get(0));
+        return new Card(splitted.get(2), value, false );
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

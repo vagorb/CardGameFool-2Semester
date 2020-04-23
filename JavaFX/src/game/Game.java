@@ -5,12 +5,14 @@ import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.PlayField;
 import javafx.application.*;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.Button;
@@ -34,6 +36,13 @@ public class Game extends Application {
     private double windowHeight;
     private double windowWidth;
 
+    private Deck deck = new Deck();
+    //    private Button forAttackComparison;
+    private Card attackCard;
+    //    private Button forDefenseComparison;
+    private Card defenseCard;
+    private String trumpInfo;
+
     private Button activeCard = null;
     private int AIcount;
     private int humanCount;
@@ -49,6 +58,7 @@ public class Game extends Application {
         windowWidth = menu.getWidth();
         windowHeight = menu.getHeight();
     }
+
     void setSettings(boolean invertScroll) {
         this.invertScroll = invertScroll;
     }
@@ -81,6 +91,12 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
+        deck.shuffleDeck();
+        trumpInfo = deck.getDeck().get(0).getSuit();
+        // I NEED TO ACCOUNT FOR THE FACT THAT THIS CARD WILL BE REMOVED FROM THE DECK AS A SEPARATE CARD
+        deck.removeCard(deck.getDeck().get(0));
+        System.out.println(trumpInfo);
+
         Buttons buttons = new Buttons();
         StackPane gameStackPane = new StackPane();
         StackPane playeradding = new StackPane();
@@ -118,13 +134,13 @@ public class Game extends Application {
 
         Button backButton = buttons.back();
         Button exitButton = buttons.exit();
-        Button pickCardsUpButton = buttons.pickCardsUp();
-        Button skipButton = buttons.skipTurn();
+        Button clearTableButton = buttons.clearTable();
+        Button pickCardsUp = buttons.pickCardsUp();
 
         cardBoxBase.setMaxSize(windowWidth, windowHeight / 12);
         cardBoxScroll.setMaxSize(windowWidth / 4, windowHeight / 12);
 
-        for (Button btn : Arrays.asList(pickCardsUpButton, skipButton)) {
+        for (Button btn : Arrays.asList(clearTableButton, pickCardsUp)) {
             Buttons.oneSizeOnly(btn, cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
             btn.setTranslateX(cardBoxBase.getMaxWidth() / 2.5);
         }
@@ -140,23 +156,22 @@ public class Game extends Application {
         if (computer != null) {
             avatars.makeAvatar(new Ai(new Hand()));
         }
-        players.add(new Player("player1", 0, new Hand()));
-        players.add(new Player("player1", 0, new Hand()));
-        avatars.makeAvatar(players.get(0));
-        avatars.makeAvatar(players.get(1));
+        for (int p = 0; p < humanCount; p++) {
+            players.add(new Player("player", 0, new Hand()));
+            avatars.makeAvatar(players.get(players.size() - 1));
+        }
         HBox avatarPage = avatars.showAvatars();
 
         // card generator
-        Deck deck = new Deck();
         deck.shuffleDeck();
         List<Button> buttonList = new ArrayList<>();
         List<Card> cardsInHand = new LinkedList<>();
         List<Card> cardsOnTable = new LinkedList<>();
         for (Card card : deck.getDeck()) {
-//            if (buttonList.size() < 11) {
+            if (buttonList.size() < 8) {
                 cardsInHand.add(card);
                 buttonList.add(cardToButton(card, cardBox, cardWidth, cardHeight));
-//            }
+            }
         }
 
         /// playfield elements
@@ -184,20 +199,99 @@ public class Game extends Application {
             } else {
                 lowerLayer.getChildren().addAll(playFieldButtons.get(i));
             }
+            attack.setOnMousePressed(mouseEvent -> {
+                System.out.println();
+                System.out.println("ACTIVE " + activeCard + ">>>" + activeCard.getId());
+                if (activeCard != null && !attack.isDisable()) {
+                    System.out.println("???");
+                    activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
 
-            for (Button placableCard : Arrays.asList(attack, defence)) {
-                placableCard.setOnMouseClicked(mouseEvent -> {
-                    if (activeCard != null && !placableCard.isDisable()) {
+                    cardsInHand.forEach(card -> {
+                        if (activeCard.getId().equals(card.getId())) {
+                            attackCard = card;
+                        }
+                    });
+                    System.out.println("VERIFIED ATTACKER");
+                    if (cardsOnTable.size() == 0) {
+                        System.out.println("0 cards on table");
                         cardBox.getChildren().remove(activeCard);
-                        placableCard.setDisable(true);
-                        placableCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                        attack.setDisable(true);
+                        attack.setStyle(activeCard.getStyle());
+                        defence.setVisible(true);
                         activeCard = null;
-                        if (placableCard == attack) {
-                            defence.setVisible(true);
+                    } else {
+                        System.out.println("more cards on table");
+                        for (Card card : cardsOnTable) {
+                            if (card.getValue().equals(attackCard.getValue())) {
+                                System.out.println("attack card IS on table");
+                                cardBox.getChildren().remove(activeCard);
+                                System.out.println(1);
+                                attack.setDisable(true);
+                                attack.setStyle(activeCard.getStyle());
+                                System.out.println(2);
+                                defence.setVisible(true);
+                                System.out.println(3);
+                                activeCard = null;
+                                System.out.println(card);
+                            }
                         }
                     }
+
+                }
+            });
+
+            defence.setOnMousePressed(mouseEvent -> {
+                cardsInHand.forEach(card -> {
+                    if (activeCard.getId().equals(card.getId())) {
+                        defenseCard = card;
+                    }
                 });
-            }
+                cardsOnTable.forEach(card -> {
+                    if (defence.getParent().getChildrenUnmodifiable().get(0).getId().equals(card.getId())) {
+                        attackCard = card;
+                    }
+                });
+                System.out.println("ATTACK: " + attackCard + "/// Defence: " + defenseCard);
+                if (activeCard != null && !defence.isDisable()) {
+                    activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+
+                    if (attackCard.getSuit().equals(defenseCard.getSuit())) {
+                        if (defenseCard.getValue() > attackCard.getValue()) {
+                            System.out.println("def > att");
+                            cardBox.getChildren().remove(activeCard);
+                            defence.setDisable(true);
+                            defence.setStyle(activeCard.getStyle());
+                        } else {
+                            System.out.println("def NOT > att");
+                            activeCard.setStyle(activeCard.getStyle());
+                        }
+                        activeCard = null;
+                    } else if (defenseCard.getSuit().equals(trumpInfo)) {
+                        System.out.println("def is TRUMP");
+                        cardBox.getChildren().remove(activeCard);
+                        defence.setDisable(true);
+                        defence.setStyle(activeCard.getStyle());
+                        activeCard = null;
+                    } else {
+                        System.out.println("this is shit card!");
+                    }
+                }
+            });
+
+
+//            for (Button placableCard : Arrays.asList(attack, defence)) {
+//                placableCard.setOnMouseClicked(mouseEvent -> {
+//                    if (activeCard != null && !placableCard.isDisable()) {
+//                        cardBox.getChildren().remove(activeCard);
+//                        placableCard.setDisable(true);
+//                        placableCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+//                        activeCard = null;
+//                        if (placableCard == attack) {
+//                            defence.setVisible(true);
+//                        }
+//                    }
+//                });
+//            }
         }
 
         /// actions for buttons
@@ -235,28 +329,33 @@ public class Game extends Application {
         pileBox.setTranslateY(windowHeight * 2.1);
 
         /// playfield reset w/ cards from table to hand
-        final int[] index = {pileBox.getChildren().size() - 1};
-        Player current = players.get(players.size() - 1);
-        pickCardsUpButton.setOnAction(actionEvent -> {
-            playFieldButtons.forEach((integer, pane) -> {
-                if (current.getPlayerState() == null) { /// .equals(Player.PlayerState.DEFENSE)) {
-                    for (int i = 0; i < 2; i++) {
-                        Button button = (Button) pane.getChildrenUnmodifiable().get(i);
-                        button.setDisable(false);
-                        button.setStyle("-fx-background-image: null");
-                        button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
-                        button.setVisible(!button.getId().equals("Defence"));
-                    }
 
-                    for (Card card : cardsOnTable) {
-                        buttonList.add(cardToButton(card, cardBox, cardWidth, cardHeight));
-                    }
-                    cardsInHand.addAll(cardsOnTable);
-                    cardsOnTable.clear();
+        pickCardsUp.setOnAction(actionEvent -> {
+//            if (PlayerWhoPressedButton.getPlayerState().equals(Player.PlayerState.DEFENSE)) {
+            playFieldClass.setDefault(playFieldButtons);
+            for (Card card : cardsOnTable) {
+                buttonList.add(cardToButton(card, cardBox, cardWidth, cardHeight));
+            }
+            cardsInHand.addAll(cardsOnTable);
+            cardsOnTable.clear();
+        });
+
+        clearTableButton.setOnAction(actionEvent -> {
+//            if (PlayerWhoPressedButton.getPlayerState().equals(Player.PlayerState.DEFENSE)) {
+            boolean clearable = true;
+            for (Pane value : playFieldButtons.values()) {
+                ObservableList<Node> x = value.getChildren();
+                if ((!x.get(0).getStyle().contains("-fx-background-image: null")
+                        && x.get(1).getStyle().contains("-fx-background-image: null"))
+                        || (x.get(0).getStyle().contains("-fx-background-image: null")
+                        && !x.get(1).getStyle().contains("-fx-background-image: null"))) {
+                    clearable = false;
+                    break;
                 }
-            });
-            if (index[0] >= 0) {
-                pileBox.getChildren().get(index[0]--).setVisible(false);
+            }
+            if (clearable) {
+                cardsOnTable.clear();
+                playFieldClass.setDefault(playFieldButtons);
             }
         });
 
@@ -296,7 +395,7 @@ public class Game extends Application {
         cardBoxBase.setId("cardBoxBase");
         cardBoxBase.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
 
-        cardBoxBase.getChildren().addAll(skipButton, pickCardsUpButton);
+        cardBoxBase.getChildren().addAll(pickCardsUp, clearTableButton);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
         gameStackPane.getChildren().addAll(menu, avatarPage, playField, pileBox, cardBoxBase, cardBoxScroll);

@@ -4,14 +4,14 @@
     -fx-background-position: center;
 }
 
-#pickCardsUp.button {
+#clearTable.button {
     -fx-background-color: #008c2a;
-    -fx-background-image: url("/icons/black/pickUp.png");
+    -fx-background-image: url("/icons/black/throwCards.png");
 }
 
-#skipTurn.button {
+#pickCardsUp.button {
     -fx-background-color: #8b8c00;
-    -fx-background-image: url("/icons/black/skip.png");
+    -fx-background-image: url("/icons/black/takeCards.png");
 }
 
 #exit.button {
