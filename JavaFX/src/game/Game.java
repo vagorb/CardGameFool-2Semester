@@ -4,30 +4,29 @@ import appearance.BackgroundSetter;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
-import com.card.game.fool.logic.GameController;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
-import com.sun.javafx.property.adapter.PropertyDescriptor;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.PlayField;
-//import game.help.Popup;
-import javafx.application.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Application;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.*;
-import javafx.scene.*;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.*;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class Game extends Application {
     private Scene menuScene;
     private boolean fullscreenStatus;
 
-    private GameController gameController = new GameController();
+    private Deck deck = new Deck();
     private Button forAttackComparison;
     private Card attackCard;
     private List<Integer> listOfCardsOnUITable = new ArrayList<>();
@@ -44,6 +43,9 @@ public class Game extends Application {
     private Button forDefenseComparison;
     private Card defenseCard;
     private String trumpInfo;
+    private List<Button> buttonsToDelete = new ArrayList<>();
+//    private List<Card> cardsToDelete = new ArrayList<>();
+    private int counter = 0;
 
 
 
@@ -75,11 +77,12 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
-        gameController.createBasic();
-        gameController.assignTrumpAndFillHands();
-        gameController.setPlayerStates();
-        trumpInfo = gameController.getCardThatDecidesTrump().getSuit();
-//        cardToPng = gameController.getCardToPng();
+        deck.shuffleDeck();
+        trumpInfo = deck.getDeck().get(0).getSuit();
+        // I NEED TO ACCOUNT FOR THE FACT THAT THIS CARD WILL BE REMOVED FROM THE DECK AS A SEPARATE CARD
+        deck.removeCard(deck.getDeck().get(0));
+        System.out.println(trumpInfo);
+
         Buttons buttons = new Buttons();
         StackPane playStackPane = new StackPane();
         StackPane playeradding = new StackPane();
@@ -202,7 +205,9 @@ public class Game extends Application {
                     forAttackComparison = activeCard;
                     attackCard = Card.javaFXCardToCard(forAttackComparison.getId());
                     if (listOfCardsOnUITable.size() == 0) {
+//                        cardsToDelete.add(attackCard);
                         listOfCardsOnUITable.add(attackCard.getValue());
+                        buttonsToDelete.add(activeCard);
                         cardBox.getChildren().remove(activeCard);
                         attack.setDisable(true);
                         attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
@@ -210,6 +215,8 @@ public class Game extends Application {
                         activeCard = null;
                     } else {
                         if (listOfCardsOnUITable.contains(attackCard.getValue())) {
+//                            cardsToDelete.add(attackCard);
+                            buttonsToDelete.add(activeCard);
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
                             attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
@@ -227,7 +234,9 @@ public class Game extends Application {
                     defenseCard = Card.javaFXCardToCard(forDefenseComparison.getId());
                     if (attackCard.getSuit().equals(defenseCard.getSuit())) {
                         if (defenseCard.getValue() > attackCard.getValue()) {
+//                            cardsToDelete.add(defenseCard);
                             listOfCardsOnUITable.add(defenseCard.getValue());
+                            buttonsToDelete.add(activeCard);
                             cardBox.getChildren().remove(activeCard);
                             defence.setDisable(true);
                             defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
@@ -240,7 +249,9 @@ public class Game extends Application {
                             activeCard = null;
                         }
                     } else if (defenseCard.getSuit().equals(trumpInfo)) {
+//                        cardsToDelete.add(defenseCard);
                         listOfCardsOnUITable.add(defenseCard.getValue());
+                        buttonsToDelete.add(activeCard);
                         cardBox.getChildren().remove(activeCard);
                         defence.setDisable(true);
                         defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
@@ -304,8 +315,18 @@ public class Game extends Application {
                         }
                     });
                     for (int x = 0; x < 3; x++) {
-                        pileBox.getChildren().get(index[0]--).setVisible(false);
+//                        if (pileBox.getChildren().) {
+                        if (index[0] >= 0) {
+                            pileBox.getChildren().get(index[0]--).setVisible(false);
+                        }
                     }
+                    // after taking cards . the cards from the table are removed so they are not accounted for in future turns.
+                    listOfCardsOnUITable.removeAll(listOfCardsOnUITable);
+                    buttonList.removeAll(buttonsToDelete);
+//                    for (Card card : cardsToDelete) {
+//                        deck.removeCard(card);
+//                    }
+                    getCardsFromDeckAndCreatePNG(cardWidth, cardHeight, cardBox, buttonList, cardsInHand);
                 }
         );
 
@@ -328,11 +349,11 @@ public class Game extends Application {
 
         exitButton.setOnAction(actionEvent -> window.close());
 
-        cardBox.getChildren().addListener((ListChangeListener<Node>) change -> {
-            change.next();
-            cardsInHand.removeIf(card -> card.getId().equals(change.getRemoved().get(0).getId()));
-            System.out.println(cardsInHand);
-        });
+//        cardBox.getChildren().addListener((ListChangeListener<Node>) change -> {
+//            change.next();
+//            cardsInHand.removeIf(card -> card.getId().equals(change.getRemoved().get(0).getId()));
+//            System.out.println(cardsInHand);
+//        });
 
         playStackPane.setBackground(new BackgroundSetter()
                 .setImage(getClass().getResource("/images/backgrounds/game_bg.jpg"), playStackPane));
@@ -345,42 +366,50 @@ public class Game extends Application {
     }
 
     public void getCardsFromDeckAndCreatePNG(double cardWidth, double cardHeight, HBox cardBox, List<Button> buttonList, List<Card> cardsInHand) {
-        int i = 0;
+//        int i = 0;
         while(buttonList.size() < 6) {
-//        for (int i = 0; i < 6; i++) {
-            Player player1 = gameController.getTable().getPlayers().get(0);
-            Card card = player1.getHand().getCardsInHand().get(i);
-            cardsInHand.add(card);
-            buttonList.add(new Button());
-            Button buttonAdding = buttonList.get(buttonList.size() - 1);
-            buttonAdding.setMinSize(cardWidth, cardHeight);
-            buttonAdding.setMaxSize(cardWidth, cardHeight);
-            String value = String.valueOf(card.getValue());
-            if (value.equals("11")) {
-                value = "Jack";
-            } else if (value.equals("12")) {
-                value = "Queen";
-            } else if (value.equals("13")) {
-                value = "King";
-            } else if (value.equals("14")) {
-                value = "Ace";
-            }
-            buttonAdding.setId(value + "_of_" + card.getSuit());
-            buttonAdding.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
-            buttonAdding.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
-                    + "url('/images/cards/%s/%s_of_%s.png')", card.getSuit(), value, card.getSuit()));
-            cardBox.getChildren().add(buttonAdding);
-
-            buttonAdding.setOnAction(actionEvent -> {
-                if (activeCard != null) {
-                    activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+            if (counter <= 34) {
+                Card card = deck.getDeck().get(counter);
+                cardsInHand.add(card);
+                buttonList.add(new Button());
+                Button buttonAdding = buttonList.get(buttonList.size() - 1);
+                buttonAdding.setMinSize(cardWidth, cardHeight);
+                buttonAdding.setMaxSize(cardWidth, cardHeight);
+                String value = String.valueOf(card.getValue());
+                if (value.equals("11")) {
+                    value = "Jack";
+                } else if (value.equals("12")) {
+                    value = "Queen";
+                } else if (value.equals("13")) {
+                    value = "King";
+                } else if (value.equals("14")) {
+                    value = "Ace";
                 }
-                activeCard = buttonAdding;
-                activeCard.setStyle(buttonAdding.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
-            });
-            i += 1;
+                buttonAdding.setId(value + "_of_" + card.getSuit());
+                buttonAdding.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
+                buttonAdding.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
+                        + "url('/images/cards/%s/%s_of_%s.png')", card.getSuit(), value, card.getSuit()));
+                cardBox.getChildren().add(buttonAdding);
+
+                buttonAdding.setOnAction(actionEvent -> {
+                    if (activeCard != null) {
+                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                    }
+                    activeCard = buttonAdding;
+                    activeCard.setStyle(buttonAdding.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
+                });
+                counter += 1;
+            } else
+                break;
         }
     }
+
+    // TODO Can't play cards, after PILE/DECK was exhaused out of options.
+    // TODO Card value comparing gets fucked up if i put x2 x3 or x4 of the same card . So i can't defend 6 with 7, unless it's trump ###
+    // ^^ IT fucks up like this due to me coding a comparison system that is capable of comparing only currently put cards
+    // 6 H > 6 P > comparison card is only 6 P now so i can potentially defend IT only.
+    // TODO Copies of cards are being given in to my hand
+    // TODO account for trump card not being part of the DECK in the current gameplay
 
 
     public static void main(String[] args) {
