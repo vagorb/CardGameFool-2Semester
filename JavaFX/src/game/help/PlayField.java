@@ -48,14 +48,19 @@ public class PlayField {
         first.getChildren().addAll(attack1, defence1);
         Pane second = new Pane();
         second.getChildren().addAll(attack2, defence2);
+        second.setVisible(false);
         Pane third = new Pane();
         third.getChildren().addAll(attack3, defence3);
+        third.setVisible(false);
         Pane fourth = new Pane();
         fourth.getChildren().addAll(attack4, defence4);
+        fourth.setVisible(false);
         Pane fifth = new Pane();
         fifth.getChildren().addAll(attack5, defence5);
+        fifth.setVisible(false);
         Pane sixth = new Pane();
         sixth.getChildren().addAll(attack6, defence6);
+        sixth.setVisible(false);
         for (Pane pane : Arrays.asList(first, second, third, fourth, fifth, sixth)) {
             pane.setMinSize(playfieldCardUnit * 3.5, playfieldCardUnit * 4);
             for (Node child : pane.getChildren())

@@ -160,20 +160,20 @@ public class Card {
                 value.equals(card.value);
     }
 
-    public static Card javaFXCardToCard(String javafxId) {
-        List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
-        int value = 0;
-        if (splitted.get(0).equalsIgnoreCase("Jack")) {
-            value = 11;
-        } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
-            value = 12;
-        } else if (splitted.get(0).equalsIgnoreCase("King")) {
-            value = 13;
-        } else if (splitted.get(0).equalsIgnoreCase("Ace")) {
-            value = 14;
-        } else
-            value = Integer.parseInt(splitted.get(0));
-        return new Card(splitted.get(2), value, false );
-    }
+//    public static Card javaFXCardToCard(String javafxId) {
+//        List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
+//        int value = 0;
+//        if (splitted.get(0).equalsIgnoreCase("Jack")) {
+//            value = 11;
+//        } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
+//            value = 12;
+//        } else if (splitted.get(0).equalsIgnoreCase("King")) {
+//            value = 13;
+//        } else if (splitted.get(0).equalsIgnoreCase("Ace")) {
+//            value = 14;
+//        } else
+//            value = Integer.parseInt(splitted.get(0));
+//        return new Card(splitted.get(2), value, false );
+//    }
 }
 
