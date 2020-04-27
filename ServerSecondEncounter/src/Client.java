@@ -17,6 +17,7 @@ public class Client {
         int port = 5200;
         Message message = new Message();
 
+
         try (Socket socket = new Socket(host, port)) {
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
             writer.println(message.getMessage(Message.MessageType.playerMove));
@@ -32,6 +33,8 @@ public class Client {
     private static void log(String message) {
         System.out.println("[" + Thread.currentThread().getName() + "] " + message);
     }
+
+
 
 
     private static void delay(int mills) {

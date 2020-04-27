@@ -11,7 +11,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("Server received " + msg);
-       // System.out.println(getMessage());
+        System.out.println(getMessage());
         ctx.write(getMessage() + "\r\n");
         ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
             //.addListener(ChannelFutureListener.CLOSE);
@@ -44,8 +44,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
 
-    Deck deck;
-    Card trumpCard;
+    private Deck deck;
+    private Card trumpCard;
     public void ServerGameStartMessage() {
         this.deck = new Deck();
         deck.shuffleDeck();
