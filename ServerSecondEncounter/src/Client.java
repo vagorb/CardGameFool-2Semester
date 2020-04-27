@@ -33,11 +33,10 @@ public class Client {
         System.out.println("[" + Thread.currentThread().getName() + "] " + message);
     }
 
-    
+
     private static void delay(int mills) {
         try {
             Thread.sleep(mills);
         } catch (InterruptedException ignored) {}
     }
 }
-
