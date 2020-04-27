@@ -1,9 +1,9 @@
-import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.card.game.fool.tables.Table;
+import com.card.game.fool.AI.Ai;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AiTest {
+class AiTest<AI> {
 
 
     Card card1;
@@ -88,7 +88,7 @@ class AiTest {
         tableFor.addToPile(cardPile6);
 
     }
-//
+
     @Test
     void getAiHand() {
         Hand hand2 = new Hand();

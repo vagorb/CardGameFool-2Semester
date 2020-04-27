@@ -7,9 +7,9 @@ import com.esotericsoftware.kryonet.Listener;
 public class ClientProgram extends Listener {
 
     static Client client;
-    static String ip = "localhost";
+    static String ip = "193.40.255.14";
 
-    static int updPort = 27960, tcpPort = 27960;
+    static int tcpPort = 5201;
 
     static boolean messageReceived = false;
 
@@ -21,7 +21,7 @@ public class ClientProgram extends Listener {
 
         client.start();
 
-        client.connect(5000, ip, tcpPort, updPort);
+        client.connect(5000, ip, tcpPort);
 
         client.addListener(new ClientProgram());
 
