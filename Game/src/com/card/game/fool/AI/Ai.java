@@ -31,7 +31,7 @@ public class Ai implements gamerInterface {
         return name;
     }
 
-    public Hand getAiHand() {
+    public Hand getHand() {
         return this.hand;
     }
 
@@ -76,7 +76,7 @@ public class Ai implements gamerInterface {
     }
 
     public Optional<Card> firstCardAttackMove(Table table) {
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
@@ -107,7 +107,7 @@ public class Ai implements gamerInterface {
         Deck deck = new Deck();
         deck.makeCardsTrump(table.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!getAiHand().getCardsInHand().contains(card) && !table.getPile().getPile().contains(card)) {
+            if (!getHand().getCardsInHand().contains(card) && !table.getPile().getPile().contains(card)) {
                 playerCards.add(card);
             }
         }
@@ -128,23 +128,23 @@ public class Ai implements gamerInterface {
     public Optional<Card> suitableAttackMoveWhenDeckEnds(Table table) {
         Map<String, List<Card>> playerCards = playerCardsInTheEndBySuit(table);
         System.out.println(playerCards);
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (!playerCards.containsKey(card.getSuit()) && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (!card.getTrump()) {
                 if (card.getValue() > maxValueBySuit(table, card.getSuit()).get().getValue())
                     return Optional.of(card);
             }
         }
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (!playerCards.containsKey(card.getSuit())) {
                 return Optional.of(card);
             }

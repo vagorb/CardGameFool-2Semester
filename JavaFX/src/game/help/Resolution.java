@@ -1,5 +1,8 @@
 package game.help;
 
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+
 public class Resolution {
     private double windowWidth;
     private double windowHeight;
@@ -12,8 +15,32 @@ public class Resolution {
         return windowHeight;
     }
 
-    public void change(double width, double height) {
+    public Double[] max(double width, double height) {
+        if (width > Screen.getPrimary().getBounds().getWidth()) {
+            width = Screen.getPrimary().getBounds().getWidth();
+        }
+        if (height > Screen.getPrimary().getBounds().getHeight()) {
+            height = Screen.getPrimary().getBounds().getHeight();
+        }
+        return new Double[]{width, height};
+    }
+    public Double[] max(String width, String height) {
+        double widthDouble = Double.parseDouble(width);
+        double heightDouble = Double.parseDouble(height);
+        if (widthDouble > Screen.getPrimary().getBounds().getWidth()) {
+            widthDouble = Screen.getPrimary().getBounds().getWidth();
+        }
+        if (heightDouble > Screen.getPrimary().getBounds().getHeight()) {
+           heightDouble = Screen.getPrimary().getBounds().getHeight();
+        }
+        return new Double[]{widthDouble, heightDouble};
+    }
+
+    public void change(Stage window, double width, double height) {
+        Double[] max = max(width, height);
         this.windowWidth = width;
         this.windowHeight = height;
+        window.setWidth(width);
+        window.setHeight(height);
     }
 }

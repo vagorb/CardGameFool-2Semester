@@ -1,30 +1,26 @@
 package game;
 
-import appearance.BackgroundSetter;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.PlayField;
-import javafx.application.Application;
+import javafx.application.*;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
+import javafx.collections.ObservableList;
+import javafx.geometry.*;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -34,6 +30,7 @@ import java.util.Map;
 public class Game extends Application {
     private Scene menuScene;
     private boolean fullscreenStatus;
+    private boolean invertScroll;
 
     private Deck deck = new Deck();
     private Button forAttackComparison;
@@ -68,12 +65,35 @@ public class Game extends Application {
         windowHeight = menu.getHeight();
     }
 
+    void setSettings(boolean invertScroll) {
+        this.invertScroll = invertScroll;
+    }
+
     void setPlayerCount(int human, int AI) {
         this.humanCount = human;
         this.AIcount = AI;
         if (AIcount > 0) {
             computer = new Ai(new Hand());
         }
+    }
+
+    private Button cardToButton(Card card, HBox cardBox, double cardWidth, double cardHeight) {
+        Button button = new Button();
+        Buttons.oneSizeOnly(button, cardWidth, cardHeight);
+        button.setId(card.getId());
+        button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
+                + "url('/images/cards/%s/%s.png')", card.getSuit(), card.getId()));
+//      button.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
+        cardBox.getChildren().add(button);
+        button.setOnAction(actionEvent -> {
+            if (activeCard != null) {
+                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+            }
+            activeCard = button;
+            activeCard.setId(button.getId());
+            activeCard.setStyle(button.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
+        });
+        return button;
     }
 
     public void start(Stage window) {
@@ -84,12 +104,11 @@ public class Game extends Application {
         System.out.println(trumpInfo);
 
         Buttons buttons = new Buttons();
-        StackPane playStackPane = new StackPane();
+        StackPane gameStackPane = new StackPane();
         StackPane playeradding = new StackPane();
-        Scene playScene = new Scene(playStackPane, windowWidth, windowHeight);
-        HBox cardBoxBase = new HBox();
+        Scene playScene = new Scene(gameStackPane, windowWidth, windowHeight);
+        HBox cardBoxBase = new HBox(20);
         HBox cardBox = new HBox(2);
-
 
 //        //// Mängija nime valik / vaja mingit sorti pausi nime kinnitamise (Submiti vajutamine) ajaks
 //        for (int i = 0; i < humanCount; i++) {
@@ -103,7 +122,7 @@ public class Game extends Application {
 //                });
 //        }
 //        System.out.println(players);
-        //        playScene.setRoot(playStackPane);
+        //        playScene.setRoot(gameStackPane);
 
         ScrollPane cardBoxScroll = new ScrollPane(cardBox);
         cardBoxScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -121,27 +140,32 @@ public class Game extends Application {
 
         Button backButton = buttons.back();
         Button exitButton = buttons.exit();
-        Button pickCardsUpButton = buttons.pickCardsUp();
+        Button clearTableButton = buttons.clearTable();
+        Button pickCardsUp = buttons.pickCardsUp();
 
         cardBoxBase.setMaxSize(windowWidth, windowHeight / 12);
-        cardBoxScroll.setMaxSize(windowWidth / 3, windowHeight / 12);
-        pickCardsUpButton.setMaxSize(cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
+        cardBoxScroll.setMaxSize(windowWidth / 4, windowHeight / 12);
 
+        for (Button btn : Arrays.asList(clearTableButton, pickCardsUp)) {
+            Buttons.oneSizeOnly(btn, cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
+            btn.setTranslateX(cardBoxBase.getMaxWidth() / 2.5);
+        }
         cardBoxBase.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
         cardBoxScroll.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
-        pickCardsUpButton.setTranslateX(cardBoxBase.getMaxWidth() / 2 - pickCardsUpButton.getMaxWidth());
 
         double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;
         double cardWidth = cardHeight / 900 * 590;
         double playfieldCardUnit = cardWidth * 0.8;
 
-        // avatarid (nime max pikkus 22-36 tähemärki)
+        // avatars (name's max length 22-36 symbols)
         AvatarBox avatars = new AvatarBox(humanCount + AIcount, windowWidth);
         if (computer != null) {
             avatars.makeAvatar(new Ai(new Hand()));
         }
-        players.add(new Player("player1", 0, new Hand()));
-        avatars.makeAvatar(players.get(players.size() - 1));
+        for (int p = 0; p < humanCount; p++) {
+            players.add(new Player("player", 0, new Hand()));
+            avatars.makeAvatar(players.get(players.size() - 1));
+        }
         HBox avatarPage = avatars.showAvatars();
 
         // kaardi generaator
@@ -174,7 +198,7 @@ public class Game extends Application {
 //                button.setId(value + "_of_" + suite);
 //                button.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
 
-        /// mänguvälja elemendid
+        /// playfield elements
         PlayField playFieldClass = new PlayField(playfieldCardUnit);
         VBox playField = (VBox) playFieldClass.createPlayfield().get(0);
         HBox upperLayer = (HBox) playFieldClass.createPlayfield().get(1);
@@ -199,6 +223,12 @@ public class Game extends Application {
             } else {
                 lowerLayer.getChildren().addAll(playFieldButtons.get(i));
             }
+            attack.setOnMousePressed(mouseEvent -> {
+                System.out.println();
+                System.out.println("ACTIVE " + activeCard + ">>>" + activeCard.getId());
+                if (activeCard != null && !attack.isDisable()) {
+                    System.out.println("???");
+                    activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
 
             attack.setOnMouseClicked(mouseEvent -> {
                 if (activeCard != null && !attack.isDisable()) {
@@ -267,9 +297,14 @@ public class Game extends Application {
             });
         }
 
-        /// tegevused nuppude ning hiire ja klaviatuuriga
-        cardBoxScroll.setOnScroll(scrollEvent -> cardBoxScroll
-                .setHvalue(cardBoxScroll.getHvalue() - scrollEvent.getDeltaY() / 1000));
+        /// actions for buttons
+        cardBoxScroll.setOnScroll(scrollEvent -> {
+            if (invertScroll) {
+                cardBoxScroll.setHvalue(cardBoxScroll.getHvalue() - scrollEvent.getDeltaY() / 1000);
+            } else {
+                cardBoxScroll.setHvalue(cardBoxScroll.getHvalue() + scrollEvent.getDeltaY() / 1000);
+            }
+        });
 
         cardBoxScroll.setOnMouseEntered(actionEvent -> {
             cardBoxScroll.setTranslateY(5.1 * cardHeight);
@@ -283,7 +318,7 @@ public class Game extends Application {
             cardBoxScroll.setScaleY(1);
         });
 
-        /// väike visuaalse pile eksperiment
+        /// pile EXPERIMENT!
         VBox pileBox = new VBox();
         for (int i = 0; i < 36; i++) {
             Label newB = new Label();
@@ -293,10 +328,8 @@ public class Game extends Application {
             newB.setTranslateX(-i);
             newB.setTranslateY(-i * 87);
         }
-        final int[] index = {pileBox.getChildren().size() - 1};
         pileBox.setTranslateX(windowWidth / 1.4);
         pileBox.setTranslateY(windowHeight * 2.1);
-        pickCardsUpButton.setOnAction(actionEvent -> pileBox.getChildren().get(index[0]++).setVisible(false));
 
         Player current = players.get(players.size() - 1);
         pickCardsUpButton.setOnAction(actionEvent -> {
@@ -333,7 +366,7 @@ public class Game extends Application {
         playScene.setOnKeyPressed(button -> {
             if (button.getCode() == KeyCode.ESCAPE) {
                 menu.setVisible(!menu.isVisible());
-                playStackPane.getChildren().forEach(child -> {
+                gameStackPane.getChildren().forEach(child -> {
                     if (child != menu) {
                         child.setDisable(!child.isDisable());
                     }
@@ -349,19 +382,31 @@ public class Game extends Application {
 
         exitButton.setOnAction(actionEvent -> window.close());
 
-//        cardBox.getChildren().addListener((ListChangeListener<Node>) change -> {
-//            change.next();
-//            cardsInHand.removeIf(card -> card.getId().equals(change.getRemoved().get(0).getId()));
-//            System.out.println(cardsInHand);
-//        });
+        cardBox.getChildren().addListener((ListChangeListener<Node>) change -> {
+            change.next();
+            if (!change.getRemoved().isEmpty()) {
+                cardsInHand.forEach(card -> {
+                    if (card.getId().equals(change.getRemoved().get(0).getId())) {
+                        cardsOnTable.add(card);
+                    }
+                });
+                cardsInHand.removeIf(card -> card.getId().equals(change.getRemoved().get(0).getId()));
+            }
+        });
 
-        playStackPane.setBackground(new BackgroundSetter()
-                .setImage(getClass().getResource("/images/backgrounds/game_bg.jpg"), playStackPane));
-        cardBoxBase.setBackground(new BackgroundSetter().setByColor(Color.DARKGOLDENROD));
-        cardBoxBase.getChildren().add(pickCardsUpButton);
+        gameStackPane.setId("gameStackPane");
+        gameStackPane.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+        cardBoxBase.setId("cardBoxBase");
+        cardBoxBase.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+
+        cardBoxBase.getChildren().addAll(pickCardsUp, clearTableButton);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
-        playStackPane.getChildren().addAll(menu, avatarPage, playField, pileBox, cardBoxBase, cardBoxScroll);
+        gameStackPane.getChildren().addAll(menu, avatarPage, playField, pileBox, cardBoxBase, cardBoxScroll);
+        backButton.prefWidthProperty().bind(Bindings.divide(window.widthProperty(), 50));
+        backButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 50));
+        exitButton.prefWidthProperty().bind(backButton.prefHeightProperty());
+        exitButton.prefHeightProperty().bind(backButton.prefHeightProperty());
         window.show();
     }
 

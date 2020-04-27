@@ -99,7 +99,7 @@ class AiTest {
         hand2.addCard(card5);
         hand2.addCard(card6);
         System.out.println(tableFor.getPile().getPile());
-        assertEquals(hand2.getCardsInHand(), ai.getAiHand().getCardsInHand());
+        assertEquals(hand2.getCardsInHand(), ai.getHand().getCardsInHand());
     }
 
     @Test
@@ -156,7 +156,7 @@ class AiTest {
         Deck deck = new Deck();
         deck.makeCardsTrump(tableFor.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }
@@ -180,7 +180,7 @@ class AiTest {
         System.out.println(card3.getTrump());
         //tableFor.setTrumpSuit((tableFor.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }
@@ -198,7 +198,7 @@ class AiTest {
         Card cardForDef = new Card("Diamonds", 14, false);
         player1.getHand().addCard(cardForDef);
         for (Card card : deck.getDeck()) {
-            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }
