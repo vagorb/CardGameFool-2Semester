@@ -28,7 +28,7 @@ public class Client {
             log("received < " + response);
         }
     }
-    
+
 
     private static void log(String message) {
         System.out.println("[" + Thread.currentThread().getName() + "] " + message);

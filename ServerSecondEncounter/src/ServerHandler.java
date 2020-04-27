@@ -12,7 +12,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("Server received " + msg);
        // System.out.println(getMessage());
-        ctx.write(getMessage());
+        ctx.write(getMessage() + "\r\n");
         ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
             //.addListener(ChannelFutureListener.CLOSE);
     }
