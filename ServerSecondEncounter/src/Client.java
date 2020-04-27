@@ -29,11 +29,11 @@ public class Client {
         }
     }
 
-
     private static void log(String message) {
         System.out.println("[" + Thread.currentThread().getName() + "] " + message);
     }
 
+    
     private static void delay(int mills) {
         try {
             Thread.sleep(mills);
