@@ -131,21 +131,13 @@ public class Card {
 
     /**
      * Overrided equals method, that counts objects as equal if they have the same parameters as another card
-     * @param o our card object
+     * @param javafxId our card object
      * @return proper result for our equals method.
      */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Card card = (Card) o;
-        return suit.equals(card.suit) &&
-                value.equals(card.value);
-    }
 
     public static Card javaFXCardToCard(String javafxId) {
         List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
-        int value = 0;
+        int value;
         if (splitted.get(0).equalsIgnoreCase("Jack")) {
             value = 11;
         } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
@@ -158,5 +150,30 @@ public class Card {
             value = Integer.parseInt(splitted.get(0));
         return new Card(splitted.get(2), value, false );
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return suit.equals(card.suit) &&
+                value.equals(card.value);
+    }
+
+//    public static Card javaFXCardToCard(String javafxId) {
+//        List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
+//        int value = 0;
+//        if (splitted.get(0).equalsIgnoreCase("Jack")) {
+//            value = 11;
+//        } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
+//            value = 12;
+//        } else if (splitted.get(0).equalsIgnoreCase("King")) {
+//            value = 13;
+//        } else if (splitted.get(0).equalsIgnoreCase("Ace")) {
+//            value = 14;
+//        } else
+//            value = Integer.parseInt(splitted.get(0));
+//        return new Card(splitted.get(2), value, false );
+//    }
 }
 
