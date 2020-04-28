@@ -59,7 +59,7 @@ public class Card {
         this.value = value;
         this.visibility = Visibility.NOONE;
         this.trump = trump;
-        id = getValueName() + "_of_" + getSuit();
+        this.id = getValueName() + "_of_" + getSuit();
     }
 
     /**
@@ -85,7 +85,6 @@ public class Card {
     public Integer getValue() {
         return value;
     }
-
 
     /**
      * Getter
@@ -128,28 +127,6 @@ public class Card {
         return valueMap.get(value);
     }
 
-
-    /**
-     * Overrided equals method, that counts objects as equal if they have the same parameters as another card
-     * @param javafxId our card object
-     * @return proper result for our equals method.
-     */
-
-    public static Card javaFXCardToCard(String javafxId) {
-        List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
-        int value;
-        if (splitted.get(0).equalsIgnoreCase("Jack")) {
-            value = 11;
-        } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
-            value = 12;
-        } else if (splitted.get(0).equalsIgnoreCase("King")) {
-            value = 13;
-        } else if (splitted.get(0).equalsIgnoreCase("Ace")) {
-            value = 14;
-        } else
-            value = Integer.parseInt(splitted.get(0));
-        return new Card(splitted.get(2), value, false );
-    }
 
     @Override
     public boolean equals(Object o) {
