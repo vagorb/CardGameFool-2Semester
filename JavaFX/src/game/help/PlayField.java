@@ -1,6 +1,5 @@
 package game.help;
 
-import com.card.game.fool.players.Player;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -12,10 +11,60 @@ import java.util.List;
 import java.util.Map;
 
 public class PlayField {
-    double playfieldCardUnit;
+    private double cardUnitSize;
+    private Map<Integer, Pane> playFieldButtons;
+
+    public PlayField(double cardUnitSize) {
+        this.cardUnitSize = cardUnitSize;
+    }
+
+    public Map<Integer, Pane> createButtons() {
+        Pane first = new Pane();
+        first.setId("firstPair");
+        Pane second = new Pane();
+        second.setId("secondPair");
+        Pane third = new Pane();
+        third.setId("thirdPair");
+        Pane fourth = new Pane();
+        fourth.setId("fourthPair");
+        Pane fifth = new Pane();
+        fifth.setId("fifthPair");
+        Pane sixth = new Pane();
+        sixth.setId("sixthPair");
+
+        for (Pane pane : List.of(first, second, third, fourth, fifth, sixth)) {
+            pane.getChildren().addAll(new Button(), new Button());
+            pane.setMinSize(cardUnitSize * 3.5, cardUnitSize * 4);
+            if (pane != first) {
+                pane.setVisible(false);
+            }
+            for (Node child : pane.getChildren())
+                if (child.getClass() == Button.class) {
+                    ((Button) child).setMinSize(cardUnitSize * 2, cardUnitSize * 3);
+                    child.setStyle("-fx-background-image: null");
+                }
+        }
+        playFieldButtons = Map.of(1, first, 2, second, 3, third, 4, fourth, 5, fifth, 6, sixth);
+        return playFieldButtons;
+    }
+
+    public List<Pane> createPlayfield() {
+        HBox upperLayer = new HBox();
+        HBox lowerLayer = new HBox();
+        VBox playZone = new VBox(cardUnitSize / 2);
+
+        playZone.setMaxSize(cardUnitSize * 10.5, cardUnitSize * 8.5);
+        upperLayer.setMinSize(playZone.getMaxWidth(), cardUnitSize * 4);
+        lowerLayer.setMinSize(playZone.getMaxWidth(), cardUnitSize * 4);
+
+        return Arrays.asList(playZone, upperLayer, lowerLayer);
+    }
 
     public void setDefault(Map<Integer, Pane> playFieldButtons) {
         playFieldButtons.forEach((integer, pane) -> {
+            if (!pane.getId().equals("firstPair")) {
+                pane.setVisible(false);
+            }
             for (int i = 0; i < 2; i++) {
                 Button button = (Button) pane.getChildrenUnmodifiable().get(i);
                 button.setDisable(false);
@@ -26,63 +75,12 @@ public class PlayField {
         });
     }
 
-    public PlayField(double playfieldCardUnit) {
-        this.playfieldCardUnit = playfieldCardUnit;
-    }
-
-    public Map<Integer, Pane> createButtons() {
-        Button attack1 = new Button();
-        Button attack2 = new Button();
-        Button attack3 = new Button();
-        Button attack4 = new Button();
-        Button attack5 = new Button();
-        Button attack6 = new Button();
-        Button defence1 = new Button();
-        Button defence2 = new Button();
-        Button defence3 = new Button();
-        Button defence4 = new Button();
-        Button defence5 = new Button();
-        Button defence6 = new Button();
-
-        Pane first = new Pane();
-        first.getChildren().addAll(attack1, defence1);
-        Pane second = new Pane();
-        second.getChildren().addAll(attack2, defence2);
-        second.setVisible(false);
-        Pane third = new Pane();
-        third.getChildren().addAll(attack3, defence3);
-        third.setVisible(false);
-        Pane fourth = new Pane();
-        fourth.getChildren().addAll(attack4, defence4);
-        fourth.setVisible(false);
-        Pane fifth = new Pane();
-        fifth.getChildren().addAll(attack5, defence5);
-        fifth.setVisible(false);
-        Pane sixth = new Pane();
-        sixth.getChildren().addAll(attack6, defence6);
-        sixth.setVisible(false);
-        for (Pane pane : Arrays.asList(first, second, third, fourth, fifth, sixth)) {
-            pane.setMinSize(playfieldCardUnit * 3.5, playfieldCardUnit * 4);
-            for (Node child : pane.getChildren())
-                if (child.getClass() == Button.class) {
-                    ((Button) child).setMinSize(playfieldCardUnit * 2, playfieldCardUnit * 3);
-                    child.setStyle("-fx-background-image: null");
-                }
+    public void nextAttackVisible(Button defence) {
+        for (int nr = 1; nr <= 6; nr++) {
+            if (defence == playFieldButtons.get(nr).getChildrenUnmodifiable().get(1)) {
+                playFieldButtons.get(nr + 1).setVisible(true);
+                break;
+            }
         }
-        return Map.of(1, first, 2, second, 3, third, 4, fourth, 5, fifth, 6, sixth);
-    }
-
-    public List<Pane> createPlayfield() {
-        HBox upperLayer = new HBox();
-        HBox lowerLayer = new HBox();
-        VBox playZone = new VBox(playfieldCardUnit / 2);
-
-        playZone.setTranslateY(-playfieldCardUnit);
-
-        playZone.setMaxSize(playfieldCardUnit * 10.5, playfieldCardUnit * 8.5);
-        upperLayer.setMinSize(playZone.getMaxWidth(), playfieldCardUnit * 4);
-        lowerLayer.setMinSize(playZone.getMaxWidth(), playfieldCardUnit * 4);
-
-        return Arrays.asList(playZone, upperLayer, lowerLayer);
     }
 }

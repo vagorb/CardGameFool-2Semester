@@ -4,12 +4,12 @@
     -fx-background-position: center;
 }
 
-#clearTable.button {
+#throwCards.button {
     -fx-background-color: #008c2a;
     -fx-background-image: url("/icons/black/throwCards.png");
 }
 
-#pickCardsUp.button {
+#pickUpCards.button {
     -fx-background-color: #8b8c00;
     -fx-background-image: url("/icons/black/takeCards.png");
 }
@@ -42,7 +42,7 @@
 }
 
 #play.button {
-    -fx-background-color: #a0ff2f;
+    -fx-background-color: #71b321;
     -fx-background-position: left;
     -fx-background-image: url("/icons/black/play_circle.png");
 }

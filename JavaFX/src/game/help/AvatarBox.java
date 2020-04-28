@@ -16,10 +16,10 @@ import java.util.List;
 public class AvatarBox {
     private final int playerCount;
     private final double elementSize;
-    private HBox horizontalPlace = new HBox();
-    private VBox leftVerticalPlace = new VBox();
-    private VBox rightVerticalPlace = new VBox();
-    private List<VBox> avatarList = new ArrayList<>();
+    private final HBox horizontalPlace = new HBox();
+    private final VBox leftVerticalPlace = new VBox();
+    private final VBox rightVerticalPlace = new VBox();
+    private final List<VBox> avatarList = new ArrayList<>();
 
     public AvatarBox(int playerCount, double screenWidth) {
         this.playerCount = playerCount;
@@ -57,12 +57,12 @@ public class AvatarBox {
 
             double cardFontSize = cardBack.maxWidthProperty().get() * 0.9;
             cardBack.setStyle("-fx-background-image: url('/images/cards/back_of_card.png');-fx-background-size: cover;");
-            cardsRemaining.setStyle("-fx-font:" + cardFontSize + "px Arial ; -fx-text-fill: rgb(255,0,0);");
+            cardsRemaining.setStyle("-fx-font:" + cardFontSize + "px Arial ; -fx-text-fill: red;");
             avatarImage.setFitWidth(elementSize * 0.6);
             avatarImage.setFitHeight(elementSize * 0.6);
             name.setWrapText(true);
-            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: rgb(155,255,0)");
-            nameBox.setStyle("-fx-border-color: rgb(0,0,0)");
+            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: lawngreen");
+            nameBox.setStyle("-fx-border-color: black");
 
             cardBack.setAlignment(Pos.CENTER);
             avatarBox.setAlignment(Pos.TOP_CENTER);
@@ -88,6 +88,7 @@ public class AvatarBox {
         horizontalPlace.getChildren().add(rightVerticalPlace);
         leftVerticalPlace.setAlignment(Pos.CENTER);
         rightVerticalPlace.setAlignment(Pos.CENTER);
+
         return horizontalPlace;
     }
 }

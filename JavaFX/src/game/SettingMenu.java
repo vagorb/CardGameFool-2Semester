@@ -133,14 +133,12 @@ public class SettingMenu {
 
         playButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         playButton.setOnAction(actionEvent -> {
-            Game play = new Game();
+            Game play = new Game(playerHumanCount, playerAI);
             try {
                 window.hide();
                 window.getScene().setRoot(mainStackpane);
-                play.setFullscreenStatus(window.isFullScreen());
                 play.setMenu(window.getScene());
-                play.setPlayerCount(playerHumanCount, playerAI);
-                play.setSettings(invertScroll);
+                play.setSettings(invertScroll, window.isFullScreen());
                 resolution.change(window, window.getScene().getWidth(), window.getScene().getHeight());
                 play.start(window);
             } catch (Exception e) {

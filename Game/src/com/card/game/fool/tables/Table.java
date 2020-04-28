@@ -38,7 +38,7 @@ public class Table {
         this.pile = new Pile(pileOfCardsForThisGame);
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
-        System.out.println(deckForThisGame);
+//        System.out.println(deckForThisGame);
     }
 
     /**
@@ -55,7 +55,7 @@ public class Table {
         listOfPlayers.add(player1);
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
-        System.out.println(deckForThisGame);
+//        System.out.println(deckForThisGame);
     }
 
     /**
@@ -74,7 +74,7 @@ public class Table {
         listOfPlayers.add(player2);
         listOfPlayers.add(player3);
         listOfPlayers.add(player4);
-        System.out.println(deckForThisGame);
+//        System.out.println(deckForThisGame);
     }
 
     public Table(Player player1, Ai ai) {
