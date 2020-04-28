@@ -41,8 +41,8 @@ class AiTest {
     Table tableFor;
 
 //    private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
-//            9, "9", 10, "10", 11, "JACK", 12, "QUEEN", 13, "KING",
-//            14, "ACE"));
+//            9, "9", 10, "10", 11, "Jack", 12, "Queen", 13, "King",
+//            14, "Ace"));
     @BeforeEach
     void setUp() {
         hand = new Hand();

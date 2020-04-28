@@ -1,9 +1,6 @@
 package com.card.game.fool.cards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Card {
@@ -14,8 +11,8 @@ public class Card {
     Visibility visibility;
     Boolean trump;
     private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
-            9, "9", 10, "10", 11, "JACK", 12, "QUEEN", 13, "KING",
-            14, "ACE"));
+            9, "9", 10, "10", 11, "Jack", 12, "Queen", 13, "King",
+            14, "Ace"));
 
 
     /**
@@ -121,7 +118,7 @@ public class Card {
 
     /**
      *
-     * @return returns name of the card for this value ( Example card with value of 11 is JACK )
+     * @return returns name of the card for this value ( Example card with value of 11 is Jack )
      */
     public String getValueName() {
         return valueMap.get(value);
