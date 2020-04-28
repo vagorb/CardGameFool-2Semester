@@ -13,19 +13,21 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
-    public Deck getDeck() {
-        return deck;
-    }
 
-    public Card getTrumpCard() {
-        return trumpCard;
-    }
+//    public Deck getDeck() {
+//        return deck;
+//    }
+//
+//    public Card getTrumpCard() {
+//        return trumpCard;
+//    }
+    private boolean hui = true;
 
     public JsonObject getMessage() {
         JsonObject obj = new JsonObject();
-        Card card = getDeck().getDeck().get(0);
-        deck.removeCard(card);
-        //System.out.println(card);
+        Card card = getDick().getDeck().get(0);
+        dick.removeCard(card);
+        //System.out.println(card + "first card");
         obj.addProperty("Suit", card.getSuit());
         obj.addProperty("Value", card.getValue());
         obj.addProperty("Trump", card.getTrump());
@@ -33,26 +35,38 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         return obj;
     }
 
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("Server received " + msg);
-        ctx.write(getMessage());
-        ctx.writeAndFlush(getMessage());
-                //.addListener(ChannelFutureListener.CLOSE);
+//    Deck deck;
+//    Card trumpCard;
+//    ServerGameStartMessage() {
+//        this.deck = new Deck();
+//        deck.shuffleDeck();
+//        this.trumpCard = deck.getDeck().get(12);
+//        deck.removeCard(trumpCard);
+//        trumpCard.setTrump(true);
+//        deck.makeCardsTrump(trumpCard.getSuit());
+//    }
+
+
+    static Deck dick = new Deck();
+
+    static Deck getDick() {
+        return dick;
     }
 
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+
+
+    static Card decideTrump() {
+        Card card = dick.getDeck().get(12);
+        dick.getDeck().remove(card);
+        return card;
     }
 
-    Deck deck;
-    Card trumpCard;
-    ServerGameStartMessage() {
-        this.deck = new Deck();
-        deck.shuffleDeck();
-        this.trumpCard = deck.getDeck().get(12);
-        deck.removeCard(trumpCard);
-        trumpCard.setTrump(true);
-        deck.makeCardsTrump(trumpCard.getSuit());
+    static void shuffle() {
+        dick.shuffleDeck();
+    }
+
+    static void makeTrump() {
+        dick.makeCardsTrump(decideTrump().getSuit());
     }
 
 

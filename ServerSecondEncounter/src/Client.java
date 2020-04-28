@@ -10,6 +10,8 @@ import java.util.Date;
 
 public class Client {
 
+    private static String response;
+
     public static void main(String[] args) throws IOException {
 
 
@@ -17,29 +19,26 @@ public class Client {
         int port = 5200;
         Message message = new Message();
 
+        for (int i = 0; i < 36; i++) {
+            try (Socket socket = new Socket(host, port)) {
+                PrintWriter writer = new PrintWriter(socket.getOutputStream());
+                writer.println(message.getMessage(Message.MessageType.playerMove));
+                writer.flush();
+                log("send > " + message);
 
-        try (Socket socket = new Socket(host, port)) {
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
-            writer.println(message.getMessage(Message.MessageType.playerMove));
-            writer.flush();
-            log("send > " + message);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String response = reader.readLine();
-            log("received < " + response);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                response = reader.readLine();
+                log("received < " + response);
+            }
         }
+    }
+
+    public String getResponse() {
+        return response;
     }
 
     private static void log(String message) {
         System.out.println("[" + Thread.currentThread().getName() + "] " + message);
     }
 
-
-
-
-    private static void delay(int mills) {
-        try {
-            Thread.sleep(mills);
-        } catch (InterruptedException ignored) {}
-    }
 }

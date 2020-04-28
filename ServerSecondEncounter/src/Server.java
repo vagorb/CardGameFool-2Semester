@@ -14,6 +14,7 @@ import io.netty.handler.codec.string.StringEncoder;
 public class Server {
 
     public static void main(String[] args) throws InterruptedException {
+        ServerHandler handler;
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -30,7 +31,6 @@ public class Server {
                             ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-
             ChannelFuture f = b.bind(5200).sync();
             System.out.println("Starting nio server at " + f.channel().localAddress());
             f.channel().closeFuture().sync();
