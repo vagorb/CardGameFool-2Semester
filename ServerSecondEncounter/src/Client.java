@@ -12,14 +12,14 @@ public class Client {
 
     private static String response;
 
-    public static void main(String[] args) throws IOException {
+    public static void sendMessage() throws IOException {
 
 
         String host = "localhost";
         int port = 5200;
         Message message = new Message();
 
-        for (int i = 0; i < 36; i++) {
+        for (int i = 0; i < 35; i++) {
             try (Socket socket = new Socket(host, port)) {
                 PrintWriter writer = new PrintWriter(socket.getOutputStream());
                 writer.println(message.getMessage(Message.MessageType.playerMove));
@@ -40,6 +40,13 @@ public class Client {
 
     private static void log(String message) {
         System.out.println("[" + Thread.currentThread().getName() + "] " + message);
+
     }
+
+
+    public static void main(String[] args) throws IOException {
+        Client.sendMessage();
+    }
+
 
 }

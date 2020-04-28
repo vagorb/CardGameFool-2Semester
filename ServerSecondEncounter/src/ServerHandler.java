@@ -20,6 +20,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             //.addListener(ChannelFutureListener.CLOSE);
     }
 
+    
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();

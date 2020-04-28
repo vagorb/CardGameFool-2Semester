@@ -1,3 +1,5 @@
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -13,8 +15,31 @@ import io.netty.handler.codec.string.StringEncoder;
 
 public class Server {
 
-    public static void main(String[] args) throws InterruptedException {
-        ServerHandler handler;
+    private static Deck deck = new Deck();
+    private static Card card = Server.decideTrump();
+
+    public static Deck getDeck() {
+        return deck;
+    }
+
+    static Card decideTrump() {
+        //Server.shuffle();
+        Card card = deck.getDeck().get(12);
+        deck.getDeck().remove(card);
+        return card;
+    }
+
+    static void shuffle() {
+        deck.shuffleDeck();
+    }
+
+    static void makeTrump() {
+        deck.makeCardsTrump(card.getSuit());
+    }
+
+
+    public static void runServer() throws InterruptedException {
+        Server.makeTrump();
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -38,5 +63,9 @@ public class Server {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        Server.runServer();
     }
 }
