@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
-
+    
 //    public Deck getDeck() {
 //        return deck;
 //    }

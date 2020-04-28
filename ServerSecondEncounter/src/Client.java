@@ -24,7 +24,7 @@ public class Client {
                 PrintWriter writer = new PrintWriter(socket.getOutputStream());
                 writer.println(message.getMessage(Message.MessageType.playerMove));
                 writer.flush();
-                
+
                 log("send > " + message);
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
