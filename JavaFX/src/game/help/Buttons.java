@@ -14,10 +14,10 @@ public class Buttons {
         button.setMaxSize(width, height);
     }
 
-    public Button clearTable() {
+    public Button throwCards() {
         Button pickUpButton = new Button();
         pickUpButton.setAlignment(Pos.CENTER);
-        pickUpButton.setId("clearTable");
+        pickUpButton.setId("throwCards");
         pickUpButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
         return pickUpButton;
     }
@@ -25,7 +25,7 @@ public class Buttons {
     public Button pickCardsUp() {
         Button pickUpButton = new Button();
         pickUpButton.setAlignment(Pos.CENTER);
-        pickUpButton.setId("pickCardsUp");
+        pickUpButton.setId("pickUpCards");
         pickUpButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
         return pickUpButton;
     }
