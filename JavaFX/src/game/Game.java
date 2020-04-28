@@ -11,7 +11,10 @@ import game.help.CardPackField;
 import game.help.PlayField;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -172,12 +175,8 @@ public class Game extends Application {
         deck.shuffleDeck();
         List<Card> cardsInHand = new LinkedList<>();
         List<Card> cardsOnTable = new LinkedList<>();
-        for (Card card : deck.getDeck()) {
-            if (cardBox.getChildren().size() < 6) {
-                cardsInHand.add(card);
-                cardToButton(card, cardBox, cardWidth, cardHeight);
-            }
-        }
+        // THIS WILL TEMPORARILY FIX HANDS HAVING COPIES OF CARDS (WILL WORK LIKE THIS UNTIL SERVER DECK IS IMPLEMENTED)
+        replenishHand(cardBox, cardWidth, cardHeight, cardsInHand);
 
         /// pile EXPERIMENT!
         VBox pileBox = new VBox();
@@ -336,6 +335,7 @@ public class Game extends Application {
                 listOfCardsOnUITable.clear();
                 cardsOnTable.clear();
                 playFieldClass.setDefault(playFieldButtons);
+                replenishHand(cardBox, cardWidth, cardHeight, cardsInHand);
 //                }
             }
         });
@@ -390,42 +390,20 @@ public class Game extends Application {
         window.show();
     }
 
-    public void getCardsFromDeckAndCreatePNG(double cardWidth, double cardHeight, HBox cardBox, List<Button> buttonList, List<Card> cardsInHand) {
-        while(buttonList.size() < 6) {
-            if (counter <= 34) {
-                Card card = deck.getDeck().get(counter);
-                cardsInHand.add(card);
-                buttonList.add(new Button());
-                Button buttonAdding = buttonList.get(buttonList.size() - 1);
-                buttonAdding.setMinSize(cardWidth, cardHeight);
-                buttonAdding.setMaxSize(cardWidth, cardHeight);
-                String value = String.valueOf(card.getValue());
-                if (value.equals("11")) {
-                    value = "Jack";
-                } else if (value.equals("12")) {
-                    value = "Queen";
-                } else if (value.equals("13")) {
-                    value = "King";
-                } else if (value.equals("14")) {
-                    value = "Ace";
-                }
-                buttonAdding.setId(value + "_of_" + card.getSuit());
-                buttonAdding.getStylesheets().add(getClass().getResource("/css/card.css").toExternalForm());
-                buttonAdding.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
-                        + "url('/images/cards/%s/%s_of_%s.png')", card.getSuit(), value, card.getSuit()));
-                cardBox.getChildren().add(buttonAdding);
 
-                buttonAdding.setOnAction(actionEvent -> {
-                    if (activeCard != null) {
-                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-                    }
-                    activeCard = buttonAdding;
-                    activeCard.setStyle(buttonAdding.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
-                });
-                counter += 1;
-            } else
-                break;
+    public void replenishHand(HBox cardBox, double cardWidth, double cardHeight, List<Card> cardsInHand) {
+        List<Card> cardsToDelete =  new ArrayList<>();
+        for (Card card : deck.getDeck()) {
+            if (cardBox.getChildren().size() < 6) {
+                cardsInHand.add(card);
+                cardsToDelete.add(card);
+                cardToButton(card, cardBox, cardWidth, cardHeight);
+            }
         }
+        for (Card card : cardsToDelete) {
+            deck.removeCard(card);
+        }
+        cardsToDelete.removeAll(cardsToDelete);
     }
 
     public void paneVisibility(Button defence, Map<Integer, Pane> playFieldButtons) {
@@ -443,7 +421,6 @@ public class Game extends Application {
         }
 
 
-    // ^^ IT fucks up like this due to me coding a comparison system that is capable of comparing only currently put cards
     // 6 H > 6 P > comparison card is only 6 P now so i can potentially defend IT only.
     // TODO account for trump card not being part of the DECK in the current gameplay
 
