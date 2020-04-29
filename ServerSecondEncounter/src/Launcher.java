@@ -2,8 +2,8 @@
 //
 //public class Launcher {
 //    public static void main(String[] args) throws InterruptedException, IOException {
-//        Server.runServer();
+//        Server.Server.runServer();
 //
-//        Client.sendMessage();
+//        Client.Client.sendMessage();
 //    }
 //}
