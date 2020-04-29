@@ -1,5 +1,6 @@
+package Server;
+
 import com.card.game.fool.cards.Card;
-import com.card.game.fool.cards.Deck;
 import com.google.gson.JsonObject;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -28,7 +29,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 
 //    Deck deck;
 //    Card trumpCard;
-//    ServerGameStartMessage() {
+//    Server.ServerGameStartMessage() {
 //        this.deck = new Deck();
 //        deck.shuffleDeck();
 //        this.trumpCard = deck.getDeck().get(12);

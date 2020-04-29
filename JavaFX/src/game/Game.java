@@ -1,10 +1,12 @@
 package game;
 
+import Client.Client;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
+import com.google.gson.JsonObject;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.CardPackField;
@@ -27,6 +29,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -46,6 +49,7 @@ public class Game extends Application {
 
     private final Deck deck = new Deck();
     private Player thePlayer;
+    private Client client = new Client();
 
     private Card attackCard;
     private Card defenseCard;
@@ -226,59 +230,96 @@ public class Game extends Application {
                 lowerLayer.getChildren().addAll(playFieldButtons.get(i));
             }
 //            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
-            attack.setOnMouseClicked(mouseEvent -> {
-                if (activeCard != null && !attack.isDisable()) {
-                    attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-                            .collect(Collectors.toList()).get(0);
-                    if (listOfCardsOnUITable.size() == 0) {
-                        listOfCardsOnUITable.add(attackCard.getValue());
-                        cardBox.getChildren().remove(activeCard);
-                        attack.setDisable(true);
-                        attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                        defence.setVisible(true);
-                        activeCard = null;
-                    } else {
-                        if (listOfCardsOnUITable.contains(attackCard.getValue())) {
+                attack.setOnMouseClicked(mouseEvent -> {
+                    // PlayerState
+                    // Card that i put on the table
+                    // PlayerName
+                    // MessageType =
+//                    Text
+//                            TEXT
+                    if (activeCard != null && !attack.isDisable()) {
+                        attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
+                                .collect(Collectors.toList()).get(0);
+                        if (listOfCardsOnUITable.size() == 0) {
+                            JsonObject sendToServer = cardToJson(attackCard);
+                            client.setMessage(sendToServer);
+                            try {
+                                Client.sendMessage(sendToServer);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            listOfCardsOnUITable.add(attackCard.getValue());
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
                             attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                             defence.setVisible(true);
                             activeCard = null;
                         } else {
-                            activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            if (listOfCardsOnUITable.contains(attackCard.getValue())) {
+                                JsonObject sendToServer = cardToJson(attackCard);
+                                client.setMessage(sendToServer);
+                                try {
+                                    Client.sendMessage(sendToServer);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                cardBox.getChildren().remove(activeCard);
+                                attack.setDisable(true);
+                                attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                                defence.setVisible(true);
+                                activeCard = null;
+                            } else {
+                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            }
                         }
                     }
-                }
-            });
+                });
+//            } else if (thePlayer.getPlayerState() == Player.PlayerState.DEFENSE) {
 
 //            } else if (thePlayer.getPlayerState() == Player.PlayerState.DEFENSE) {
-            defence.setOnMouseClicked(mouseEvent -> {
-                if (activeCard != null && !defence.isDisable()) {
-                    defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-                            .collect(Collectors.toList()).get(0);
-                    if (attackCard.getSuit().equals(defenseCard.getSuit())) {
-                        if (defenseCard.getValue() > attackCard.getValue()) {
+                defence.setOnMouseClicked(mouseEvent -> {
+                    if (activeCard != null && !defence.isDisable()) {
+                        defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
+                                .collect(Collectors.toList()).get(0);
+                        if (attackCard.getSuit().equals(defenseCard.getSuit())) {
+                            if (defenseCard.getValue() > attackCard.getValue()) {
+                                JsonObject sendToServer = cardToJson(defenseCard);
+                                client.setMessage(sendToServer);
+                                try {
+                                    Client.sendMessage(sendToServer);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                listOfCardsOnUITable.add(defenseCard.getValue());
+                                cardBox.getChildren().remove(activeCard);
+                                defence.setDisable(true);
+                                defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                                playFieldClass.nextAttackVisible(defence);
+                            } else {
+                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            }
+                            activeCard = null;
+                        } else if (defenseCard.getSuit().equals(trumpCard.getSuit())) {
+                            JsonObject sendToServer = cardToJson(defenseCard);
+                            client.setMessage(sendToServer);
+                            try {
+                                Client.sendMessage(sendToServer);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             listOfCardsOnUITable.add(defenseCard.getValue());
                             cardBox.getChildren().remove(activeCard);
                             defence.setDisable(true);
                             defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                            activeCard = null;
                             playFieldClass.nextAttackVisible(defence);
                         } else {
                             activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                         }
-                        activeCard = null;
-                    } else if (defenseCard.getSuit().equals(trumpCard.getSuit())) {
-                        listOfCardsOnUITable.add(defenseCard.getValue());
-                        cardBox.getChildren().remove(activeCard);
-                        defence.setDisable(true);
-                        defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                        activeCard = null;
-                        playFieldClass.nextAttackVisible(defence);
-                    } else {
-                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                     }
-                }
-            });
+                });
+//            }
 //            }
         }
 
@@ -419,6 +460,23 @@ public class Game extends Application {
                 playFieldButtons.get(nr).setVisible(false);
             }
         }
+
+    public JsonObject cardToJson(Card card) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("MessageType", "gameMove");
+        obj.addProperty("PlayerName", "Sanja"); //player.getName()
+        obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
+        //if (!player.getPlayerState().equals(Player.PlayerState.SKIP)) {
+        obj.addProperty("Card", card.getValueName()); //table.getLastCardOnTable().getId());
+//        obj.get("Card").getAsJsonObject().addProperty("Name", card.getValueName());
+//        obj.get("Card").getAsJsonObject().addProperty("Suit", card.getSuit());
+//        obj.get("Card").getAsJsonObject().addProperty("Value", card.getValue());
+//        obj.get("Card").getAsJsonObject().addProperty("Trump", card.getTrump());
+        //}
+        return obj;
+    }
+
+//    public void jsonInfoToCards()
 
 
     // 6 H > 6 P > comparison card is only 6 P now so i can potentially defend IT only.

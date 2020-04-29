@@ -1,3 +1,5 @@
+package Server;
+
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import io.netty.bootstrap.ServerBootstrap;
@@ -5,7 +7,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
@@ -23,7 +24,7 @@ public class Server {
     }
 
     static Card decideTrump() {
-        //Server.shuffle();
+        //Server.Server.shuffle();
         Card card = deck.getDeck().get(12);
         deck.getDeck().remove(card);
         return card;

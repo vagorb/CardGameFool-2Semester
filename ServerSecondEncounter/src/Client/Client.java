@@ -1,28 +1,30 @@
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
+package Client;
+
+import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Date;
 
 public class Client {
 
     private static String response;
 
-    public static void sendMessage() throws IOException {
+    private JsonObject message;
+
+    public static void sendMessage(JsonObject object) throws IOException {
 
 
         String host = "localhost";
         int port = 5200;
-        Message message = new Message();
+        JsonObject message = object;
 
-        for (int i = 0; i < 35; i++) {
+//        for (int i = 0; i < 35; i++) {
             try (Socket socket = new Socket(host, port)) {
                 PrintWriter writer = new PrintWriter(socket.getOutputStream());
-                writer.println(message.getMessage(Message.MessageType.playerMove));
+                writer.println(message);
                 writer.flush();
 
                 log("send > " + message);
@@ -31,7 +33,7 @@ public class Client {
                 response = reader.readLine();
                 log("received < " + response);
             }
-        }
+//        }
     }
 
     public String getResponse() {
@@ -43,9 +45,13 @@ public class Client {
 
     }
 
+    public void setMessage(JsonObject jsonObject) {
+        this.message = jsonObject;
+    }
+
 
     public static void main(String[] args) throws IOException {
-        Client.sendMessage();
+
     }
 
 
