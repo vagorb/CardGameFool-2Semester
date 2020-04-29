@@ -7,6 +7,7 @@ import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.CardPackField;
@@ -249,7 +250,8 @@ public class Game extends Application {
                                 e.printStackTrace();
                             }
                             String resp = Client.getResponse();
-                            System.out.println(resp);
+                            Card card = cardFromResponse(resp);
+                            System.out.println(card);
                             listOfCardsOnUITable.add(attackCard.getValue());
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
@@ -265,6 +267,9 @@ public class Game extends Application {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
+                                String resp = Client.getResponse();
+                                Card card = cardFromResponse(resp);
+                                System.out.println(card);
                                 cardBox.getChildren().remove(activeCard);
                                 attack.setDisable(true);
                                 attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
@@ -292,6 +297,9 @@ public class Game extends Application {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
+                                String resp = Client.getResponse();
+                                Card card = cardFromResponse(resp);
+                                System.out.println(card);
                                 listOfCardsOnUITable.add(defenseCard.getValue());
                                 cardBox.getChildren().remove(activeCard);
                                 defence.setDisable(true);
@@ -309,6 +317,9 @@ public class Game extends Application {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+                            String resp = Client.getResponse();
+                            Card card = cardFromResponse(resp);
+                            System.out.println(card);
                             listOfCardsOnUITable.add(defenseCard.getValue());
                             cardBox.getChildren().remove(activeCard);
                             defence.setDisable(true);
@@ -475,6 +486,21 @@ public class Game extends Application {
 //        obj.get("Card").getAsJsonObject().addProperty("Trump", card.getTrump());
         //}
         return obj;
+    }
+
+    public Card cardFromResponse(String resp) {
+        JsonObject jsonObject = new JsonParser().parse(resp).getAsJsonObject();
+        String suit = jsonObject.get("Suit").toString();
+        suit = suit.replace("\"", "");
+        String value = jsonObject.get("Value").toString();
+        value = value.replace("\"", "");
+        Integer val = Integer.parseInt(value);
+        String trump = jsonObject.get("Trump").toString();
+        trump = trump.replace("\"", "");
+        Boolean tru = Boolean.parseBoolean(trump);
+//        String id = jsonObject.get("Id").toString();
+//        id = id.replace("\"", "");
+        return new Card(suit, val, tru);
     }
 
 //    public void jsonInfoToCards()

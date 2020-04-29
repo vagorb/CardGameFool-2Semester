@@ -25,14 +25,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         String string = jsonObject.get("MessageType").toString();
         System.out.println(string);
         string = string.replace("\"", "");
-        //string.substring(0);
-//        if (jsonObject.get("MessageType").equals("gameStart")) {
-//            ctx.write(message.getGameStartMessage() + "\r\n");
-//            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
-        if (string.equalsIgnoreCase("gameMove")) {
+
+        if (string.equalsIgnoreCase("gameStart")) {
+            ctx.write(message.getGameStartMessage() + "\r\n");
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
+        } else if (string.equalsIgnoreCase("gameMove")) {
             // change this later
             ctx.write(message.getMessage() + "\r\n");
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
+        } else if (string.equalsIgnoreCase("Skip")) {
+            //
         }
 //        ctx.write(message.getMessage() + "\r\n");
 //        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);

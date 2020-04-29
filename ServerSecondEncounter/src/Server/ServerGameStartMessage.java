@@ -28,6 +28,21 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         return obj;
     }
 
+    public JsonArray refreshCardsMessage(Integer s) {
+        JsonArray array = new JsonArray();
+        for (int i = 0; i < s; i++) {
+            JsonObject obj = new JsonObject();
+            Card card = Server.getDeck().getDeck().get(0);
+            Server.getDeck().removeCard(card);
+            obj.addProperty("Suit", card.getSuit());
+            obj.addProperty("Value", card.getValue());
+            obj.addProperty("Trump", card.getTrump());
+            obj.addProperty("Id", card.getId());
+            array.add(obj);
+        }
+        return array;
+    }
+
 
     public JsonArray getGameStartMessage() {
         JsonArray array = new JsonArray();
