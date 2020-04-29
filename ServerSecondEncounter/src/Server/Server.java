@@ -29,7 +29,6 @@ public class Server {
         deck.getDeck().remove(card);
         return card;
     }
-
     static void shuffle() {
         deck.shuffleDeck();
     }
