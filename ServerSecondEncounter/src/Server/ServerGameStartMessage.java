@@ -28,9 +28,20 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         return obj;
     }
 
-    public JsonArray refreshCardsMessage(Integer s) {
+    public JsonObject getTrumpMessage() {
+        JsonObject obj = new JsonObject();
+        Card card = Server.getTrump();
+        //System.out.println(card + "first card");
+        obj.addProperty("Suit", card.getSuit());
+        obj.addProperty("Value", card.getValue());
+        obj.addProperty("Trump", card.getTrump());
+        obj.addProperty("Id", card.getId());
+        return obj;
+    }
+
+    public JsonArray refreshCardsMessage(Integer cardsNeeded) {
         JsonArray array = new JsonArray();
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < cardsNeeded; i++) {
             JsonObject obj = new JsonObject();
             Card card = Server.getDeck().getDeck().get(0);
             Server.getDeck().removeCard(card);
