@@ -3,7 +3,6 @@ package game;
 import Client.Client;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
-import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.google.gson.JsonObject;
@@ -106,7 +105,14 @@ public class Game extends Application {
         // I NEED TO ACCOUNT FOR THE FACT THAT THIS CARD WILL BE REMOVED FROM THE DECK AS A SEPARATE CARD
 //        deck.removeCard(trumpCard);
 //        System.out.println(trumpCard.getSuit());
-
+        try {
+            Client.sendMessage(gameStart());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String response = Client.getResponse();
+        trumpCard = cardFromResponse(response);
+        System.out.println(trumpCard);
         Buttons buttons = new Buttons();
         StackPane gameStackPane = new StackPane();
 //        StackPane playeradding = new StackPane();
@@ -443,10 +449,15 @@ public class Game extends Application {
         window.show();
     }
 
-
     public JsonObject gameStart() {
         JsonObject obj = new JsonObject();
-        obj.addProperty("MessageType", "gameMove");
+        obj.addProperty("MessageType", "GameStart");
+        return obj;
+    }
+
+    public JsonObject gameCardsReplenish() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("MessageType", "replenish");
 //        obj.addProperty("PlayerName", "Sanja"); //player.getName()
 //        obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
 //        //if (!player.getPlayerState().equals(Player.PlayerState.SKIP)) {
@@ -467,7 +478,7 @@ public class Game extends Application {
 //            deck.removeCard(card);
 //        }
 //        cardsToDelete.removeAll(cardsToDelete);
-        JsonObject obj = gameStart();
+        JsonObject obj = gameCardsReplenish();
 //        trumpCard
         while (cardBox.getChildren().size() < 6) {
             try {

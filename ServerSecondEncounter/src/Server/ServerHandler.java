@@ -38,6 +38,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             hand = hand.replace("\"", "");
             ctx.write(message.refreshCardsMessage(6 - Integer.parseInt(hand)) + "\r\n");
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
+        } else if (string.equalsIgnoreCase("GameMove")) {
+            ctx.write(message.getMessage() + "\r\n");
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
         }
 //        ctx.write(message.getMessage() + "\r\n");
 //        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
