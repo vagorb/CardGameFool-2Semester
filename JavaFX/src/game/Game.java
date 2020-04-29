@@ -248,7 +248,8 @@ public class Game extends Application {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-
+                            String resp = Client.getResponse();
+                            System.out.println(resp);
                             listOfCardsOnUITable.add(attackCard.getValue());
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);

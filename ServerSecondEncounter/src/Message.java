@@ -15,7 +15,7 @@ public class Message {
         if (type.equals(MessageType.gameStateUpdate)) {
             JsonObject obj = new JsonObject();
             obj.addProperty("MessageType", "gameStateUpdate");
-            //obj.get("MessageType").getAsJsonObject().addProperty("DeckSize", 30); // table.getGameDeck().size()
+            obj.get("MessageType").getAsJsonObject().addProperty("DeckSize", 30); // table.getGameDeck().size()
             return obj;
         } else if (type.equals(MessageType.playerMove)) {
             Card card = new Card("Hearts", 9, false);

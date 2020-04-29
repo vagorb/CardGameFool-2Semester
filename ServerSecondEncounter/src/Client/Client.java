@@ -36,7 +36,7 @@ public class Client {
 //        }
     }
 
-    public String getResponse() {
+    public static String getResponse() {
         return response;
     }
 
