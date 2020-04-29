@@ -27,14 +27,20 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         string = string.replace("\"", "");
 
         if (string.equalsIgnoreCase("gameStart")) {
-            ctx.write(message.getGameStartMessage() + "\r\n");
+            ctx.write(message.getTrumpMessage() + "\r\n");
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
-        } else if (string.equalsIgnoreCase("gameMove")) {
+        } else if (string.equalsIgnoreCase("Replenish")) {
             // change this later
             ctx.write(message.getMessage() + "\r\n");
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
         } else if (string.equalsIgnoreCase("Skip")) {
-            //
+            String hand = jsonObject.get("HandSize").toString();
+            hand = hand.replace("\"", "");
+            ctx.write(message.refreshCardsMessage(6 - Integer.parseInt(hand)) + "\r\n");
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
+        } else if (string.equalsIgnoreCase("GameMove")) {
+            ctx.write(message.getMessage() + "\r\n");
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
         }
 //        ctx.write(message.getMessage() + "\r\n");
 //        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);

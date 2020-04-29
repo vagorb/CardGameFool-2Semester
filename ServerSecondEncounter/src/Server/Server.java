@@ -23,17 +23,24 @@ public class Server {
         return deck;
     }
 
-    static Card decideTrump() {
-        //Server.Server.shuffle();
-        Card card = deck.getDeck().get(12);
-        deck.getDeck().remove(card);
+    public static Card getTrump() {
         return card;
     }
-    static void shuffle() {
+
+    public static Card decideTrump() {
+        //Server.Server.shuffle();
+        Card card = deck.getDeck().get(12);
+        card.setTrump(true);
+        deck.getDeck().remove(card);
+        deck.getDeck().add(card);
+        return card;
+    }
+
+    public static void shuffle() {
         deck.shuffleDeck();
     }
 
-    static void makeTrump() {
+    public static void makeTrump() {
         deck.makeCardsTrump(card.getSuit());
     }
 
