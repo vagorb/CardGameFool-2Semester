@@ -48,7 +48,7 @@ public class Game extends Application {
     private double windowHeight;
     private double windowWidth;
 
-    private final Deck deck = new Deck();
+//    private final Deck deck = new Deck();
     private Player thePlayer;
     private Client client = new Client();
 
@@ -101,11 +101,11 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
-        deck.shuffleDeck();
-        trumpCard = deck.getDeck().get(0);
+//        deck.shuffleDeck();
+//        trumpCard = deck.getDeck().get(0);
         // I NEED TO ACCOUNT FOR THE FACT THAT THIS CARD WILL BE REMOVED FROM THE DECK AS A SEPARATE CARD
-        deck.removeCard(trumpCard);
-        System.out.println(trumpCard.getSuit());
+//        deck.removeCard(trumpCard);
+//        System.out.println(trumpCard.getSuit());
 
         Buttons buttons = new Buttons();
         StackPane gameStackPane = new StackPane();
@@ -177,7 +177,7 @@ public class Game extends Application {
         this.thePlayer.setPlayerState(Player.PlayerState.ATTACK);
 
         // card generator
-        deck.shuffleDeck();
+//        deck.shuffleDeck();
         List<Card> cardsInHand = new LinkedList<>();
         List<Card> cardsOnTable = new LinkedList<>();
         // THIS WILL TEMPORARILY FIX HANDS HAVING COPIES OF CARDS (WILL WORK LIKE THIS UNTIL SERVER DECK IS IMPLEMENTED)
@@ -444,19 +444,42 @@ public class Game extends Application {
     }
 
 
+    public JsonObject gameStart() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("MessageType", "gameMove");
+//        obj.addProperty("PlayerName", "Sanja"); //player.getName()
+//        obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
+//        //if (!player.getPlayerState().equals(Player.PlayerState.SKIP)) {
+//        obj.addProperty("Card", card.getValueName()); //table.getLastCardOnTable().getId());
+        return obj;
+    }
+
     public void replenishHand(HBox cardBox, double cardWidth, double cardHeight, List<Card> cardsInHand) {
-        List<Card> cardsToDelete =  new ArrayList<>();
-        for (Card card : deck.getDeck()) {
-            if (cardBox.getChildren().size() < 6) {
-                cardsInHand.add(card);
-                cardsToDelete.add(card);
-                cardToButton(card, cardBox, cardWidth, cardHeight);
+//        List<Card> cardsToDelete =  new ArrayList<>();
+//        for (Card card : deck.getDeck()) {
+//            if (cardBox.getChildren().size() < 6) {
+//                cardsInHand.add(card);
+//                cardsToDelete.add(card);
+//                cardToButton(card, cardBox, cardWidth, cardHeight);
+//            }
+//        }
+//        for (Card card : cardsToDelete) {
+//            deck.removeCard(card);
+//        }
+//        cardsToDelete.removeAll(cardsToDelete);
+        JsonObject obj = gameStart();
+//        trumpCard
+        while (cardBox.getChildren().size() < 6) {
+            try {
+                Client.sendMessage(obj);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            String resp = Client.getResponse();
+            Card card = cardFromResponse(resp);
+            cardsInHand.add(card);
+            cardToButton(card, cardBox, cardWidth, cardHeight);
         }
-        for (Card card : cardsToDelete) {
-            deck.removeCard(card);
-        }
-        cardsToDelete.removeAll(cardsToDelete);
     }
 
     public void paneVisibility(Button defence, Map<Integer, Pane> playFieldButtons) {
