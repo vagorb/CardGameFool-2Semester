@@ -2,7 +2,7 @@ package com.card.game.fool.players;
 
 import com.card.game.fool.cards.Card;
 
-public class Player {
+public class Player implements gamerInterface{
     private Hand hand;
     private String name;
     private Integer score;
