@@ -4,6 +4,7 @@ import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.gamerInterface;
 import com.card.game.fool.tables.Table;
 
 import java.util.ArrayList;
@@ -18,14 +19,19 @@ import java.util.stream.Collectors;
 // Moves after 0 cards in deck
 // method in table getAi move
 
-public class Ai {
+public class Ai implements gamerInterface {
     private Hand hand;
+    private String name = "CPU";
 
     public Ai(Hand hand) {
         this.hand = hand;
     }
 
-    public Hand getAiHand() {
+    public String getName() {
+        return name;
+    }
+
+    public Hand getHand() {
         return this.hand;
     }
 
@@ -44,7 +50,6 @@ public class Ai {
                     && card.getValue() > lastCard.getValue())).collect(Collectors.toList());
         }
     }
-
     public Optional<Card> mostSuitableCardForDef(Table table) {
         List<Card> cards = suitableForDefCards(table);
         if (cards.size() < 1) {
@@ -61,8 +66,8 @@ public class Ai {
         if (table.getPile().getPile().size() > 1) {
             for (Card card : cards) {
                 if (table.getPile().mapOfCardsAndValues().containsKey(card.getValue()) && table.getPile().mapOfCardsAndValues().get(card.getValue())
-                            .size() >= 2) {
-                        return Optional.of(card);
+                        .size() >= 2) {
+                    return Optional.of(card);
                 }
             }
         }
@@ -70,7 +75,7 @@ public class Ai {
     }
 
     public Optional<Card> firstCardAttackMove(Table table) {
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
@@ -96,12 +101,12 @@ public class Ai {
         return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
-    public  List<Card> playerCardsInTheEnd(Table table) {
+    public List<Card> playerCardsInTheEnd(Table table) {
         List<Card> playerCards = new ArrayList<>();
         Deck deck = new Deck();
         deck.makeCardsTrump(table.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!getAiHand().getCardsInHand().contains(card) && !table.getPile().getPile().contains(card)) {
+            if (!getHand().getCardsInHand().contains(card) && !table.getPile().getPile().contains(card)) {
                 playerCards.add(card);
             }
         }
@@ -119,27 +124,26 @@ public class Ai {
     }
 
 
-
     public Optional<Card> suitableAttackMoveWhenDeckEnds(Table table) {
         Map<String, List<Card>> playerCards = playerCardsInTheEndBySuit(table);
         System.out.println(playerCards);
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (!playerCards.containsKey(card.getSuit()) && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (!card.getTrump()) {
                 if (card.getValue() > maxValueBySuit(table, card.getSuit()).get().getValue())
                     return Optional.of(card);
             }
         }
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
-        for (Card card : getAiHand().getCardsInHand()) {
+        for (Card card : getHand().getCardsInHand()) {
             if (!playerCards.containsKey(card.getSuit())) {
                 return Optional.of(card);
             }
@@ -196,6 +200,6 @@ public class Ai {
                 }
             }
         }
-        
+
     }
 }

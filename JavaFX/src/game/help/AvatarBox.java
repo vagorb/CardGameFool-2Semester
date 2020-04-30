@@ -1,5 +1,6 @@
 package game.help;
 
+import com.card.game.fool.players.gamerInterface;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -15,19 +16,10 @@ import java.util.List;
 public class AvatarBox {
     private final int playerCount;
     private final double elementSize;
-    private HBox horizontalPlace = new HBox();
-    private VBox leftVerticalPlace = new VBox();
-    private VBox rightVerticalPlace = new VBox();
-    private List<VBox> avatarList = new ArrayList<>();
-    private int cardCount = 52;
-
-    public int getCardCount() {
-        return cardCount;
-    }
-
-    public void setCardCount(int cardCount) {
-        this.cardCount = cardCount;
-    }
+    private final HBox horizontalPlace = new HBox();
+    private final VBox leftVerticalPlace = new VBox();
+    private final VBox rightVerticalPlace = new VBox();
+    private final List<VBox> avatarList = new ArrayList<>();
 
     public AvatarBox(int playerCount, double screenWidth) {
         this.playerCount = playerCount;
@@ -48,16 +40,15 @@ public class AvatarBox {
         object.setMaxSize(width, height);
     }
 
-    //    public void makeAvatar(Image image, Player player) {
-    public void makeAvatar(String playerName) {
+    public void makeAvatar(gamerInterface gamer) {
         if (avatarList.size() < playerCount) {
-//            Label name = new Label(player.getName());
-            Label name = new Label(playerName);
+            Label name = new Label(gamer.getName());
             HBox nameBox = new HBox(name);
-            Label cardsRemaining = new Label(String.valueOf(cardCount));
+            nameBox.setAlignment(Pos.CENTER);
+            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().getCardsInHand().size()));
             HBox cardBack = new HBox(cardsRemaining);
-            ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
 //            ImageView avatarImage = new ImageView(image);
+            ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
             HBox avatarSubBox = new HBox(avatarImage, cardBack);
             VBox avatarBox = new VBox(avatarSubBox, nameBox);
 
@@ -66,12 +57,12 @@ public class AvatarBox {
 
             double cardFontSize = cardBack.maxWidthProperty().get() * 0.9;
             cardBack.setStyle("-fx-background-image: url('/images/cards/back_of_card.png');-fx-background-size: cover;");
-            cardsRemaining.setStyle("-fx-font:" + cardFontSize + "px Arial ; -fx-text-fill: rgb(255,0,0);");
+            cardsRemaining.setStyle("-fx-font:" + cardFontSize + "px Arial ; -fx-text-fill: red;");
             avatarImage.setFitWidth(elementSize * 0.6);
             avatarImage.setFitHeight(elementSize * 0.6);
             name.setWrapText(true);
-            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: rgb(155,255,0)");
-            nameBox.setStyle("-fx-border-color: rgb(0,0,0)");
+            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: lawngreen");
+            nameBox.setStyle("-fx-border-color: black");
 
             cardBack.setAlignment(Pos.CENTER);
             avatarBox.setAlignment(Pos.TOP_CENTER);
@@ -97,6 +88,7 @@ public class AvatarBox {
         horizontalPlace.getChildren().add(rightVerticalPlace);
         leftVerticalPlace.setAlignment(Pos.CENTER);
         rightVerticalPlace.setAlignment(Pos.CENTER);
+
         return horizontalPlace;
     }
 }

@@ -16,7 +16,7 @@ public class GameStart {
         boolean gameIsBeingPlayed = true;
         GameController codeIsHere = new GameController();
         codeIsHere.createBasic();
-        codeIsHere.assignTrumpAndFillHands(codeIsHere.getTable());
+        codeIsHere.assignTrumpAndFillHands();
         while (gameIsBeingPlayed) {
             if (codeIsHere.getTable().getGameDeck().size() >= 0 && codeIsHere.getCardThatDecidesTrump() != null) {
                 codeIsHere.setPlayerStates();
