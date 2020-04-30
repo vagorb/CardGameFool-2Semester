@@ -35,12 +35,11 @@ public class Server {
         deck.getDeck().add(card);
         return card;
     }
-
-    public static void shuffle() {
+    static void shuffle() {
         deck.shuffleDeck();
     }
 
-    public static void makeTrump() {
+    static void makeTrump() {
         deck.makeCardsTrump(card.getSuit());
     }
 
