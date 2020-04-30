@@ -4,12 +4,14 @@ package game;
 import game.help.Buttons;
 import game.help.Resolution;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +19,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class SettingMenu {
     private Stage window;
@@ -39,19 +42,20 @@ public class SettingMenu {
         Button backButton = buttons.back();
         Button fullscreenButton = buttons.fullscreen();
 
-        ComboBox<String> resolutionChoice = new ComboBox<>();
-        resolutionChoice.getItems().addAll(
-                "1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440", "3840x2160");
+        ComboBox<String> resolutionChoices = resolution.getResolutionChoices();
 
         CheckBox scrollInversion = new CheckBox();
         scrollInversion.setText("Invert scroll");
-        scrollInversion.setId("scrollInversion");
-        scrollInversion.getStylesheets().add(getClass().getResource("/css/misc.css").toString());
+
+        CheckBox customResolution = resolution.getCustomResolution();
+        customResolution.setText("Custom Resolution");
 
         CheckBox alwaysOnTop = new CheckBox();
         alwaysOnTop.setText("Always on top");
-        alwaysOnTop.setId("AlwaysOnTop");
-        alwaysOnTop.getStylesheets().add(getClass().getResource("/css/misc.css").toString());
+
+        for (CheckBox checkBox : List.of(scrollInversion, alwaysOnTop, customResolution)) {
+            checkBox.getStylesheets().add(getClass().getResource("/css/misc.css").toString());
+        }
 
         fullscreenButton.setOnAction(actionEvent -> {
             window.setFullScreen(!window.isFullScreen());
@@ -61,28 +65,30 @@ public class SettingMenu {
                 fullscreenButton.setId("fullscreenEnter");
             }
             fullscreenButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
-            resolution.change(window, window.getScene().getWidth(), window.getScene().getHeight());
+            resolution.change(window.getScene().getWidth(), window.getScene().getHeight());
             ((VBox) mainStackpane.getChildren().get(0)).setMaxSize(resolution.width() / 3, resolution.height());
         });
 
-        resolutionChoice.valueProperty().addListener((observableValue, s, t1) -> {
-            String[] initValues = t1.split("x");
-            Double[] values = resolution.max(initValues[0], initValues[1]);
-            resolution.change(window, values[0], values[1]);
-            ((VBox) mainStackpane.getChildren().get(0)).setMaxSize(resolution.width() / 3, resolution.height());
-            window.setX((Screen.getPrimary().getBounds().getWidth() - resolution.width()) / 2);
-            window.setY((Screen.getPrimary().getBounds().getHeight() - resolution.height()) / 2);
-        });
+//        resolutionChoices.valueProperty().addListener((observableValue, s, t1) -> {
+//            if (!t1.equals("")) {
+//                String[] values = t1.split("x");
+//                resolution.change(values[0], values[1]);
+//                ((VBox) mainStackpane.getChildren().get(0)).setMaxSize(resolution.width() / 3, resolution.height());
+//                window.setX((Screen.getPrimary().getBounds().getWidth() - resolution.width()) / 2);
+//                window.setY((Screen.getPrimary().getBounds().getHeight() - resolution.height()) / 2);
+//            }
+//        });
+
         alwaysOnTop.setOnAction(actionEvent -> window.setAlwaysOnTop(alwaysOnTop.isSelected()));
         scrollInversion.setOnAction(actionEvent -> invertScroll = scrollInversion.isSelected());
-        backButton.setOnAction(actionEvent -> window.getScene().setRoot(mainStackpane));
 
+        backButton.setOnAction(actionEvent -> window.getScene().setRoot(mainStackpane));
         fullscreenButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         backButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         settingsMenu.setPadding(new Insets(100, 0, 0, 100));
         settingsMenu.setAlignment(Pos.CENTER);
 
-        settingsMenu.getChildren().addAll(resolutionChoice, fullscreenButton, alwaysOnTop, scrollInversion, backButton);
+        settingsMenu.getChildren().addAll(fullscreenButton, resolutionChoices, customResolution, alwaysOnTop, scrollInversion, backButton);
         settingsStackpane.getChildren().addAll(settingsMenu);
 
         return settingsStackpane;
@@ -138,8 +144,8 @@ public class SettingMenu {
                 window.hide();
                 window.getScene().setRoot(mainStackpane);
                 play.setMenu(window.getScene());
-                play.setSettings(invertScroll, window.isFullScreen());
-                resolution.change(window, window.getScene().getWidth(), window.getScene().getHeight());
+                play.setSettings(invertScroll, window.isFullScreen(), resolution.isFixedResolution());
+                resolution.change(window.getScene().getWidth(), window.getScene().getHeight());
                 play.start(window);
             } catch (Exception e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
