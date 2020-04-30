@@ -27,20 +27,14 @@ public class Resolution {
     public Double[] max(String width, String height) {
         double widthDouble = Double.parseDouble(width);
         double heightDouble = Double.parseDouble(height);
-        if (widthDouble > Screen.getPrimary().getBounds().getWidth()) {
-            widthDouble = Screen.getPrimary().getBounds().getWidth();
-        }
-        if (heightDouble > Screen.getPrimary().getBounds().getHeight()) {
-           heightDouble = Screen.getPrimary().getBounds().getHeight();
-        }
-        return new Double[]{widthDouble, heightDouble};
+        return max(widthDouble, heightDouble);
     }
 
     public void change(Stage window, double width, double height) {
         Double[] max = max(width, height);
-        this.windowWidth = width;
-        this.windowHeight = height;
-        window.setWidth(width);
-        window.setHeight(height);
+        this.windowWidth = max[0];
+        this.windowHeight = max[1];
+        window.setWidth(windowWidth);
+        window.setHeight(windowHeight);
     }
 }

@@ -50,7 +50,6 @@ public class Ai implements gamerInterface {
                     && card.getValue() > lastCard.getValue())).collect(Collectors.toList());
         }
     }
-
     public Optional<Card> mostSuitableCardForDef(Table table) {
         List<Card> cards = suitableForDefCards(table);
         if (cards.size() < 1) {
