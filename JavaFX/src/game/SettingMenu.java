@@ -4,31 +4,28 @@ package game;
 import game.help.Buttons;
 import game.help.Resolution;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class SettingMenu {
-    private Stage window;
-    private StackPane mainStackpane;
-    private Resolution resolution;
+    private final Stage window;
+    private final StackPane mainStackpane;
+    private final Resolution resolution;
+    private final Buttons buttons = new Buttons();
     private int playerAI = 0;
     private int playerHumanCount = 1;
     private boolean invertScroll = false;
-    private Buttons buttons = new Buttons();
 
     public SettingMenu(Stage window, StackPane mainStackpane, Resolution resolution) {
         this.window = window;
@@ -68,21 +65,10 @@ public class SettingMenu {
             resolution.change(window.getScene().getWidth(), window.getScene().getHeight());
             ((VBox) mainStackpane.getChildren().get(0)).setMaxSize(resolution.width() / 3, resolution.height());
         });
-
-//        resolutionChoices.valueProperty().addListener((observableValue, s, t1) -> {
-//            if (!t1.equals("")) {
-//                String[] values = t1.split("x");
-//                resolution.change(values[0], values[1]);
-//                ((VBox) mainStackpane.getChildren().get(0)).setMaxSize(resolution.width() / 3, resolution.height());
-//                window.setX((Screen.getPrimary().getBounds().getWidth() - resolution.width()) / 2);
-//                window.setY((Screen.getPrimary().getBounds().getHeight() - resolution.height()) / 2);
-//            }
-//        });
-
         alwaysOnTop.setOnAction(actionEvent -> window.setAlwaysOnTop(alwaysOnTop.isSelected()));
         scrollInversion.setOnAction(actionEvent -> invertScroll = scrollInversion.isSelected());
-
         backButton.setOnAction(actionEvent -> window.getScene().setRoot(mainStackpane));
+
         fullscreenButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         backButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         settingsMenu.setPadding(new Insets(100, 0, 0, 100));
