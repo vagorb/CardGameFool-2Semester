@@ -1,9 +1,9 @@
-import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.card.game.fool.tables.Table;
+import com.card.game.fool.AI.Ai;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AiTest {
+class AiTest<AI> {
 
 
     Card card1;
@@ -41,8 +41,8 @@ class AiTest {
     Table tableFor;
 
 //    private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
-//            9, "9", 10, "10", 11, "JACK", 12, "QUEEN", 13, "KING",
-//            14, "ACE"));
+//            9, "9", 10, "10", 11, "Jack", 12, "Queen", 13, "King",
+//            14, "Ace"));
     @BeforeEach
     void setUp() {
         hand = new Hand();
@@ -88,7 +88,7 @@ class AiTest {
         tableFor.addToPile(cardPile6);
 
     }
-//
+
     @Test
     void getAiHand() {
         Hand hand2 = new Hand();
@@ -99,7 +99,7 @@ class AiTest {
         hand2.addCard(card5);
         hand2.addCard(card6);
         System.out.println(tableFor.getPile().getPile());
-        assertEquals(hand2.getCardsInHand(), ai.getAiHand().getCardsInHand());
+        assertEquals(hand2.getCardsInHand(), ai.getHand().getCardsInHand());
     }
 
     @Test
@@ -156,7 +156,7 @@ class AiTest {
         Deck deck = new Deck();
         deck.makeCardsTrump(tableFor.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }
@@ -180,7 +180,7 @@ class AiTest {
         System.out.println(card3.getTrump());
         //tableFor.setTrumpSuit((tableFor.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }
@@ -198,7 +198,7 @@ class AiTest {
         Card cardForDef = new Card("Diamonds", 14, false);
         player1.getHand().addCard(cardForDef);
         for (Card card : deck.getDeck()) {
-            if (!ai.getAiHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }

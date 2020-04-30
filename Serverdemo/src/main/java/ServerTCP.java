@@ -6,21 +6,31 @@ import com.esotericsoftware.kryonet.Server;
 
 import java.util.Date;
 
-public class serv extends Listener {
+public class ServerTCP extends Listener {
     static Server server;
+    static String serverIP = "193.40.255.14";
 
-    static int updPort = 27960, tcpPort = 27960;
+
+    static int tcpPort = 5201;
 
     public static void main (String[] args) throws Exception {
-        System.out.println(("Creating the server..."));
         server = new Server();
-        server.getKryo().register(PacketMessage.class);
-        server.bind(tcpPort, updPort);
         server.start();
+        server.bind(tcpPort);
+        System.out.println(("Creating the server..."));
 
-        server.addListener(new serv());
+        server.addListener(new Listener() {
+            public void received (Connection connection, Object object) {
+                if (object instanceof SomeRequest) {
+                    SomeRequest request = (SomeRequest)object;
+                    //System.out.println(request.text);
 
-        System.out.println("Server is working!");
+                    SomeResponse response = new SomeResponse();
+                    //response.text = "Thanks";
+                    connection.sendTCP(response);
+                }
+            }
+        });
     }
 
     public void connected (Connection c) {

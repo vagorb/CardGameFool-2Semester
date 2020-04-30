@@ -79,7 +79,7 @@ public class GameController {
      * Method fills hands of 2 players with cards
      * @param table com.card.game.fool.tables.Table on which this exact MATCH ( Game ) is happening
      */
-    public void assignTrumpAndFillHands(Table table) {
+    public void assignTrumpAndFillHands() {
         Random generator = new Random();
         cardThatDecidesTrump = table.getGameDeck().get(generator.nextInt(36));
         table.setTrumpSuit(cardThatDecidesTrump);

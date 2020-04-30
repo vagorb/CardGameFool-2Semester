@@ -6,12 +6,13 @@ import java.util.Map;
 public class Card {
 
     String suit;
+    String id;
     Integer value;
     Visibility visibility;
     Boolean trump;
     private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
-            9, "9", 10, "10", 11, "JACK", 12, "QUEEN", 13, "KING",
-            14, "ACE"));
+            9, "9", 10, "10", 11, "Jack", 12, "Queen", 13, "King",
+            14, "Ace"));
 
 
     /**
@@ -55,8 +56,16 @@ public class Card {
         this.value = value;
         this.visibility = Visibility.NOONE;
         this.trump = trump;
+        this.id = getValueName() + "_of_" + getSuit();
     }
 
+    /**
+     * Getter
+     * @return id of this card (purely to connect JavaFX style with this card)
+     */
+    public String getId() {
+        return id;
+    }
 
     /**
      * Getter
@@ -73,7 +82,6 @@ public class Card {
     public Integer getValue() {
         return value;
     }
-
 
     /**
      * Getter
@@ -110,18 +118,13 @@ public class Card {
 
     /**
      *
-     * @return returns name of the card for this value ( Example card with value of 11 is JACK )
+     * @return returns name of the card for this value ( Example card with value of 11 is Jack )
      */
     public String getValueName() {
         return valueMap.get(value);
     }
 
 
-    /**
-     * Overrided equals method, that counts objects as equal if they have the same parameters as another card
-     * @param o our card object
-     * @return proper result for our equals method.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -130,5 +133,21 @@ public class Card {
         return suit.equals(card.suit) &&
                 value.equals(card.value);
     }
+
+//    public static Card javaFXCardToCard(String javafxId) {
+//        List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
+//        int value = 0;
+//        if (splitted.get(0).equalsIgnoreCase("Jack")) {
+//            value = 11;
+//        } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
+//            value = 12;
+//        } else if (splitted.get(0).equalsIgnoreCase("King")) {
+//            value = 13;
+//        } else if (splitted.get(0).equalsIgnoreCase("Ace")) {
+//            value = 14;
+//        } else
+//            value = Integer.parseInt(splitted.get(0));
+//        return new Card(splitted.get(2), value, false );
+//    }
 }
 
