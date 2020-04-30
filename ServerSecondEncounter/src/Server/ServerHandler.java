@@ -1,5 +1,6 @@
 package Server;
 
+import com.card.game.fool.cards.Deck;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.netty.buffer.Unpooled;
@@ -25,6 +26,23 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         String string = jsonObject.get("MessageType").toString();
         System.out.println(string);
         string = string.replace("\"", "");
+
+//        if(mesage.type == "newPLayer"){
+//            // starting new game
+//            Game game = new Game()
+//                    //add player 1
+//            // add player 2
+////            game.addPlayer()
+////            game.addPlayer()
+////            Deck deck = new Deck();
+////            game.add(deck)
+//            Server.games.add(game);
+//        }
+//
+//        if(message.type == "PlayerMOve") {
+//            game = Server.games.getGameByPlayer(playerId);
+//            game.move(mesage)
+//        }
 
         if (string.equalsIgnoreCase("gameStart")) {
             ctx.write(message.getTrumpMessage() + "\r\n");

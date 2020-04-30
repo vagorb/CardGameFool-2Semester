@@ -14,7 +14,10 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
+import java.util.List;
+
 public class Server {
+//    public static List<String> games;
 
     private static Deck deck = new Deck();
     private static Card card = Server.decideTrump();
@@ -47,6 +50,17 @@ public class Server {
 
     public static void runServer() throws InterruptedException {
         Server.makeTrump();
+//
+//        GameHlder = nbew GameHolder;
+//        gameholder.addPlayer(1)
+//        gameholder.addPlayer(2)
+//                Deck deck11 = new Deck()
+//        gameholder.addDeck(deck11)
+//         gameHolder.startGame();
+//        games.add(game1);
+//
+//        GameHlder game2
+
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
