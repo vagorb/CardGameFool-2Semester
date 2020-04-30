@@ -1,5 +1,6 @@
 Kaardimäng "Fool".
 ***
+
 Režiimid: com.card.game.fool.players.Player vs AI või 2 kuni 4 mängijat mängivad üksteise vastu.
 Mängu protsess:
 Enne mängu alustamisest:
