@@ -14,13 +14,21 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-public class Server {
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
+public class Server {
     private static Deck deck = new Deck();
     private static Card card = Server.decideTrump();
 
     public static Deck getDeck() {
         return deck;
+    }
+
+    public static Card getTrump() {
+        return card;
     }
 
     static Card decideTrump() {
@@ -29,6 +37,7 @@ public class Server {
         deck.getDeck().remove(card);
         return card;
     }
+
     static void shuffle() {
         deck.shuffleDeck();
     }
@@ -49,7 +58,7 @@ public class Server {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1000, Delimiters.lineDelimiter()));
                             ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(new StringEncoder());

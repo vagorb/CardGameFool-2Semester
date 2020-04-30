@@ -42,6 +42,7 @@ public class Game extends Application {
     private Scene menuScene;
     private boolean fullscreenStatus;
     private boolean invertScroll;
+    private boolean fixedResolution;
 
     private double windowHeight;
     private double windowWidth;
@@ -75,9 +76,10 @@ public class Game extends Application {
         windowHeight = menu.getHeight();
     }
 
-    void setSettings(boolean invertScroll, boolean fullscreenStatus) {
+    void setSettings(boolean invertScroll, boolean fullscreenStatus, boolean fixedResolution) {
         this.fullscreenStatus = fullscreenStatus;
         this.invertScroll = invertScroll;
+        this.fixedResolution = fixedResolution;
     }
 
     private Button cardToButton(Card card, HBox cardBox, double cardWidth, double cardHeight) {
@@ -99,6 +101,7 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
+        window.setResizable(false);
 //        deck.shuffleDeck();
 //        trumpCard = deck.getDeck().get(0);
         // I NEED TO ACCOUNT FOR THE FACT THAT THIS CARD WILL BE REMOVED FROM THE DECK AS A SEPARATE CARD
@@ -310,7 +313,7 @@ public class Game extends Application {
 //            }
         }
 
-        HBox gameFields = new CardPackField(cardUnitSize, windowWidth, throwCards).addFields(playField);
+        HBox gameFields = new CardPackField(cardUnitSize, windowWidth, throwCards).addFields(playField, trumpCard);
         gameFields.setTranslateX(windowWidth * 9 / 40);
         gameFields.setTranslateY((windowHeight / 2 - 4 * cardUnitSize));
 
@@ -387,9 +390,9 @@ public class Game extends Application {
             }
         });
 
-
         backButton.setOnAction(actionEvent -> {
             window.hide();
+            window.setResizable(fixedResolution);
             window.setScene(menuScene);
             window.show();
         });
