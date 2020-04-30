@@ -6,6 +6,7 @@ import javafx.scene.control.ComboBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Resolution {
@@ -27,20 +28,22 @@ public class Resolution {
 
     private void actions() {
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
-            if (!customResolution.isSelected()) {
+            if (!customResolution.isSelected() && !window.isFullScreen()) {
                 window.setX((Screen.getPrimary().getBounds().getWidth() - windowWidth) / 2);
                 window.setY((Screen.getPrimary().getBounds().getHeight() - windowHeight) / 2);
             }
         };
 
         window.getScene().setOnMousePressed(event -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
         });
 
         window.getScene().setOnMouseDragged(event -> {
-            window.setX(event.getScreenX() - xOffset);
-            window.setY(event.getScreenY() - yOffset);
+            if (!window.isFullScreen()) {
+                window.setX(event.getScreenX() - xOffset);
+                window.setY(event.getScreenY() - yOffset);
+            }
         });
 
         window.heightProperty().addListener(stageSizeListener);
@@ -70,15 +73,19 @@ public class Resolution {
 
     private void makeResolutionChoices() {
         ComboBox<String> choices = new ComboBox<>();
-        for (String reso : List.of("1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440", "3840x2160")) {
+        for (String reso : List.of("1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440", "3200x1800",
+                "3840x2160", "5120x2880", "7680x4320")) {
             if (Integer.parseInt(reso.split("x")[1]) <= Screen.getPrimary().getBounds().getHeight()) {
                 choices.getItems().add(reso);
+            } else {
+                break;
             }
         }
         choices.valueProperty().addListener((observableValue, s, t1) -> {
-            if (!t1.equals("")) {
+            if (!t1.equals("") && !window.isFullScreen()) {
                 String[] values = t1.split("x");
                 change(values[0], values[1]);
+                window.setX((Screen.getPrimary().getBounds().getWidth() - windowWidth) / 2);
                 window.setY((Screen.getPrimary().getBounds().getHeight() - windowHeight) / 2);
             }
         });
@@ -121,6 +128,10 @@ public class Resolution {
         windowHeight = max[1];
         window.setWidth(windowWidth);
         window.setHeight(windowHeight);
+        if (!window.isFullScreen()) {
+            window.setX((Screen.getPrimary().getBounds().getWidth() - windowWidth) / 2);
+            window.setY((Screen.getPrimary().getBounds().getHeight() - windowHeight) / 2);
+        }
     }
 
     public void change(String width, String height) {
