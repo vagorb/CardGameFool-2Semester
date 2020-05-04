@@ -38,18 +38,18 @@ public class CardPackField {
         field.getChildren().add(newB);
     }
 
-    private void trumpCard() {
-        Card trumpCard = Server.getTrump();
-        Label trump = new Label();
-        trump.setMinSize(cardUnit * 2, cardUnit * 3);
-        trump.setMaxSize(cardUnit * 2, cardUnit * 3);
-        trump.setStyle(String.format("-fx-background-image: url('/images/cards/%s/%s.png'); -fx-background-size: cover",
-                trumpCard.getSuit(), trumpCard.getId()));
-        trump.setTranslateX(-2 * deckCards.getChildren().size() * cardUnit - 30);
-        trump.setTranslateY(deckCards.getChildren().size() * cardUnit / 6);
-        trump.setRotate(90);
-        deckCards.getChildren().add(trump);
-    }
+//    private void trumpCard() {
+//        Card trumpCard = Server.getTrump();
+//        Label trump = new Label();
+//        trump.setMinSize(cardUnit * 2, cardUnit * 3);
+//        trump.setMaxSize(cardUnit * 2, cardUnit * 3);
+//        trump.setStyle(String.format("-fx-background-image: url('/images/cards/%s/%s.png'); -fx-background-size: cover",
+//                trumpCard.getSuit(), trumpCard.getId()));
+//        trump.setTranslateX(-2 * deckCards.getChildren().size() * cardUnit - 30);
+//        trump.setTranslateY(deckCards.getChildren().size() * cardUnit / 6);
+//        trump.setRotate(90);
+//        deckCards.getChildren().add(trump);
+//    }
 
     public HBox addFields(VBox playField, Card trump) {
         for (HBox field : List.of(deckField, pileField)) {
@@ -57,10 +57,10 @@ public class CardPackField {
             field.setMaxSize(maxWidth, maxHeight);
         }
 
-        trumpCard();
-        for (int i = 0; i < 35; i++) {
-            oneCard(deckCards);
-        }
+//        trumpCard();
+//        for (int i = 0; i < 35; i++) {
+//            oneCard(deckCards);
+//        }
 
         deckCards.getChildren().addListener((ListChangeListener<Node>) change -> {
             change.next();

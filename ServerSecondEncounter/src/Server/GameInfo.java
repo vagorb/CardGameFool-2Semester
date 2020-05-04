@@ -1,6 +1,7 @@
 package Server;
 
 import Client.Client;
+import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.google.gson.Gson;
 
@@ -13,13 +14,21 @@ public class GameInfo {
     private List<String> players = new ArrayList<>();
     private Deck deck;
     private String id;
+    private Card trump;
 
 
     public GameInfo(Deck deck, List<String> players) {
         this.deck = deck;
         this.players = players;
         this.id = UUID.randomUUID().toString();
+        this.trump = getDeck().getDeck().get(players.size() * 6);
+        trump.setTrump(true);
+        deck.removeCard(trump);
+        deck.getDeck().add(trump);
+        deck.makeCardsTrump(trump.getSuit());
     }
+
+
 
     public void addPlayers(String player) {
         players.add(player);
@@ -39,6 +48,10 @@ public class GameInfo {
 
     public String getId() {
         return id;
+    }
+
+    public Card getTrump() {
+        return trump;
     }
 
     public static void main(String[] args) {

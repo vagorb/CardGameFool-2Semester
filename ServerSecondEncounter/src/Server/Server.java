@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class Server {
+    public static List<String> gameForTwo = new ArrayList<>();
+    public static List<String> gameForThree = new ArrayList<>();
+    public static List<String> gameForFour = new ArrayList<>();
     public static List<GameInfo> games = new ArrayList<GameInfo>();
     public static List<String> players = new ArrayList<>();
     public static Map<String, GameInfo> playersToGames = new HashMap<>();
