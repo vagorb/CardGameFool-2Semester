@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class Server {
+    public static List<String> gameForTwo = new ArrayList<>();
+    public static List<String> gameForThree = new ArrayList<>();
+    public static List<String> gameForFour = new ArrayList<>();
     public static List<GameInfo> games = new ArrayList<GameInfo>();
     public static List<String> players = new ArrayList<>();
     public static Map<String, GameInfo> playersToGames = new HashMap<>();
@@ -54,33 +57,6 @@ public class Server {
 //    public static void makeTrump() {
 //        deck.makeCardsTrump(card.getSuit());
 //    }
-
-    private static Deck deck = new Deck();
-    private static Card card = Server.decideTrump();
-
-    public static Deck getDeck() {
-        return deck;
-    }
-
-    public static Card getTrump() {
-        return card;
-    }
-
-    public static Card decideTrump() {
-        //Server.Server.shuffle();
-        Card card = deck.getDeck().get(12);
-        card.setTrump(true);
-        deck.getDeck().remove(card);
-        deck.getDeck().add(card);
-        return card;
-    }
-    static void shuffle() {
-        deck.shuffleDeck();
-    }
-
-    static void makeTrump() {
-        deck.makeCardsTrump(card.getSuit());
-    }
 
 
     public static void runServer() throws InterruptedException {

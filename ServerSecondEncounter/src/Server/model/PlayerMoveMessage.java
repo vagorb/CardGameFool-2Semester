@@ -7,4 +7,6 @@ public class PlayerMoveMessage {
     String player;
     String move;
     Card card;
+
+
 }
