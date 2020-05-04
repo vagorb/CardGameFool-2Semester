@@ -6,14 +6,8 @@ import com.google.gson.JsonParser;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import java.net.Socket;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.Reader;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private ServerGameStartMessage message = new ServerGameStartMessage();
@@ -24,6 +18,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         System.out.println("Server.Server received " + msg);
         String str = msg.toString();
         JsonObject jsonObject = JsonParser.parseString(str).getAsJsonObject();
+//        JsonObject jsonObject = JsonParser.parseString()
         System.out.println(jsonObject);
         String string = jsonObject.get("MessageType").toString();
         System.out.println(string);
