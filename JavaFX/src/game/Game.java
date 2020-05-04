@@ -5,6 +5,7 @@ import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import game.help.AvatarBox;
@@ -101,6 +102,17 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
+//        JsonObject checkForPlayers = new JsonObject();
+//        checkForPlayers.addProperty("MessageType", "canGameStart");
+//        client.setMessage(checkForPlayers);
+//        try {
+//            Client.sendMessage(checkForPlayers);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        while () {
+//
+//        }
         window.setResizable(false);
 //        deck.shuffleDeck();
 //        trumpCard = deck.getDeck().get(0);
@@ -512,18 +524,8 @@ public class Game extends Application {
     }
 
     public Card cardFromResponse(String resp) {
-        JsonObject jsonObject = new JsonParser().parse(resp).getAsJsonObject();
-        String suit = jsonObject.get("Suit").toString();
-        suit = suit.replace("\"", "");
-        String value = jsonObject.get("Value").toString();
-        value = value.replace("\"", "");
-        Integer val = Integer.parseInt(value);
-        String trump = jsonObject.get("Trump").toString();
-        trump = trump.replace("\"", "");
-        Boolean tru = Boolean.parseBoolean(trump);
-//        String id = jsonObject.get("Id").toString();
-//        id = id.replace("\"", "");
-        return new Card(suit, val, tru);
+        Gson gson = new Gson();
+        return gson.fromJson(resp, Card.class);
     }
 
 //    public void jsonInfoToCards()
