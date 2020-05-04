@@ -14,6 +14,7 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.HashMap;
@@ -22,39 +23,41 @@ import java.util.Map;
 import java.util.Set;
 
 public class Server {
-//    public static List<String> games;
+    public static List<GameInfo> games = new ArrayList<GameInfo>();
+    public static List<String> players = new ArrayList<>();
+    public static Map<String, GameInfo> playersToGames = new HashMap<>();
 
-    private static Deck deck = new Deck();
-    private static Card card = Server.decideTrump();
-
-    public static Deck getDeck() {
-        return deck;
-    }
-
-    public static Card getTrump() {
-        return card;
-    }
-
-    public static Card decideTrump() {
-        //Server.Server.shuffle();
-        Card card = deck.getDeck().get(12);
-        card.setTrump(true);
-        deck.getDeck().remove(card);
-        deck.getDeck().add(card);
-        return card;
-    }
-
-    public static void shuffle() {
-        deck.shuffleDeck();
-    }
-
-    public static void makeTrump() {
-        deck.makeCardsTrump(card.getSuit());
-    }
+//    private static Deck deck = new Deck();
+//    private static Card card = Server.decideTrump();
+//
+//    public static Deck getDeck() {
+//        return deck;
+//    }
+//
+//    public static Card getTrump() {
+//        return card;
+//    }
+//
+//    public static Card decideTrump() {
+//        //Server.Server.shuffle();
+//        Card card = deck.getDeck().get(12);
+//        card.setTrump(true);
+//        deck.getDeck().remove(card);
+//        deck.getDeck().add(card);
+//        return card;
+//    }
+//
+//    public static void shuffle() {
+//        deck.shuffleDeck();
+//    }
+//
+//    public static void makeTrump() {
+//        deck.makeCardsTrump(card.getSuit());
+//    }
 
 
     public static void runServer() throws InterruptedException {
-        Server.makeTrump();
+//        Server.makeTrump();
 //
 //        GameHlder = nbew GameHolder;
 //        gameholder.addPlayer(1)

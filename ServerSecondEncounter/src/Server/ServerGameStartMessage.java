@@ -69,6 +69,12 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         }
         return array;
     }
+//
+//    public JsonObject canGameStart() {
+//        JsonObject jsonObject = new JsonObject();
+//        //if amoutn of players on server is not the same as players required for the game (- potential AI) do not start the game
+//        if ()
+//    }
 
 
 
