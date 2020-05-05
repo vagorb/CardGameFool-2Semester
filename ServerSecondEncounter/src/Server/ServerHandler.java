@@ -15,7 +15,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public synchronized void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("Server.Server received " + msg);
         System.out.println(Server.playersToGames);
         System.out.println(Server.games);
@@ -47,7 +47,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                          }
                          ctx.write(message.canAttackGameStart(gameInfo) + "\r\n");
                          ctx.writeAndFlush(UUID.fromString(uuid));
-
                      } else {
                          GameInfo gameInfo = Server.games.get(0);
                          ctx.write(message.canDefGameStart(gameInfo) + "\r\n");
