@@ -52,6 +52,7 @@ public class Game extends Application {
     private double windowWidth;
 
     //    private final Deck deck = new Deck();
+    private Player.PlayerState playerState;
     private Player thePlayer;
     private Client client = new Client();
 
@@ -129,6 +130,14 @@ public class Game extends Application {
                 Client.sendMessage(start);
                 response = Client.getResponse();
             }
+            JsonObject obj = JsonParser.parseString(response).getAsJsonObject();
+            String state = obj.get("State").toString();
+            state = state.replace("\"", "");
+            if (state.equalsIgnoreCase("ATTACK")) {
+                playerState = Player.PlayerState.ATTACK;
+            } else if (state.equalsIgnoreCase("DEFENCE")) {
+                playerState = Player.PlayerState.DEFENSE;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -148,7 +157,16 @@ public class Game extends Application {
 //        System.out.println(trumpCard);
 
         // TODO ASK for trump CARD
-
+        try {
+            JsonObject trump = new JsonObject();
+            trump.addProperty("UUID", uuid);
+            trump.addProperty("MessageType", "getTrump");
+            Client.sendMessage(trump);
+            String response = Client.getResponse();
+            trumpCard = cardFromResponse(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Buttons buttons = new Buttons();
         StackPane gameStackPane = new StackPane();
 //        StackPane playeradding = new StackPane();

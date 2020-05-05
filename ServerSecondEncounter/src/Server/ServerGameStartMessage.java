@@ -34,7 +34,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         return obj;
     }
 
-    public JsonObject getMessage(GameInfo gameinfo) {
+    public synchronized JsonObject getMessage(GameInfo gameinfo) {
         JsonObject obj = new JsonObject();
         if (gameinfo.getDeck().getDeck().size() > 0) {
             Card card = gameinfo.getCard();
@@ -52,11 +52,11 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 
 
 
-    public JsonObject getTrumpMessage(GameInfo gameinfo) {
+    public synchronized JsonObject getTrumpMessage(GameInfo gameinfo) {
         JsonObject obj = new JsonObject();
         Card card = gameinfo.getTrump();
         //System.out.println(card + "first card");
-        obj.addProperty("MessageType", "Replenish");
+        obj.addProperty("MessageType", "getTrump");
         obj.addProperty("Suit", card.getSuit());
         obj.addProperty("Value", card.getValue());
         obj.addProperty("Trump", card.getTrump());
@@ -66,14 +66,14 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 
 
 
-    public JsonObject canAttackGameStart(GameInfo gameInfo) {
+    public synchronized JsonObject canAttackGameStart(GameInfo gameInfo) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("GameInfo", "gameIsReady");
         jsonObject.addProperty("State", "ATTACK");
         return jsonObject;
     }
 
-    public JsonObject canDefGameStart(GameInfo gameInfo) {
+    public synchronized JsonObject canDefGameStart(GameInfo gameInfo) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("GameInfo", "gameIsReady");
         jsonObject.addProperty("State", "DEFENCE");

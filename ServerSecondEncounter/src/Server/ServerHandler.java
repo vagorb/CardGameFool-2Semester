@@ -15,7 +15,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 
     @Override
-    public synchronized void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("Server.Server received " + msg);
         System.out.println(Server.playersToGames);
         System.out.println(Server.games);
@@ -39,7 +39,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //                    ctx.write("WAIT" + "\r\n");
 //                    ctx.writeAndFlush(UUID.fromString(uuid));
                  if (Server.gameForTwo.size() == 2) {
-                     if (!Server.playersToGames.containsKey(uuid)) {
+                     if (uuid.equalsIgnoreCase(Server.gameForTwo.get(0))) {
                          GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
                          Server.games.add(gameInfo);
                          for (String player : Server.gameForTwo) {
@@ -48,11 +48,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                          ctx.write(message.canAttackGameStart(gameInfo) + "\r\n");
                          ctx.writeAndFlush(UUID.fromString(uuid));
                      } else {
-                         GameInfo gameInfo = Server.games.get(0);
-                         ctx.write(message.canDefGameStart(gameInfo) + "\r\n");
-                         ctx.writeAndFlush(UUID.fromString(uuid));
-                         Server.games.clear();
-                         Server.gameForTwo.clear();
+                         if (Server.playersToGames.containsKey(uuid)) {
+                             GameInfo gameInfo = Server.games.get(0);
+                             ctx.write(message.canDefGameStart(gameInfo) + "\r\n");
+                             ctx.writeAndFlush(UUID.fromString(uuid));
+                             Server.games.clear();
+                             Server.gameForTwo.clear();
+                         } else {
+                             ctx.write("WAIT" + "\r\n");
+                             ctx.writeAndFlush(UUID.fromString(uuid));
+                         }
+
                      }
                          //                           System.out.println(Server.playersToGames);
                          //                           System.out.println(Server.gameForTwo);

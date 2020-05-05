@@ -52,7 +52,7 @@ public class GameInfo {
         return card;
     }
 
-    public Card getTrump() {
+    public synchronized Card getTrump() {
         return trump;
     }
 

@@ -83,7 +83,7 @@ public class Server {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected synchronized void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1000, Delimiters.lineDelimiter()));
                             ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(new StringEncoder());
@@ -99,7 +99,7 @@ public class Server {
         }
     }
 
-    public synchronized static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         Server.runServer();
     }
 }
