@@ -30,6 +30,7 @@ public class Server {
     public static List<String> players = new ArrayList<>();
     public static Map<String, GameInfo> playersToGames = new HashMap<>();
 
+
 //    private static Deck deck = new Deck();
 //    private static Card card = Server.decideTrump();
 //
@@ -71,7 +72,6 @@ public class Server {
 //        games.add(game1);
 //
 //        GameHlder game2
-
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();

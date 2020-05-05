@@ -41,8 +41,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 Server.gameForTwo.add(uuid);
                 if (Server.gameForTwo.size() == 2) {
                     GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
+
                     Server.players.addAll(Server.gameForTwo);
-                    for (String player : Server.gameForTwo){
+                    for (String player : Server.gameForTwo) {
                         Server.playersToGames.put(player, gameInfo);
                     }
                     for (String player : Server.gameForTwo) {
@@ -50,8 +51,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                         ctx.writeAndFlush(UUID.fromString(player));
                     }
                     Server.gameForTwo.clear();
-
                 }
+                //}
            }
         } else if (messageType.equalsIgnoreCase("replenish")) {
             String uuid = jsonObject.get("UUID").toString();
