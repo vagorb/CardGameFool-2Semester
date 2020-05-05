@@ -39,7 +39,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //                    ctx.write("WAIT" + "\r\n");
 //                    ctx.writeAndFlush(UUID.fromString(uuid));
                  if (Server.gameForTwo.size() == 2) {
-                     if (Server.games.size() < 1) {
+                     if (!Server.playersToGames.containsKey(uuid)) {
                          GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
                          Server.games.add(gameInfo);
                          for (String player : Server.gameForTwo) {
@@ -93,6 +93,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             for (String player : game.getPlayers()) {
                 if (!player.equalsIgnoreCase(uuid)) {
                     ctx.write(message.skipMessage(game) + "\r\n");
+                    ctx.writeAndFlush(UUID.fromString(uuid));
+                } else {
+                    ctx.write("RECEIVED" + "\r\n");
                     ctx.writeAndFlush(UUID.fromString(uuid));
                 }
             }

@@ -24,12 +24,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class Server {
-    public static List<String> gameForTwo = new ArrayList<>();
+    public static List<String> gameForTwo = Collections.synchronizedList(new ArrayList<String>());
     public static List<String> gameForThree = new ArrayList<>();
     public static List<String> gameForFour = new ArrayList<>();
-    public static List<GameInfo> games = Collections.synchronizedList(new ArrayList<GameInfo>());;
+    public static List<GameInfo> games = Collections.synchronizedList(new ArrayList<GameInfo>());
     public static List<String> players = new ArrayList<>();
-    public static Map<String, GameInfo> playersToGames = new HashMap<>();
+    public static Map<String, GameInfo> playersToGames = Collections.synchronizedMap(new HashMap<String, GameInfo>());
 
 
 //    private static Deck deck = new Deck();
