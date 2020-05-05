@@ -268,9 +268,9 @@ public class Game extends Application {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        String resp = Client.getResponse();
-                        Card card = cardFromResponse(resp);
-                        System.out.println(card);
+//                        String resp = Client.getResponse();
+//                        Card card = cardFromResponse(resp);
+//                        System.out.println(card);
                         listOfCardsOnUITable.add(attackCard.getValue());
                         cardBox.getChildren().remove(activeCard);
                         attack.setDisable(true);
@@ -538,7 +538,9 @@ public class Game extends Application {
         obj.addProperty("PlayerName", "Sanja"); //player.getName()
         obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
         //if (!player.getPlayerState().equals(Player.PlayerState.SKIP)) {
-        obj.addProperty("Card", card.getValueName()); //table.getLastCardOnTable().getId());
+        obj.addProperty("Value", card.getValue()); //table.getLastCardOnTable().getId());
+        obj.addProperty("Suit", card.getSuit());
+        obj.addProperty("Trump", card.getTrump());
 //        obj.get("Card").getAsJsonObject().addProperty("Name", card.getValueName());
 //        obj.get("Card").getAsJsonObject().addProperty("Suit", card.getSuit());
 //        obj.get("Card").getAsJsonObject().addProperty("Value", card.getValue());

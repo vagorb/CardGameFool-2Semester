@@ -18,7 +18,7 @@ public class Client {
 
 
         String host = "localhost";
-        int port = 5200;
+        int port = 5201;
         JsonObject message = object;
 
 //        for (int i = 0; i < 35; i++) {

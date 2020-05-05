@@ -46,6 +46,12 @@ public class GameInfo {
         return deck;
     }
 
+    public synchronized Card getCard() {
+        Card card = deck.getDeck().get(0);
+        deck.getDeck().remove(card);
+        return card;
+    }
+
     public Card getTrump() {
         return trump;
     }

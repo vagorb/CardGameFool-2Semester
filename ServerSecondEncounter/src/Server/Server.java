@@ -15,6 +15,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class Server {
     public static List<String> gameForTwo = new ArrayList<>();
     public static List<String> gameForThree = new ArrayList<>();
     public static List<String> gameForFour = new ArrayList<>();
-    public static List<GameInfo> games = new ArrayList<GameInfo>();
+    public static List<GameInfo> games = Collections.synchronizedList(new ArrayList<GameInfo>());;
     public static List<String> players = new ArrayList<>();
     public static Map<String, GameInfo> playersToGames = new HashMap<>();
 
@@ -89,7 +90,7 @@ public class Server {
                             ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(5200).sync();
+            ChannelFuture f = b.bind(5201).sync();
             System.out.println("Starting nio server at " + f.channel().localAddress());
             f.channel().closeFuture().sync();
         } finally {
@@ -98,7 +99,7 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public synchronized static void main(String[] args) throws InterruptedException {
         Server.runServer();
     }
 }

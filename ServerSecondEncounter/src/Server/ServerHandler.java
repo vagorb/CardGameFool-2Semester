@@ -8,8 +8,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -19,6 +17,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("Server.Server received " + msg);
+        System.out.println(Server.playersToGames);
+        System.out.println(Server.games);
         String str = msg.toString();
         JsonObject jsonObject = JsonParser.parseString(str).getAsJsonObject();
 //        JsonObject jsonObject = JsonParser.parseString()
@@ -33,31 +33,46 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if (gameSize == 2) {
                 String uuid = jsonObject.get("UUID").toString();
                 uuid = uuid.replace("\"", "");
-                    if (Server.gameForTwo.size() == 2) {
-                        GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
-                        System.out.println(gameInfo);
-                        Server.players.addAll(Server.gameForTwo);
-                        for (String player : Server.gameForTwo){
-                            Server.playersToGames.put(player, gameInfo);
-                            System.out.println(Server.playersToGames);
-//                            System.out.println(Server.playersToGames);
-//                            System.out.println(Server.gameForTwo);
-                        }
-                        for (String player : Server.gameForTwo) {
-                            ctx.write(message.canGameStart(gameInfo) + "\r\n");
-                            ctx.writeAndFlush(UUID.fromString(player));
-                        }
+//                if (Server.gameForTwo.size() == 1 && Server.games.size() < 1) {
+//                    GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
+//                    Server.games.add(gameInfo);
+//                    ctx.write("WAIT" + "\r\n");
+//                    ctx.writeAndFlush(UUID.fromString(uuid));
+                 if (Server.gameForTwo.size() == 2) {
+                     if (Server.games.size() < 1) {
+                         GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
+                         Server.games.add(gameInfo);
+                         for (String player : Server.gameForTwo) {
+                             Server.playersToGames.put(player, gameInfo);
+                         }
+                         for (String player : Server.gameForTwo) {
+                             ctx.write(message.canGameStart(gameInfo) + "\r\n");
+                             ctx.writeAndFlush(UUID.fromString(player));
+                         }
+                     } else {
+                         GameInfo gameInfo = Server.games.get(0);
+                         for (String player : Server.gameForTwo) {
+                             Server.playersToGames.put(player, gameInfo);
+                         }
+                         for (String player : Server.gameForTwo) {
+                             ctx.write(message.canGameStart(gameInfo) + "\r\n");
+                             ctx.writeAndFlush(UUID.fromString(player));
+                             //}
+                         }
+                     }
+                         //                           System.out.println(Server.playersToGames);
+                         //                           System.out.println(Server.gameForTwo);
 //                        Server.gameForTwo.clear(); TODO This
-
-                    } else {
-                        if (!Server.gameForTwo.contains(uuid)) {
-                            Server.gameForTwo.add(uuid);
-                        }
+                 } else {
+                     if (!Server.gameForTwo.contains(uuid)) {
+                         Server.gameForTwo.add(uuid);
+                         System.out.println(Server.playersToGames);
+                     }
 //                        System.out.println(Server.playersToGames);
 //                        System.out.println(Server.gameForTwo);
-                        ctx.write("WAIT" + "\r\n");
-                        ctx.writeAndFlush(UUID.fromString(uuid));
-                    }
+                         ctx.write("WAIT" + "\r\n");
+                         ctx.writeAndFlush(UUID.fromString(uuid));
+                     }
            }
         } else if (messageType.equalsIgnoreCase("replenish")) {
             String uuid = jsonObject.get("UUID").toString();
@@ -98,6 +113,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             for (String player : game.getPlayers()) {
                 if (!player.equalsIgnoreCase(uuid)) {
                     ctx.write(message.moveMessage(jsonObject) + "\r\n");
+                    ctx.writeAndFlush(UUID.fromString(uuid));
+                } else {
+                    ctx.write("RECEIVED" + "\r\n");
                     ctx.writeAndFlush(UUID.fromString(uuid));
                 }
             }

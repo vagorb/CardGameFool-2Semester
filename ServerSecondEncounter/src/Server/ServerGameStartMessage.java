@@ -37,8 +37,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
     public JsonObject getMessage(GameInfo gameinfo) {
         JsonObject obj = new JsonObject();
         if (gameinfo.getDeck().getDeck().size() > 0) {
-            Card card = gameinfo.getDeck().getDeck().get(0);
-            gameinfo.getDeck().removeCard(card);
+            Card card = gameinfo.getCard();
             //System.out.println(card + "first card");
             obj.addProperty("Suit", card.getSuit());
             obj.addProperty("Value", card.getValue());
