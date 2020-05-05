@@ -130,7 +130,7 @@ public class SettingMenu {
                 window.hide();
                 window.getScene().setRoot(mainStackpane);
                 play.setMenu(window.getScene());
-                play.setSettings(invertScroll, window.isFullScreen(), resolution.isFixedResolution());
+                play.setSettings(invertScroll, window.isFullScreen(), resolution);
                 resolution.change(window.getScene().getWidth(), window.getScene().getHeight());
                 play.start(window);
             } catch (Exception e) {

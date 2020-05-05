@@ -6,7 +6,6 @@ import javafx.scene.control.ComboBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Resolution {
@@ -23,28 +22,18 @@ public class Resolution {
         this.window = window;
         makeCustomResoCheckbox();
         makeResolutionChoices();
-        actions();
+        dragWindow();
+        resizeWindow();
     }
 
-    private void actions() {
+
+    private void resizeWindow() {
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
             if (!customResolution.isSelected() && !window.isFullScreen()) {
                 window.setX((Screen.getPrimary().getBounds().getWidth() - windowWidth) / 2);
                 window.setY((Screen.getPrimary().getBounds().getHeight() - windowHeight) / 2);
             }
         };
-
-        window.getScene().setOnMousePressed(event -> {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-        });
-
-        window.getScene().setOnMouseDragged(event -> {
-            if (!window.isFullScreen()) {
-                window.setX(event.getScreenX() - xOffset);
-                window.setY(event.getScreenY() - yOffset);
-            }
-        });
 
         window.heightProperty().addListener(stageSizeListener);
         window.minWidthProperty().bind(window.heightProperty().multiply(16d / 9));
@@ -56,6 +45,20 @@ public class Resolution {
                 if (newHeight >= 720 && newHeight <= Screen.getPrimary().getBounds().getHeight()) {
                     window.setHeight(newHeight);
                 }
+            }
+        });
+    }
+
+    public void dragWindow() {
+        window.getScene().setOnMousePressed(event -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+
+        window.getScene().setOnMouseDragged(event -> {
+            if (!window.isFullScreen()) {
+                window.setX(event.getScreenX() - xOffset);
+                window.setY(event.getScreenY() - yOffset);
             }
         });
     }
