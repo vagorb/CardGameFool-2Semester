@@ -1,6 +1,7 @@
 package Server;
 
 import com.card.game.fool.cards.Card;
+import com.card.game.fool.players.Player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -31,7 +32,6 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         obj.addProperty("Trump", card.getTrump());
         obj.addProperty("Id", card.getId());
         return obj;
-
     }
 
     public JsonObject getMessage(GameInfo gameinfo) {
@@ -66,9 +66,17 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 
 
 
-    public JsonObject canGameStart(GameInfo gameInfo) {
+    public JsonObject canAttackGameStart(GameInfo gameInfo) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("GameInfo", "gameIsReady");
+        jsonObject.addProperty("State", "ATTACK");
+        return jsonObject;
+    }
+
+    public JsonObject canDefGameStart(GameInfo gameInfo) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("GameInfo", "gameIsReady");
+        jsonObject.addProperty("State", "DEFENCE");
         return jsonObject;
     }
 

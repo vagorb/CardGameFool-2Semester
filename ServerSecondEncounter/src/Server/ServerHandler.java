@@ -45,20 +45,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                          for (String player : Server.gameForTwo) {
                              Server.playersToGames.put(player, gameInfo);
                          }
-                         for (String player : Server.gameForTwo) {
-                             ctx.write(message.canGameStart(gameInfo) + "\r\n");
-                             ctx.writeAndFlush(UUID.fromString(player));
-                         }
+                         ctx.write(message.canAttackGameStart(gameInfo) + "\r\n");
+                         ctx.writeAndFlush(UUID.fromString(uuid));
+
                      } else {
                          GameInfo gameInfo = Server.games.get(0);
-                         for (String player : Server.gameForTwo) {
-                             Server.playersToGames.put(player, gameInfo);
-                         }
-                         for (String player : Server.gameForTwo) {
-                             ctx.write(message.canGameStart(gameInfo) + "\r\n");
-                             ctx.writeAndFlush(UUID.fromString(player));
-                             //}
-                         }
+                         ctx.write(message.canDefGameStart(gameInfo) + "\r\n");
+                         ctx.writeAndFlush(UUID.fromString(uuid));
+                         Server.games.clear();
+                         Server.gameForTwo.clear();
                      }
                          //                           System.out.println(Server.playersToGames);
                          //                           System.out.println(Server.gameForTwo);
@@ -93,11 +88,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             for (String player : game.getPlayers()) {
                 if (!player.equalsIgnoreCase(uuid)) {
                     ctx.write(message.skipMessage(game) + "\r\n");
-                    ctx.writeAndFlush(UUID.fromString(uuid));
                 } else {
                     ctx.write("RECEIVED" + "\r\n");
-                    ctx.writeAndFlush(UUID.fromString(uuid));
                 }
+                ctx.writeAndFlush(UUID.fromString(uuid));
             }
         } else if (messageType.equalsIgnoreCase("TAKE")) {
             String uuid = jsonObject.get("UUID").toString();
