@@ -60,6 +60,7 @@ public class Server {
 
 
     public static void runServer() throws InterruptedException {
+        System.out.println("LONG LINE OF TEXT THAT WE CAN SEE ??????????");
 //        Server.makeTrump();
 //
 //        GameHlder = nbew GameHolder;

@@ -22,9 +22,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         String str = msg.toString();
         JsonObject jsonObject = JsonParser.parseString(str).getAsJsonObject();
 //        JsonObject jsonObject = JsonParser.parseString()
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         String messageType = jsonObject.get("MessageType").toString();
-        System.out.println(messageType);
+//        System.out.println(messageType);
         messageType = messageType.replace("\"", "");
         if(messageType.equalsIgnoreCase("GameStart")) {
             String messageGameSize = jsonObject.get("GameSize").toString();
@@ -33,20 +33,31 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if (gameSize == 2) {
                 String uuid = jsonObject.get("UUID").toString();
                 uuid = uuid.replace("\"", "");
-                Server.gameForTwo.add(uuid);
-                if (Server.gameForTwo.size() == 2) {
-                    GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
-                    Server.players.addAll(Server.gameForTwo);
-                    for (String player : Server.gameForTwo){
-                        Server.playersToGames.put(player, gameInfo);
-                    }
-                    for (String player : Server.gameForTwo) {
-                        ctx.write(message.canGameStart(gameInfo) + "\r\n");
-                        ctx.writeAndFlush(UUID.fromString(player));
-                    }
-                    Server.gameForTwo.clear();
+                    if (Server.gameForTwo.size() == 2) {
+                        GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
+                        System.out.println(gameInfo);
+                        Server.players.addAll(Server.gameForTwo);
+                        for (String player : Server.gameForTwo){
+                            Server.playersToGames.put(player, gameInfo);
+                            System.out.println(Server.playersToGames);
+//                            System.out.println(Server.playersToGames);
+//                            System.out.println(Server.gameForTwo);
+                        }
+                        for (String player : Server.gameForTwo) {
+                            ctx.write(message.canGameStart(gameInfo) + "\r\n");
+                            ctx.writeAndFlush(UUID.fromString(player));
+                        }
+//                        Server.gameForTwo.clear(); TODO This
 
-                }
+                    } else {
+                        if (!Server.gameForTwo.contains(uuid)) {
+                            Server.gameForTwo.add(uuid);
+                        }
+//                        System.out.println(Server.playersToGames);
+//                        System.out.println(Server.gameForTwo);
+                        ctx.write("WAIT" + "\r\n");
+                        ctx.writeAndFlush(UUID.fromString(uuid));
+                    }
            }
         } else if (messageType.equalsIgnoreCase("replenish")) {
             String uuid = jsonObject.get("UUID").toString();

@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Game extends Application {
@@ -44,6 +45,8 @@ public class Game extends Application {
     private boolean fullscreenStatus;
     private boolean invertScroll;
     private boolean fixedResolution;
+    private String uuid = UUID.randomUUID().toString();
+    private int playersInTable = 2;
 
     private double windowHeight;
     private double windowWidth;
@@ -102,6 +105,7 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
+//        System.out.println(uuid);
 //        JsonObject checkForPlayers = new JsonObject();
 //        checkForPlayers.addProperty("MessageType", "canGameStart");
 //        client.setMessage(checkForPlayers);
@@ -113,20 +117,38 @@ public class Game extends Application {
 //        while () {
 //
 //        }
+        JsonObject start = new JsonObject();
+        start.addProperty("MessageType", "gameStart");
+        start.addProperty("UUID", uuid);
+        start.addProperty("GameSize", playersInTable);
+        client.setMessage(start);
+        try {
+            Client.sendMessage(start);
+            String response = Client.getResponse();
+            while (response.equals("WAIT")) {
+                Client.sendMessage(start);
+                response = Client.getResponse();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         window.setResizable(false);
 //        deck.shuffleDeck();
 //        trumpCard = deck.getDeck().get(0);
         // I NEED TO ACCOUNT FOR THE FACT THAT THIS CARD WILL BE REMOVED FROM THE DECK AS A SEPARATE CARD
 //        deck.removeCard(trumpCard);
 //        System.out.println(trumpCard.getSuit());
-        try {
-            Client.sendMessage(gameStart());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String response = Client.getResponse();
-        trumpCard = cardFromResponse(response);
-        System.out.println(trumpCard);
+//        try {
+//            Client.sendMessage(gameStart());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        String response = Client.getResponse();
+//        trumpCard = cardFromResponse(response);
+//        System.out.println(trumpCard);
+
+        // TODO ASK for trump CARD
+
         Buttons buttons = new Buttons();
         StackPane gameStackPane = new StackPane();
 //        StackPane playeradding = new StackPane();
@@ -458,6 +480,7 @@ public class Game extends Application {
     public JsonObject gameCardsReplenish() {
         JsonObject obj = new JsonObject();
         obj.addProperty("MessageType", "replenish");
+        obj.addProperty("UUID", uuid);
 //        obj.addProperty("PlayerName", "Sanja"); //player.getName()
 //        obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
 //        //if (!player.getPlayerState().equals(Player.PlayerState.SKIP)) {
@@ -510,6 +533,7 @@ public class Game extends Application {
 
     public JsonObject cardToJson(Card card) {
         JsonObject obj = new JsonObject();
+        obj.addProperty("UUID", uuid);
         obj.addProperty("MessageType", "gameMove");
         obj.addProperty("PlayerName", "Sanja"); //player.getName()
         obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
@@ -524,8 +548,18 @@ public class Game extends Application {
     }
 
     public Card cardFromResponse(String resp) {
-        Gson gson = new Gson();
-        return gson.fromJson(resp, Card.class);
+        JsonObject jsonObject = JsonParser.parseString(resp).getAsJsonObject();
+        String suit = jsonObject.get("Suit").toString();
+        suit = suit.replace("\"", "");
+        String value = jsonObject.get("Value").toString();
+        value = value.replace("\"", "");
+        Integer val = Integer.parseInt(value);
+        String trump = jsonObject.get("Trump").toString();
+        trump = trump.replace("\"", "");
+        Boolean tru = Boolean.parseBoolean(trump);
+// String id = jsonObject.get("Id").toString();
+// id = id.replace("\"", "");
+        return new Card(suit, val, tru);
     }
 
 //    public void jsonInfoToCards()

@@ -13,14 +13,12 @@ public class GameInfo {
 
     private List<String> players = new ArrayList<>();
     private Deck deck;
-    private String id;
     private Card trump;
 
 
     public GameInfo(Deck deck, List<String> players) {
         this.deck = deck;
         this.players = players;
-        this.id = UUID.randomUUID().toString();
         this.trump = getDeck().getDeck().get(players.size() * 6);
         trump.setTrump(true);
         deck.removeCard(trump);
@@ -44,10 +42,6 @@ public class GameInfo {
 
     public Deck getDeck() {
         return deck;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public Card getTrump() {
