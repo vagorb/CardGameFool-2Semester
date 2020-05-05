@@ -1,7 +1,5 @@
 package com.card.game.fool.cards;
 
-import com.card.game.fool.cards.Card;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

@@ -22,12 +22,20 @@ public class Buttons {
         return pickUpButton;
     }
 
-    public Button pickCardsUp() {
+    public Button pickUpCards() {
         Button pickUpButton = new Button();
         pickUpButton.setAlignment(Pos.CENTER);
         pickUpButton.setId("pickUpCards");
         pickUpButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
         return pickUpButton;
+    }
+
+    public Button skipTurn() {
+        Button skipTurnButton = new Button();
+        skipTurnButton.setAlignment(Pos.CENTER);
+        skipTurnButton.setId("skipTurn");
+        skipTurnButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
+        return skipTurnButton;
     }
 
     public Button exit() {

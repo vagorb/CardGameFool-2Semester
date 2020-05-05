@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public class SettingMenu {
         this.resolution = resolution;
     }
 
-    protected StackPane settings() {
+    StackPane settings() {
         StackPane settingsStackpane = new StackPane();
         VBox settingsMenu = new VBox(25);
         Button backButton = buttons.back();
@@ -59,6 +60,8 @@ public class SettingMenu {
             if (window.isFullScreen()) {
                 fullscreenButton.setId("fullscreenExit");
             } else {
+                window.setX((Screen.getPrimary().getBounds().getWidth() - window.getWidth()) / 2);
+                window.setY((Screen.getPrimary().getBounds().getHeight() - window.getHeight()) / 2);
                 fullscreenButton.setId("fullscreenEnter");
             }
             fullscreenButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
@@ -71,7 +74,6 @@ public class SettingMenu {
 
         fullscreenButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         backButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
-        settingsMenu.setPadding(new Insets(100, 0, 0, 100));
         settingsMenu.setAlignment(Pos.CENTER);
 
         settingsMenu.getChildren().addAll(fullscreenButton, resolutionChoices, customResolution, alwaysOnTop, scrollInversion, backButton);
@@ -80,7 +82,7 @@ public class SettingMenu {
         return settingsStackpane;
     }
 
-    protected StackPane game() {
+    StackPane game() {
         StackPane gameStackPane = new StackPane();
         Button playButton = buttons.play();
 
@@ -107,6 +109,7 @@ public class SettingMenu {
             }
             playerHumanCount = (int) sliderHuman.getValue();
         });
+
         checkBoxAI.setOnAction(actionEvent -> {
             if (checkBoxAI.isSelected()) {
                 playerAI = 1;

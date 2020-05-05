@@ -1,5 +1,6 @@
 package game.help;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -33,7 +34,16 @@ public class PlayField {
         sixth.setId("sixthPair");
 
         for (Pane pane : List.of(first, second, third, fourth, fifth, sixth)) {
-            pane.getChildren().addAll(new Button(), new Button());
+            Button attack = new Button();
+            Button defense = new Button();
+            attack.setId("Attack");
+            defense.setId("Defence");
+
+            attack.setTranslateX(cardUnitSize);
+            attack.setTranslateY(cardUnitSize);
+            defense.setVisible(false);
+
+            pane.getChildren().addAll(attack, defense);
             pane.setMinSize(cardUnitSize * 3.5, cardUnitSize * 4);
             if (pane != first) {
                 pane.setVisible(false);
@@ -60,7 +70,7 @@ public class PlayField {
         return Arrays.asList(playZone, upperLayer, lowerLayer);
     }
 
-    public void setDefault(Map<Integer, Pane> playFieldButtons) {
+    public void setDefault() {
         playFieldButtons.forEach((integer, pane) -> {
             if (!pane.getId().equals("firstPair")) {
                 pane.setVisible(false);
@@ -82,5 +92,17 @@ public class PlayField {
                 break;
             }
         }
+    }
+
+    public boolean validToThrowCards() {
+        for (Pane value : playFieldButtons.values()) {
+            ObservableList<Node> x = value.getChildren();
+            boolean attackPlaced = !x.get(0).getStyle().contains("-fx-background-image: null");
+            boolean defensePlaced = !x.get(1).getStyle().contains("-fx-background-image: null");
+            if ((!attackPlaced && defensePlaced) || (attackPlaced && !defensePlaced)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

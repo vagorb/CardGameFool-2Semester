@@ -40,7 +40,7 @@ public class Resolution {
         window.maxWidthProperty().bind(window.heightProperty().multiply(16d / 9));
 
         window.getScene().setOnScroll(scrollEvent -> {
-            if (!fixedResolution) {
+            if (!fixedResolution && !window.isFullScreen()) {
                 double newHeight = window.getHeight() + scrollEvent.getDeltaY();
                 if (newHeight >= 720 && newHeight <= Screen.getPrimary().getBounds().getHeight()) {
                     window.setHeight(newHeight);
@@ -131,10 +131,6 @@ public class Resolution {
         windowHeight = max[1];
         window.setWidth(windowWidth);
         window.setHeight(windowHeight);
-        if (!window.isFullScreen()) {
-            window.setX((Screen.getPrimary().getBounds().getWidth() - windowWidth) / 2);
-            window.setY((Screen.getPrimary().getBounds().getHeight() - windowHeight) / 2);
-        }
     }
 
     public void change(String width, String height) {
