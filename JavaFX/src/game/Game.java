@@ -287,8 +287,6 @@ public class Game extends Application {
                                     e.printStackTrace();
                                 }
                                 String resp = Client.getResponse();
-                                Card card = cardFromResponse(resp);
-                                System.out.println(card);
                                 listOfCardsOnUITable.add(defenseCard.getValue());
                                 cardBox.getChildren().remove(activeCard);
                                 defence.setDisable(true);
@@ -321,26 +319,46 @@ public class Game extends Application {
                     }
                 });
             }
-            if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
-                JsonObject opponent = new JsonObject();
-                opponent.addProperty("MessageType", "getOpponentCard");
-                opponent.addProperty("UUID", uuid);
-                client.setMessage(opponent);
-                try {
-                    Client.sendMessage(opponent);
-                    String response = Client.getResponse();
-                    while (response.equals("WAIT")) {
-                        Client.sendMessage(opponent);
-                        response = Client.getResponse();
-                    }
-                    Card card = cardFromResponse(response);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            } else if (playerState == Player.PlayerState.DEFENSE) {
-
-            }
+//            if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
+//                JsonObject opponent = new JsonObject();
+//                opponent.addProperty("MessageType", "getOpponentCard");
+//                opponent.addProperty("UUID", uuid);
+//                client.setMessage(opponent);
+//                try {
+//                    Client.sendMessage(opponent);
+//                    String response = Client.getResponse();
+//                    while (response.equals("WAIT")) {
+//                        Client.sendMessage(opponent);
+//                        System.out.println(response = Client.getResponse());
+//                    }
+//                    Card card = cardFromResponse(response);
+//                    listOfCardsOnUITable.add(card.getValue());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            } else if (playerState == Player.PlayerState.DEFENSE && listOfCardsOnUITable.size() % 2 == 0) {
+//                JsonObject opponent = new JsonObject();
+//                opponent.addProperty("MessageType", "getOpponentCard");
+//                opponent.addProperty("UUID", uuid);
+//                client.setMessage(opponent);
+//                try {
+//                    Client.sendMessage(opponent);
+////                    String response = Client.getResponse();
+//                    JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
+//                    String strResponse = response.get("MessageType").toString();
+//                    strResponse = strResponse.replace("\"", "");
+//
+//                    while (strResponse.equals("WAIT")) {
+//                        Client.sendMessage(opponent);
+////                        System.out.println(response = Client.getResponse());
+//                    }
+//                    Card card = cardFromResponse(response.toString());
+//                    listOfCardsOnUITable.add(card.getValue());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
         }
 
         HBox gameFields = new CardPackField(cardUnitSize, windowWidth, throwCards).addFields(playField, trumpCard);

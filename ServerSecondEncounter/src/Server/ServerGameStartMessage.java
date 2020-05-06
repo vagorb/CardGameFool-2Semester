@@ -15,7 +15,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 //    public Card getTrumpCard() {
 //        return trumpCard;
 //    }
-    public JsonObject moveMessage(JsonObject json) {
+    public JsonObject moveMessage(JsonObject json, GameInfo gameInfo) {
         JsonObject obj = new JsonObject();
         String suit = json.get("Suit").toString();
         suit = suit.replace("\"", "");
@@ -26,11 +26,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         trump = trump.replace("\"", "");
         Boolean tru = Boolean.parseBoolean(trump);
         Card card = new Card(suit, val, tru);
-        obj.addProperty("MessageType", "GameMove");
-        obj.addProperty("Suit", card.getSuit());
-        obj.addProperty("Value", card.getValue());
-        obj.addProperty("Trump", card.getTrump());
-        obj.addProperty("Id", card.getId());
+        gameInfo.setMoveCard(card);
         return obj;
     }
 
@@ -91,6 +87,23 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         JsonObject obj = new JsonObject();
         obj.addProperty("MessageType", "TAKE");
         return obj;
+    }
+
+    public JsonObject updateTable(GameInfo gameInfo) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("MessageType", "getOpponentCard");
+        if (!gameInfo.getMoveCard().equals(new Card("Test", 100, false))) {
+            Card card = gameInfo.getMoveCard();
+            obj.addProperty("MessageType", "Send");
+            obj.addProperty("Suit", card.getSuit());
+            obj.addProperty("Value", card.getValue());
+            obj.addProperty("Trump", card.getTrump());
+            obj.addProperty("Id", card.getId());
+            return obj;
+        } else {
+            obj.addProperty("MessageType", "WAIT");
+            return obj;
+        }
     }
 
 

@@ -16,6 +16,8 @@ public class GameInfo {
 
     private Card trump;
 
+    private Card card = new Card("Test", 100, false);
+
 
     public GameInfo(Deck deck, List<String> players) {
         this.deck = deck;
@@ -56,6 +58,14 @@ public class GameInfo {
         return trump;
     }
 
+    public synchronized Card getMoveCard() {
+        return this.card;
+    }
+
+    public synchronized void setMoveCard(Card card) {
+        this.card = card;
+    }
+
     public static void main(String[] args) {
         List<String> players = new ArrayList<>();
         players.add("player1");
@@ -68,6 +78,5 @@ public class GameInfo {
         // client receives
         GameInfo receivedInfo = gson.fromJson(json, GameInfo.class);
         System.out.println(receivedInfo);
-
     }
 }

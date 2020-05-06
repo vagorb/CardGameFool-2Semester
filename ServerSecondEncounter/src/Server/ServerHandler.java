@@ -113,16 +113,27 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             String uuid = jsonObject.get("UUID").toString();
             uuid = uuid.replace("\"", "");
             GameInfo game = Server.playersToGames.get(uuid);
-            for (String player : game.getPlayers()) {
-                if (!player.equalsIgnoreCase(uuid)) {
-                    System.out.println("LUL KEK");
-                    ctx.write(message.moveMessage(jsonObject) + "\r\n");
-                } else {
-                    System.out.println("RECEIVED");
-                    ctx.write("RECEIVED" + "\r\n");
-                }
-                ctx.writeAndFlush(UUID.fromString(uuid));
-            }
+//            for (String player : game.getPlayers()) {
+//                if (!player.equalsIgnoreCase(uuid)) {
+//                    System.out.println("LUL KEK");
+//                    ctx.write(message.moveMessage(jsonObject) + "\r\n");
+//                } else {
+//                    System.out.println("RECEIVED");
+//                    ctx.write("RECEIVED" + "\r\n");
+//                }
+//                ctx.writeAndFlush(UUID.fromString(uuid));
+//            }
+            message.moveMessage(jsonObject, game);
+            ctx.write("RECEIVED" + "\r\n");
+            ctx.writeAndFlush(UUID.fromString(uuid));
+        } else if (messageType.equalsIgnoreCase("getOpponentCard")) {
+            String uuid = jsonObject.get("UUID").toString();
+            uuid = uuid.replace("\"", "");
+            GameInfo game = Server.playersToGames.get(uuid);
+
+            ctx.write(message.updateTable(game) + "\r\n");
+            ctx.writeAndFlush(UUID.fromString(uuid));
+            game.setMoveCard(new Card("Test", 100, false));
         }
 
 
