@@ -8,6 +8,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -40,7 +41,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //                    ctx.writeAndFlush(UUID.fromString(uuid));
                  if (Server.gameForTwo.size() == 2) {
                      if (uuid.equalsIgnoreCase(Server.gameForTwo.get(0))) {
-                         GameInfo gameInfo = new GameInfo(new Deck(), Server.gameForTwo);
+                         GameInfo gameInfo = new GameInfo(new Deck(), List.of(Server.gameForTwo.get(0), Server.gameForTwo.get(1)));
                          Server.games.add(gameInfo);
                          for (String player : Server.gameForTwo) {
                              Server.playersToGames.put(player, gameInfo);
@@ -114,12 +115,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             GameInfo game = Server.playersToGames.get(uuid);
             for (String player : game.getPlayers()) {
                 if (!player.equalsIgnoreCase(uuid)) {
+                    System.out.println("LUL KEK");
                     ctx.write(message.moveMessage(jsonObject) + "\r\n");
-                    ctx.writeAndFlush(UUID.fromString(uuid));
                 } else {
+                    System.out.println("RECEIVED");
                     ctx.write("RECEIVED" + "\r\n");
-                    ctx.writeAndFlush(UUID.fromString(uuid));
                 }
+                ctx.writeAndFlush(UUID.fromString(uuid));
             }
         }
 

@@ -106,18 +106,6 @@ public class Game extends Application {
     }
 
     public void start(Stage window) {
-//        System.out.println(uuid);
-//        JsonObject checkForPlayers = new JsonObject();
-//        checkForPlayers.addProperty("MessageType", "canGameStart");
-//        client.setMessage(checkForPlayers);
-//        try {
-//            Client.sendMessage(checkForPlayers);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        while () {
-//
-//        }
         JsonObject start = new JsonObject();
         start.addProperty("MessageType", "gameStart");
         start.addProperty("UUID", uuid);
@@ -142,20 +130,6 @@ public class Game extends Application {
             e.printStackTrace();
         }
         window.setResizable(false);
-//        deck.shuffleDeck();
-//        trumpCard = deck.getDeck().get(0);
-        // I NEED TO ACCOUNT FOR THE FACT THAT THIS CARD WILL BE REMOVED FROM THE DECK AS A SEPARATE CARD
-//        deck.removeCard(trumpCard);
-//        System.out.println(trumpCard.getSuit());
-//        try {
-//            Client.sendMessage(gameStart());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        String response = Client.getResponse();
-//        trumpCard = cardFromResponse(response);
-//        System.out.println(trumpCard);
-
         // TODO ASK for trump CARD
         try {
             JsonObject trump = new JsonObject();
@@ -169,24 +143,10 @@ public class Game extends Application {
         }
         Buttons buttons = new Buttons();
         StackPane gameStackPane = new StackPane();
-//        StackPane playeradding = new StackPane();
         Scene playScene = new Scene(gameStackPane, windowWidth, windowHeight);
         HBox cardBoxBase = new HBox(20);
         HBox cardBox = new HBox(2);
 
-//        //// Mängija nime valik / vaja mingit sorti pausi nime kinnitamise (Submiti vajutamine) ajaks
-//        for (int i = 0; i < humanCount; i++) {
-//            System.out.println(i);
-//            Popup popup = new Popup(playeradding);
-//            if (popup.playerName() == null || popup.playerName().equals(""))
-//                playeradding.getChildren().get(0).setOnMouseClicked(mouseEvent -> {
-//                    Player player = new Player(popup.playerName(), 0, new Hand());
-//                    players.add(player);
-//                    System.out.println("PLAYER " + player.getName());
-//                });
-//        }
-//        System.out.println(players);
-        //        playScene.setRoot(gameStackPane);
 
         ScrollPane cardBoxScroll = new ScrollPane(cardBox);
         cardBoxScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -233,14 +193,11 @@ public class Game extends Application {
         HBox avatarPage = avatars.showAvatars();
 
         this.thePlayer = players.get(players.size() - 1);
-        // HERE WE GET INFO ON WHICH PLAYERSTATE WE SHOULD HAVE (CURRENTLY IT WILL DEFAULT AS ATTACK )
-        this.thePlayer.setPlayerState(Player.PlayerState.ATTACK);
 
         // card generator
 //        deck.shuffleDeck();
         List<Card> cardsInHand = new LinkedList<>();
         List<Card> cardsOnTable = new LinkedList<>();
-        // THIS WILL TEMPORARILY FIX HANDS HAVING COPIES OF CARDS (WILL WORK LIKE THIS UNTIL SERVER DECK IS IMPLEMENTED)
         replenishHand(cardBox, cardWidth, cardHeight, cardsInHand);
 
         /// playfield elements
@@ -267,36 +224,14 @@ public class Game extends Application {
             } else {
                 lowerLayer.getChildren().addAll(playFieldButtons.get(i));
             }
-//            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
-            attack.setOnMouseClicked(mouseEvent -> {
-                // PlayerState
-                // Card that i put on the table
-                // PlayerName
-                // MessageType =
-//                    Text
-//                            TEXT
-                if (activeCard != null && !attack.isDisable()) {
-                    attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-                            .collect(Collectors.toList()).get(0);
-                    if (listOfCardsOnUITable.size() == 0) {
-                        JsonObject sendToServer = cardToJson(attackCard);
-                        client.setMessage(sendToServer);
-                        try {
-                            Client.sendMessage(sendToServer);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-//                        String resp = Client.getResponse();
-//                        Card card = cardFromResponse(resp);
-//                        System.out.println(card);
-                        listOfCardsOnUITable.add(attackCard.getValue());
-                        cardBox.getChildren().remove(activeCard);
-                        attack.setDisable(true);
-                        attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                        defence.setVisible(true);
-                        activeCard = null;
-                    } else {
-                        if (listOfCardsOnUITable.contains(attackCard.getValue())) {
+
+            if (playerState == Player.PlayerState.ATTACK) {
+                attack.setOnMouseClicked(mouseEvent -> {
+
+                    if (activeCard != null && !attack.isDisable()) {
+                        attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
+                                .collect(Collectors.toList()).get(0);
+                        if (listOfCardsOnUITable.size() == 0) {
                             JsonObject sendToServer = cardToJson(attackCard);
                             client.setMessage(sendToServer);
                             try {
@@ -304,29 +239,66 @@ public class Game extends Application {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            String resp = Client.getResponse();
-                            Card card = cardFromResponse(resp);
-                            System.out.println(card);
+                        String resp = Client.getResponse();
+                            System.out.println(resp);
+//                        Card card = cardFromResponse(resp);
+//                        System.out.println(card);
+                            listOfCardsOnUITable.add(attackCard.getValue());
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
                             attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                             defence.setVisible(true);
                             activeCard = null;
                         } else {
-                            activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            if (listOfCardsOnUITable.contains(attackCard.getValue())) {
+                                JsonObject sendToServer = cardToJson(attackCard);
+                                client.setMessage(sendToServer);
+                                try {
+                                    Client.sendMessage(sendToServer);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+//                                String resp = Client.getResponse();
+//                                Card card = cardFromResponse(resp);
+//                                System.out.println(card);
+                                cardBox.getChildren().remove(activeCard);
+                                attack.setDisable(true);
+                                attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                                defence.setVisible(true);
+                                activeCard = null;
+                            } else {
+                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            }
                         }
                     }
-                }
-            });
-//            } else if (thePlayer.getPlayerState() == Player.PlayerState.DEFENSE) {
-
-//            } else if (thePlayer.getPlayerState() == Player.PlayerState.DEFENSE) {
-            defence.setOnMouseClicked(mouseEvent -> {
-                if (activeCard != null && !defence.isDisable()) {
-                    defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-                            .collect(Collectors.toList()).get(0);
-                    if (attackCard.getSuit().equals(defenseCard.getSuit())) {
-                        if (defenseCard.getValue() > attackCard.getValue()) {
+                });
+            } else if (playerState == Player.PlayerState.DEFENSE) {
+                defence.setOnMouseClicked(mouseEvent -> {
+                    if (activeCard != null && !defence.isDisable()) {
+                        defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
+                                .collect(Collectors.toList()).get(0);
+                        if (attackCard.getSuit().equals(defenseCard.getSuit())) {
+                            if (defenseCard.getValue() > attackCard.getValue()) {
+                                JsonObject sendToServer = cardToJson(defenseCard);
+                                client.setMessage(sendToServer);
+                                try {
+                                    Client.sendMessage(sendToServer);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                String resp = Client.getResponse();
+                                Card card = cardFromResponse(resp);
+                                System.out.println(card);
+                                listOfCardsOnUITable.add(defenseCard.getValue());
+                                cardBox.getChildren().remove(activeCard);
+                                defence.setDisable(true);
+                                defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                                playFieldClass.nextAttackVisible(defence);
+                            } else {
+                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            }
+                            activeCard = null;
+                        } else if (defenseCard.getSuit().equals(trumpCard.getSuit())) {
                             JsonObject sendToServer = cardToJson(defenseCard);
                             client.setMessage(sendToServer);
                             try {
@@ -341,35 +313,34 @@ public class Game extends Application {
                             cardBox.getChildren().remove(activeCard);
                             defence.setDisable(true);
                             defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+                            activeCard = null;
                             playFieldClass.nextAttackVisible(defence);
                         } else {
                             activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                         }
-                        activeCard = null;
-                    } else if (defenseCard.getSuit().equals(trumpCard.getSuit())) {
-                        JsonObject sendToServer = cardToJson(defenseCard);
-                        client.setMessage(sendToServer);
-                        try {
-                            Client.sendMessage(sendToServer);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        String resp = Client.getResponse();
-                        Card card = cardFromResponse(resp);
-                        System.out.println(card);
-                        listOfCardsOnUITable.add(defenseCard.getValue());
-                        cardBox.getChildren().remove(activeCard);
-                        defence.setDisable(true);
-                        defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                        activeCard = null;
-                        playFieldClass.nextAttackVisible(defence);
-                    } else {
-                        activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                     }
+                });
+            }
+            if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
+                JsonObject opponent = new JsonObject();
+                opponent.addProperty("MessageType", "getOpponentCard");
+                opponent.addProperty("UUID", uuid);
+                client.setMessage(opponent);
+                try {
+                    Client.sendMessage(opponent);
+                    String response = Client.getResponse();
+                    while (response.equals("WAIT")) {
+                        Client.sendMessage(opponent);
+                        response = Client.getResponse();
+                    }
+                    Card card = cardFromResponse(response);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            });
-//            }
-//            }
+
+            } else if (playerState == Player.PlayerState.DEFENSE) {
+
+            }
         }
 
         HBox gameFields = new CardPackField(cardUnitSize, windowWidth, throwCards).addFields(playField, trumpCard);
@@ -431,10 +402,7 @@ public class Game extends Application {
                 playFieldClass.setDefault(playFieldButtons);
                 replenishHand(cardBox, cardWidth, cardHeight, cardsInHand);
                 HBox deckcards = (HBox) ((HBox) gameFields.getChildren().get(0)).getChildren().get(0);
-//                for (int i = 0; i <= CardsTakenFromDeck; i++) {
                 deckcards.getChildren().remove(deckcards.getChildren().size() - 1);
-//                }
-//                }
             }
         });
 
@@ -499,28 +467,11 @@ public class Game extends Application {
         JsonObject obj = new JsonObject();
         obj.addProperty("MessageType", "replenish");
         obj.addProperty("UUID", uuid);
-//        obj.addProperty("PlayerName", "Sanja"); //player.getName()
-//        obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
-//        //if (!player.getPlayerState().equals(Player.PlayerState.SKIP)) {
-//        obj.addProperty("Card", card.getValueName()); //table.getLastCardOnTable().getId());
         return obj;
     }
 
     public void replenishHand(HBox cardBox, double cardWidth, double cardHeight, List<Card> cardsInHand) {
-//        List<Card> cardsToDelete =  new ArrayList<>();
-//        for (Card card : deck.getDeck()) {
-//            if (cardBox.getChildren().size() < 6) {
-//                cardsInHand.add(card);
-//                cardsToDelete.add(card);
-//                cardToButton(card, cardBox, cardWidth, cardHeight);
-//            }
-//        }
-//        for (Card card : cardsToDelete) {
-//            deck.removeCard(card);
-//        }
-//        cardsToDelete.removeAll(cardsToDelete);
         JsonObject obj = gameCardsReplenish();
-//        trumpCard
         while (cardBox.getChildren().size() < 6) {
             try {
                 Client.sendMessage(obj);
@@ -552,18 +503,12 @@ public class Game extends Application {
     public JsonObject cardToJson(Card card) {
         JsonObject obj = new JsonObject();
         obj.addProperty("UUID", uuid);
-        obj.addProperty("MessageType", "gameMove");
-        obj.addProperty("PlayerName", "Sanja"); //player.getName()
+        obj.addProperty("MessageType", "GameMove");
+//        obj.addProperty("PlayerName", "Sanja"); //player.getName()
         obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
-        //if (!player.getPlayerState().equals(Player.PlayerState.SKIP)) {
         obj.addProperty("Value", card.getValue()); //table.getLastCardOnTable().getId());
         obj.addProperty("Suit", card.getSuit());
         obj.addProperty("Trump", card.getTrump());
-//        obj.get("Card").getAsJsonObject().addProperty("Name", card.getValueName());
-//        obj.get("Card").getAsJsonObject().addProperty("Suit", card.getSuit());
-//        obj.get("Card").getAsJsonObject().addProperty("Value", card.getValue());
-//        obj.get("Card").getAsJsonObject().addProperty("Trump", card.getTrump());
-        //}
         return obj;
     }
 
@@ -577,15 +522,11 @@ public class Game extends Application {
         String trump = jsonObject.get("Trump").toString();
         trump = trump.replace("\"", "");
         Boolean tru = Boolean.parseBoolean(trump);
-// String id = jsonObject.get("Id").toString();
-// id = id.replace("\"", "");
         return new Card(suit, val, tru);
     }
 
-//    public void jsonInfoToCards()
 
 
-    // 6 H > 6 P > comparison card is only 6 P now so i can potentially defend IT only.
     // TODO account for trump card not being part of the DECK in the current gameplay
 
 
