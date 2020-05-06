@@ -1,6 +1,5 @@
 package Server;
 
-import Client.Client;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.google.gson.Gson;
@@ -8,14 +7,13 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 public class GameInfo {
 
-    private List<String> players;
-    private List<Card> cardsOnTable;
-    private Deck deck;
-    private Card trump;
+    private final List<String> players;
+    private final List<Card> cardsOnTable = new LinkedList<>();
+    private final Deck deck;
+    private final Card trump;
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -27,7 +25,6 @@ public class GameInfo {
         deck.removeCard(trump);
         deck.getDeck().add(trump);
         deck.makeCardsTrump(trump.getSuit());
-        cardsOnTable = new LinkedList<>();
     }
 
     public List<Card> getCardsOnTable() {
