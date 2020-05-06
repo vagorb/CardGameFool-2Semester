@@ -70,7 +70,7 @@ public class PlayField {
         return Arrays.asList(playZone, upperLayer, lowerLayer);
     }
 
-    public void setDefault() {
+    public void setDefault(Map<Integer, Pane> playFieldButtons) {
         playFieldButtons.forEach((integer, pane) -> {
             if (!pane.getId().equals("firstPair")) {
                 pane.setVisible(false);
@@ -95,8 +95,8 @@ public class PlayField {
     }
 
     public boolean validToThrowCards() {
-        for (Pane value : playFieldButtons.values()) {
-            ObservableList<Node> x = value.getChildren();
+        for (Pane pane : playFieldButtons.values()) {
+            ObservableList<Node> x = pane.getChildren();
             boolean attackPlaced = !x.get(0).getStyle().contains("-fx-background-image: null");
             boolean defensePlaced = !x.get(1).getStyle().contains("-fx-background-image: null");
             if ((!attackPlaced && defensePlaced) || (attackPlaced && !defensePlaced)) {
@@ -105,4 +105,5 @@ public class PlayField {
         }
         return true;
     }
+
 }

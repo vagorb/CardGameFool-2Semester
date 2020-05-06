@@ -1,10 +1,8 @@
 package Server;
 
-import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -16,7 +14,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("Server.Server received " + msg);
         System.out.println(Server.playersToGames);
         System.out.println(Server.games);
@@ -191,7 +189,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
     }
 

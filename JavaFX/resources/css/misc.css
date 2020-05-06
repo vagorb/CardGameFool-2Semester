@@ -1,14 +1,13 @@
-
-.check-box {
-    -fx-background-color: rgba(20, 200, 70, 0.5);
-    -fx-background-insets: 0 -5 -2 0, 0, 0;
-    -fx-font: bold 10pt 'Arial Black';
-}
-
 #AIcheck.check-box {
     -fx-background-color: rgb(21, 201, 60);
     -fx-background-insets: -10 -15 -10 -15, 0, 0;
     -fx-background-radius: 2em, 2em, 2em;
+    -fx-font: bold 10pt 'Arial Black';
+}
+
+.check-box {
+    -fx-background-color: rgba(20, 200, 70, 0.5);
+    -fx-background-insets: 0 -5 -2 0, 0, 0;
     -fx-font: bold 10pt 'Arial Black';
 }
 

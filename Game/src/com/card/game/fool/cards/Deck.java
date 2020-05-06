@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class Deck {
-    private ArrayList<Card> deck;
+    private final ArrayList<Card> deck;
 
 
     /**
@@ -47,8 +47,6 @@ public class Deck {
             }
         }
     }
-
-
 
     /**
      * Method returns list of cards

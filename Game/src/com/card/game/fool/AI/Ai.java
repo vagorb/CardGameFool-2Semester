@@ -2,13 +2,13 @@ package com.card.game.fool.AI;
 
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
-import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.card.game.fool.players.gamerInterface;
 import com.card.game.fool.tables.Table;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,32 +20,27 @@ import java.util.stream.Collectors;
 // method in table getAi move
 
 public class Ai implements gamerInterface {
-    private Hand hand;
-    private String name = "CPU";
-
-    public Ai(Hand hand) {
-        this.hand = hand;
-    }
+    private final List<Card> cardsInHand = new LinkedList<>();
 
     public String getName() {
-        return name;
+        return "CPU";
     }
 
-    public Hand getHand() {
-        return this.hand;
+    public List<Card> getHand() {
+        return cardsInHand;
     }
 
     public Map<Integer, List<Card>> mapOfCardsInHand() {
-        return hand.getCardsInHand().stream().collect(Collectors.groupingBy(Card::getValue));
+        return cardsInHand.stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
     public List<Card> suitableForDefCards(Table table) {
         Card lastCard = table.getLastCardOnTable();
         if (lastCard.getTrump()) {
-            return hand.getCardsInHand().stream().filter(card -> card.getValue() > lastCard.getValue()
+            return cardsInHand.stream().filter(card -> card.getValue() > lastCard.getValue()
                     && card.getTrump()).collect(Collectors.toList());
         } else {
-            return hand.getCardsInHand().stream().filter(card -> card.getTrump()
+            return cardsInHand.stream().filter(card -> card.getTrump()
                     || (card.getSuit().equals(lastCard.getSuit())
                     && card.getValue() > lastCard.getValue())).collect(Collectors.toList());
         }
@@ -74,17 +69,17 @@ public class Ai implements gamerInterface {
         return cards.stream().min(Comparator.comparingInt(Card::getValue));
     }
 
-    public Optional<Card> firstCardAttackMove(Table table) {
-        for (Card card : getHand().getCardsInHand()) {
+    public Optional<Card> firstCardAttackMove() {
+        for (Card card : cardsInHand) {
             if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
-        return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue));
+        return cardsInHand.stream().min(Comparator.comparingInt(Card::getValue));
     }
 
     public List<Card> suitableCardsForAttackMoves(Table table) {
-        return hand.getCardsInHand().stream().filter(card -> table.mapOfCardsInTable().containsKey(card.getValue()))
+        return cardsInHand.stream().filter(card -> table.mapOfCardsInTable().containsKey(card.getValue()))
                 .collect(Collectors.toList());
     }
 
@@ -98,7 +93,7 @@ public class Ai implements gamerInterface {
                 return Optional.of(cards.get(0));
             }
         }
-        return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
+        return cardsInHand.stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
     public List<Card> playerCardsInTheEnd(Table table) {
@@ -106,7 +101,7 @@ public class Ai implements gamerInterface {
         Deck deck = new Deck();
         deck.makeCardsTrump(table.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!getHand().getCardsInHand().contains(card) && !table.getPile().getPile().contains(card)) {
+            if (!cardsInHand.contains(card) && !table.getPile().getPile().contains(card)) {
                 playerCards.add(card);
             }
         }
@@ -127,28 +122,28 @@ public class Ai implements gamerInterface {
     public Optional<Card> suitableAttackMoveWhenDeckEnds(Table table) {
         Map<String, List<Card>> playerCards = playerCardsInTheEndBySuit(table);
         System.out.println(playerCards);
-        for (Card card : getHand().getCardsInHand()) {
+        for (Card card : cardsInHand) {
             if (!playerCards.containsKey(card.getSuit()) && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
-        for (Card card : getHand().getCardsInHand()) {
+        for (Card card : cardsInHand) {
             if (!card.getTrump()) {
                 if (card.getValue() > maxValueBySuit(table, card.getSuit()).get().getValue())
                     return Optional.of(card);
             }
         }
-        for (Card card : getHand().getCardsInHand()) {
+        for (Card card : cardsInHand) {
             if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
                 return Optional.of(card);
             }
         }
-        for (Card card : getHand().getCardsInHand()) {
+        for (Card card : cardsInHand) {
             if (!playerCards.containsKey(card.getSuit())) {
                 return Optional.of(card);
             }
         }
-        return hand.getCardsInHand().stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
+        return cardsInHand.stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
     public Optional<Card> maxValueBySuit(Table table, String suit) {
@@ -194,7 +189,7 @@ public class Ai implements gamerInterface {
                 }
             } else {
                 if (table.getTable().size() == 0) {
-                    return firstCardAttackMove(table);
+                    return firstCardAttackMove();
                 } else {
                     return suitableAttackMoveBeforeEndOfDeck(table);
                 }

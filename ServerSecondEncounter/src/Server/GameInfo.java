@@ -6,14 +6,15 @@ import com.card.game.fool.cards.Deck;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 public class GameInfo {
 
-    private List<String> players = new ArrayList<>();
+    private List<String> players;
+    private List<Card> cardsOnTable;
     private Deck deck;
-
     private Card trump;
 
 
@@ -26,9 +27,12 @@ public class GameInfo {
         deck.removeCard(trump);
         deck.getDeck().add(trump);
         deck.makeCardsTrump(trump.getSuit());
+        cardsOnTable = new LinkedList<>();
     }
 
-
+    public List<Card> getCardsOnTable() {
+        return cardsOnTable;
+    }
 
     public void addPlayers(String player) {
         players.add(player);

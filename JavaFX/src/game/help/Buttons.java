@@ -22,7 +22,7 @@ public class Buttons {
         return pickUpButton;
     }
 
-    public Button pickUpCards() {
+    public Button pickCardsUp() {
         Button pickUpButton = new Button();
         pickUpButton.setAlignment(Pos.CENTER);
         pickUpButton.setId("pickUpCards");

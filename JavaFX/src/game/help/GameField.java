@@ -1,6 +1,6 @@
 package game.help;
 
-import Server.Server;
+import Server.GameInfo;
 import com.card.game.fool.cards.Card;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -34,7 +34,7 @@ public class GameField {
     }
 
     private void trumpCard() {
-        Card trumpCard = new Card("Hearts", 13, true);
+        Card trumpCard = GameInfo().getTrump();
         Label trump = new Label();
         trump.setMinSize(cardUnit * 2, cardUnit * 3);
         trump.setMaxSize(cardUnit * 2, cardUnit * 3);
@@ -42,7 +42,7 @@ public class GameField {
                 trumpCard.getSuit(), trumpCard.getId()));
         trump.setTranslateX(-2 * deckCards.getChildren().size() * cardUnit - 30);
         trump.setTranslateY(deckCards.getChildren().size() * cardUnit / 6);
-        trump.setRotate(90);
+        trump.setRotate(80);
         deckCards.getChildren().add(trump);
     }
 
@@ -61,4 +61,5 @@ public class GameField {
         }
         return new HBox(deckField, playField, pileField);
     }
+
 }

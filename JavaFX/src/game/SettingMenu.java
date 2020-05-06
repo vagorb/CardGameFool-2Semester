@@ -4,7 +4,6 @@ package game;
 import game.help.Buttons;
 import game.help.Resolution;
 import javafx.beans.binding.Bindings;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -13,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
@@ -34,7 +32,7 @@ public class SettingMenu {
         this.resolution = resolution;
     }
 
-    StackPane settings() {
+    protected StackPane settings() {
         StackPane settingsStackpane = new StackPane();
         VBox settingsMenu = new VBox(25);
         Button backButton = buttons.back();
@@ -60,8 +58,6 @@ public class SettingMenu {
             if (window.isFullScreen()) {
                 fullscreenButton.setId("fullscreenExit");
             } else {
-                window.setX((Screen.getPrimary().getBounds().getWidth() - window.getWidth()) / 2);
-                window.setY((Screen.getPrimary().getBounds().getHeight() - window.getHeight()) / 2);
                 fullscreenButton.setId("fullscreenEnter");
             }
             fullscreenButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
@@ -76,13 +72,14 @@ public class SettingMenu {
         backButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         settingsMenu.setAlignment(Pos.CENTER);
 
-        settingsMenu.getChildren().addAll(fullscreenButton, resolutionChoices, customResolution, alwaysOnTop, scrollInversion, backButton);
+        settingsMenu.getChildren().addAll(fullscreenButton, resolutionChoices, customResolution, alwaysOnTop,
+                scrollInversion, backButton);
         settingsStackpane.getChildren().addAll(settingsMenu);
 
         return settingsStackpane;
     }
 
-    StackPane game() {
+    protected StackPane game() {
         StackPane gameStackPane = new StackPane();
         Button playButton = buttons.play();
 
@@ -109,7 +106,6 @@ public class SettingMenu {
             }
             playerHumanCount = (int) sliderHuman.getValue();
         });
-
         checkBoxAI.setOnAction(actionEvent -> {
             if (checkBoxAI.isSelected()) {
                 playerAI = 1;
@@ -140,7 +136,6 @@ public class SettingMenu {
                 System.out.println(Arrays.toString(e.getStackTrace()));
             }
         });
-
         return gameStackPane;
     }
 }

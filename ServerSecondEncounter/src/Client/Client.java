@@ -14,12 +14,11 @@ public class Client {
 
     private JsonObject message;
 
-    public static void sendMessage(JsonObject object) throws IOException {
+    public static void sendMessage(JsonObject message) throws IOException {
 
 
         String host = "localhost";
         int port = 5201;
-        JsonObject message = object;
 
 //        for (int i = 0; i < 35; i++) {
             try (Socket socket = new Socket(host, port)) {
@@ -50,7 +49,7 @@ public class Client {
     }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
     }
 
