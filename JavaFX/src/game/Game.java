@@ -406,6 +406,7 @@ public class Game extends Application {
         skipTurn.setOnAction(actionEvent -> {
 //            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
             thePlayer.setPlayerState(Player.PlayerState.SKIP);   // need to send that info to Server as well
+            cardBoxScroll.setDisable(true);
 //            }
         });
 
