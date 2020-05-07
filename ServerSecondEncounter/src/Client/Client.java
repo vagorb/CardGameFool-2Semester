@@ -14,24 +14,24 @@ public class Client {
 
     private JsonObject message;
 
-    public static void sendMessage(JsonObject message) throws IOException {
-
+    public static void sendMessage(JsonObject object) throws IOException {
 
         String host = "localhost";
         int port = 5201;
+        JsonObject message = object;
 
 //        for (int i = 0; i < 35; i++) {
-            try (Socket socket = new Socket(host, port)) {
-                PrintWriter writer = new PrintWriter(socket.getOutputStream());
-                writer.println(message);
-                writer.flush();
+        try (Socket socket = new Socket(host, port)) {
+            PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            writer.println(message);
+            writer.flush();
 
-                log("send > " + message);
+            log("send > " + message);
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                response = reader.readLine();
-                log("received < " + response);
-            }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            response = reader.readLine();
+            log("received < " + response);
+        }
 //        }
     }
 
@@ -52,6 +52,4 @@ public class Client {
     public static void main(String[] args) {
 
     }
-
-
 }

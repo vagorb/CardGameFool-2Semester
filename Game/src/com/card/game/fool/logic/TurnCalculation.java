@@ -6,7 +6,7 @@ import com.card.game.fool.tables.Table;
 
 public class TurnCalculation {
 
-    private Table playingTable;
+    private final Table playingTable;
     private boolean defenseSuccess = true;
     private Card attackCard;
     private Card defenseCard;

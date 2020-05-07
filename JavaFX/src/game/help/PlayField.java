@@ -12,28 +12,28 @@ import java.util.List;
 import java.util.Map;
 
 public class PlayField {
-    private double cardUnitSize;
-    private Map<Integer, Pane> playFieldButtons;
+    private final double cardUnitSize;
+    private Map<Integer, HBox> playFieldButtons;
 
     public PlayField(double cardUnitSize) {
         this.cardUnitSize = cardUnitSize;
     }
 
-    public Map<Integer, Pane> createButtons() {
-        Pane first = new Pane();
+    public Map<Integer, HBox> createButtons() {
+        HBox first = new HBox();
         first.setId("firstPair");
-        Pane second = new Pane();
+        HBox second = new HBox();
         second.setId("secondPair");
-        Pane third = new Pane();
+        HBox third = new HBox();
         third.setId("thirdPair");
-        Pane fourth = new Pane();
+        HBox fourth = new HBox();
         fourth.setId("fourthPair");
-        Pane fifth = new Pane();
+        HBox fifth = new HBox();
         fifth.setId("fifthPair");
-        Pane sixth = new Pane();
+        HBox sixth = new HBox();
         sixth.setId("sixthPair");
 
-        for (Pane pane : List.of(first, second, third, fourth, fifth, sixth)) {
+        for (HBox hbox : List.of(first, second, third, fourth, fifth, sixth)) {
             Button attack = new Button();
             Button defense = new Button();
             attack.setId("Attack");
@@ -43,12 +43,12 @@ public class PlayField {
             attack.setTranslateY(cardUnitSize);
             defense.setVisible(false);
 
-            pane.getChildren().addAll(attack, defense);
-            pane.setMinSize(cardUnitSize * 3.5, cardUnitSize * 4);
-            if (pane != first) {
-                pane.setVisible(false);
+            hbox.getChildren().addAll(attack, defense);
+            hbox.setMinSize(cardUnitSize * 3.5, cardUnitSize * 4);
+            if (hbox != first) {
+                hbox.setVisible(false);
             }
-            for (Node child : pane.getChildren())
+            for (Node child : hbox.getChildren())
                 if (child.getClass() == Button.class) {
                     ((Button) child).setMinSize(cardUnitSize * 2, cardUnitSize * 3);
                     child.setStyle("-fx-background-image: null");
@@ -70,13 +70,13 @@ public class PlayField {
         return Arrays.asList(playZone, upperLayer, lowerLayer);
     }
 
-    public void setDefault(Map<Integer, Pane> playFieldButtons) {
-        playFieldButtons.forEach((integer, pane) -> {
-            if (!pane.getId().equals("firstPair")) {
-                pane.setVisible(false);
+    public void setDefault(Map<Integer, HBox> playFieldButtons) {
+        playFieldButtons.forEach((integer, hBox) -> {
+            if (!hBox.getId().equals("firstPair")) {
+                hBox.setVisible(false);
             }
             for (int i = 0; i < 2; i++) {
-                Button button = (Button) pane.getChildrenUnmodifiable().get(i);
+                Button button = (Button) hBox.getChildrenUnmodifiable().get(i);
                 button.setDisable(false);
                 button.setStyle("-fx-background-image: null");
                 button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());

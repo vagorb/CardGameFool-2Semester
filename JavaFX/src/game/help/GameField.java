@@ -1,6 +1,5 @@
 package game.help;
 
-import Server.GameInfo;
 import com.card.game.fool.cards.Card;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -33,13 +32,12 @@ public class GameField {
         field.getChildren().add(newB);
     }
 
-    private void trumpCard() {
-        Card trumpCard = GameInfo().getTrump();
+    private void trumpCard(Card trumpCard) {
         Label trump = new Label();
         trump.setMinSize(cardUnit * 2, cardUnit * 3);
         trump.setMaxSize(cardUnit * 2, cardUnit * 3);
         trump.setStyle(String.format("-fx-background-image: url('/images/cards/%s/%s.png'); -fx-background-size: cover",
-                trumpCard.getSuit(), trumpCard.getId()));
+        trumpCard.getSuit(), trumpCard.getId()));
         trump.setTranslateX(-2 * deckCards.getChildren().size() * cardUnit - 30);
         trump.setTranslateY(deckCards.getChildren().size() * cardUnit / 6);
         trump.setRotate(80);
@@ -50,12 +48,12 @@ public class GameField {
         oneCard(pileCards);
     }
 
-    public HBox addFields(VBox playField) {
+    public HBox addFields(VBox playField, Card trump) {
         for (HBox field : List.of(deckField, pileField)) {
             field.setMinSize(maxWidth, maxHeight);
             field.setMaxSize(maxWidth, maxHeight);
         }
-        trumpCard();
+        trumpCard(trump);
         for (int i = 0; i < 35; i++) {
             oneCard(deckCards);
         }
