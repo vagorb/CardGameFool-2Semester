@@ -86,7 +86,6 @@ public class Game extends Application {
         this.fullscreenStatus = fullscreenStatus;
         this.invertScroll = invertScroll;
         this.resolution = resolution;
-        resolution.dragWindow();
     }
 
     private Button cardToButton(Card card, HBox destination, double cardWidth, double cardHeight) {
@@ -382,6 +381,8 @@ public class Game extends Application {
         gameFields.setTranslateY((windowHeight / 2 - 4 * cardUnitSize));
 
         /// actions for buttons
+        resolution.dragWindow();
+
         cardBoxScroll.setOnScroll(scrollEvent -> {
             if (invertScroll) {
                 cardBoxScroll.setHvalue(cardBoxScroll.getHvalue() - scrollEvent.getDeltaY() / 1000);
