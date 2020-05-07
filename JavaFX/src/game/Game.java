@@ -488,7 +488,7 @@ public class Game extends Application {
         cardBoxBase.setId("cardBoxBase");
         cardBoxBase.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
 
-        cardBoxBase.getChildren().addAll(pickUpCards, throwCards, pickUpCards);
+        cardBoxBase.getChildren().addAll(pickUpCards, throwCards, skipTurn);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
         gameStackPane.getChildren().addAll(avatarPage, gameFields, cardBoxBase, cardBoxScroll, menu);
