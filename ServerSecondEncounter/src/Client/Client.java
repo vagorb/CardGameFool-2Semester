@@ -54,10 +54,8 @@ public class Client {
         this.message = jsonObject;
     }
 
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
     }
-
 
 }

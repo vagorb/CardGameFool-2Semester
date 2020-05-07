@@ -1,13 +1,11 @@
 package Server;
 
-import Client.Client;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class GameInfo {
 
@@ -17,7 +15,6 @@ public class GameInfo {
 
     private List<String> players = new ArrayList<>();
     private Deck deck;
-
     private Card trump;
 
     private static List<Card> cards = new ArrayList<>();

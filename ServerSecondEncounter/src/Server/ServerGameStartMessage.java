@@ -8,7 +8,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 
-//    public Deck getDeck() {
+    //    public Deck getDeck() {
 //        return deck;
 //    }
 //

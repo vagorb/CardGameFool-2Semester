@@ -6,7 +6,7 @@ import com.card.game.fool.tables.Table;
 
 public class TurnCalculation {
 
-    private Table playingTable;
+    private final Table playingTable;
     private boolean defenseSuccess = true;
     private Card attackCard;
     private Card defenseCard;
@@ -40,13 +40,13 @@ public class TurnCalculation {
      */
     public void putAttackCard(Player player , Card card) {
         if (playingTable.getTable().size() == 0) {
-            playingTable.getTable().add(player.getHand().putCardOnTable(card));
-            player.getHand().removeCard(card);
+//            playingTable.getTable().add(player.getHand().putCardOnTable(card));
+            player.getHand().remove(card);
             attackCard = card;
         }else if (playingTable.getTable().size() > 0) {
             if (playingTable.mapOfCardsInTable().containsKey(card.getValue())) {
-                playingTable.getTable().add(player.getHand().putCardOnTable(card));
-                player.getHand().removeCard(card);
+//                playingTable.getTable().add(player.getHand().putCardOnTable(card));
+                player.getHand().remove(card);
                 attackCard = card;
             }
 //            for (com.card.game.fool.cards.Card value : playingTable.getTable()) {
@@ -69,23 +69,23 @@ public class TurnCalculation {
         if (card.getSuit().equals(playingTable.getTrumpSuit())) {
             if (attackCard.getSuit().equals(playingTable.getTrumpSuit())) {
                 if (card.getValue() > attackCard.getValue()) {
-                    playingTable.getTable().add(player.getHand().putCardOnTable(card));
-                    player.getHand().removeCard(card);
+//                    playingTable.getTable().add(player.getHand().putCardOnTable(card));
+                    player.getHand().remove(card);
                     defenseCard = card;
                     defenseSuccess = true;
                 } else {
                     defenseSuccess = false;
                 }
             } else {
-                playingTable.getTable().add(player.getHand().putCardOnTable(card));
-                player.getHand().removeCard(card);
+//                playingTable.getTable().add(player.getHand().putCardOnTable(card));
+                player.getHand().remove(card);
                 defenseCard = card;
                 defenseSuccess = true;
             }
         } else if (card.getSuit().equals(attackCard.getSuit())) {
             if (card.getValue() > attackCard.getValue()) {
-                playingTable.getTable().add(player.getHand().putCardOnTable(card));
-                player.getHand().removeCard(card);
+//                playingTable.getTable().add(player.getHand().putCardOnTable(card));
+                player.getHand().remove(card);
                 defenseCard = card;
                 defenseSuccess = true;
             } else {
@@ -118,7 +118,7 @@ public class TurnCalculation {
             playingTable.getPile().getPile().addAll(playingTable.getTable());
         } else {
             for (Card card : playingTable.getTable()) {
-                player.getHand().addCard(card);
+                player.getHand().add(card);
             }
         }
         playingTable.getTable().removeAll(playingTable.getTable());

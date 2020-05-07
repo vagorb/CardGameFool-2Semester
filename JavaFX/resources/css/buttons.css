@@ -5,13 +5,18 @@
 }
 
 #throwCards.button {
-    -fx-background-color: #008c2a;
-    -fx-background-image: url("/icons/black/throwCards.png");
+    -fx-background-size: cover;
+    -fx-background-image: url("/images/backgrounds/throwButton.jpg");
 }
 
 #pickUpCards.button {
-    -fx-background-color: #8b8c00;
-    -fx-background-image: url("/icons/black/takeCards.png");
+    -fx-background-size: cover;
+    -fx-background-image: url("/images/backgrounds/takeButton.jpg");
+}
+
+#skipTurn.button {
+    -fx-background-size: cover;
+    -fx-background-image: url("/images/backgrounds/skipButton.jpg");
 }
 
 #exit.button {

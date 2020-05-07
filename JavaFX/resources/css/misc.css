@@ -34,7 +34,7 @@
 
 #cardBoxBase {
     -fx-background-size: cover;
-    -fx-background-color: #867714;
+    -fx-background-image: url('/images/backgrounds/cardBox_bg.jpg');
 }
 
 #gameStackPane {
