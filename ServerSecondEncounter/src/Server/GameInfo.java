@@ -1,22 +1,20 @@
 package Server;
 
-import Client.Client;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class GameInfo {
 
-    private List<String> players = new ArrayList<>();
-    private Deck deck;
 
+    private List<String> players;
+    private Deck deck;
     private Card trump;
 
-    private Card card = new Card("Test", 100, false);
+    private static List<Card> cards = new ArrayList<>();
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -30,7 +28,9 @@ public class GameInfo {
         deck.makeCardsTrump(trump.getSuit());
     }
 
-
+    public List<Card> getCards() {
+        return cards;
+    }
 
     public void addPlayers(String player) {
         players.add(player);
@@ -58,12 +58,12 @@ public class GameInfo {
         return trump;
     }
 
-    public synchronized Card getMoveCard() {
-        return this.card;
+    public Card getMoveCard() {
+        return cards.get(cards.size() - 1);
     }
 
-    public synchronized void setMoveCard(Card card) {
-        this.card = card;
+    public synchronized void addMoveCard(Card card) {
+        cards.add(card);
     }
 
     public static void main(String[] args) {

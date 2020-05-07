@@ -1,6 +1,5 @@
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
-import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.card.game.fool.tables.Table;
 import com.card.game.fool.AI.Ai;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AiTest<AI> {
+class AiTest {
 
 
     Card card1;
@@ -34,18 +33,15 @@ class AiTest<AI> {
     Card cardPile4;
     Card cardPile5;
     Card cardPile6;
-    Hand hand;
-    Hand hand1;
     Player player1;
     Ai ai;
     Table tableFor;
 
-//    private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
+    //    private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
 //            9, "9", 10, "10", 11, "Jack", 12, "Queen", 13, "King",
 //            14, "Ace"));
     @BeforeEach
     void setUp() {
-        hand = new Hand();
         card3 = new Card("Spades", 6, true);
         card5 = new Card("Spades", 14, true);
         card1 = new Card("Hearts", 6, false);
@@ -64,21 +60,20 @@ class AiTest<AI> {
         cardPile4 = new Card("Clubs", 6, false);
         cardPile5 = new Card("Clubs", 9, false);
         cardPile6 = new Card("Clubs", 10, false);
-        hand1 = new Hand();
-        hand.addCard(card3);
-        hand.addCard(card2);
-        hand.addCard(card1);
-        hand.addCard(card4);
-        hand.addCard(card5);
-        hand.addCard(card6);
-        ai = new Ai(hand);
-        hand1.addCard(card7);
-        hand1.addCard(card8);
-        hand1.addCard(card9);
-        hand1.addCard(card10);
-        hand1.addCard(card11);
-        hand1.addCard(card12);
-        player1 = new Player("Ja", 0, hand1);
+        player1.getHand().add(card3);
+        player1.getHand().add(card2);
+        player1.getHand().add(card1);
+        player1.getHand().add(card4);
+        player1.getHand().add(card5);
+        player1.getHand().add(card6);
+        ai = new Ai();
+        ai.getHand().add(card7);
+        ai.getHand().add(card8);
+        ai.getHand().add(card9);
+        ai.getHand().add(card10);
+        ai.getHand().add(card11);
+        ai.getHand().add(card12);
+        player1 = new Player("Ja", 0);
         tableFor = new Table(player1, ai);
         tableFor.addToPile(cardPile1);
         tableFor.addToPile(cardPile2);
@@ -91,27 +86,27 @@ class AiTest<AI> {
 
     @Test
     void getAiHand() {
-        Hand hand2 = new Hand();
-        hand2.addCard(card3);
-        hand2.addCard(card2);
-        hand2.addCard(card1);
-        hand2.addCard(card4);
-        hand2.addCard(card5);
-        hand2.addCard(card6);
+        ai.getHand().clear();
+        ai.getHand().add(card3);
+        ai.getHand().add(card2);
+        ai.getHand().add(card1);
+        ai.getHand().add(card4);
+        ai.getHand().add(card5);
+        ai.getHand().add(card6);
         System.out.println(tableFor.getPile().getPile());
-        assertEquals(hand2.getCardsInHand(), ai.getHand().getCardsInHand());
+        assertEquals(List.of(card1, card2, card3, card4, card5, card6), ai.getHand());
     }
 
     @Test
     void mapOfCardsInHand() {
-        Hand hand2 = new Hand();
-        hand2.addCard(card1);
-        hand2.addCard(card2);
-        hand2.addCard(card3);
-        hand2.addCard(card4);
-        hand2.addCard(card5);
-        hand2.addCard(card6);
-        System.out.println(hand2.getCardsInHand().stream().collect(Collectors.groupingBy(Card::getValue)));
+        ai.getHand().clear();
+        ai.getHand().add(card1);
+        ai.getHand().add(card2);
+        ai.getHand().add(card3);
+        ai.getHand().add(card4);
+        ai.getHand().add(card5);
+        ai.getHand().add(card6);
+        System.out.println(ai.getHand().stream().collect(Collectors.groupingBy(Card::getValue)));
     }
 
     @Test
@@ -119,7 +114,7 @@ class AiTest<AI> {
         tableFor.addCardOnTable(card9);
         System.out.println(tableFor.getTable());
         System.out.println(tableFor.getLastCardOnTable().getTrump());
-        assertEquals(List.of(card3, card4, card5) , ai.suitableForDefCards(tableFor));
+        assertEquals(List.of(card3, card4, card5), ai.suitableForDefCards(tableFor));
     }
 
     @Test
@@ -131,7 +126,7 @@ class AiTest<AI> {
 
     @Test
     void firstCardAttackMove() {
-        assertEquals(Optional.of(card1), ai.firstCardAttackMove(tableFor));
+        assertEquals(Optional.of(card1), ai.firstCardAttackMove());
     }
 
     @Test
@@ -156,7 +151,7 @@ class AiTest<AI> {
         Deck deck = new Deck();
         deck.makeCardsTrump(tableFor.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }
@@ -180,7 +175,7 @@ class AiTest<AI> {
         System.out.println(card3.getTrump());
         //tableFor.setTrumpSuit((tableFor.getTrumpSuit());
         for (Card card : deck.getDeck()) {
-            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }
@@ -196,9 +191,9 @@ class AiTest<AI> {
     void suitableDefMoveWhenDeckEnds() {
         Deck deck = new Deck();
         Card cardForDef = new Card("Diamonds", 14, false);
-        player1.getHand().addCard(cardForDef);
+        player1.getHand().add(cardForDef);
         for (Card card : deck.getDeck()) {
-            if (!ai.getHand().getCardsInHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().getCardsInHand().contains(card)) {
+            if (!ai.getHand().contains(card) && !tableFor.getPile().getPile().contains(card) && !player1.getHand().contains(card)) {
                 tableFor.addToPile(card);
             }
         }

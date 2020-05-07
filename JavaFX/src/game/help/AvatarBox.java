@@ -45,7 +45,7 @@ public class AvatarBox {
             Label name = new Label(gamer.getName());
             HBox nameBox = new HBox(name);
             nameBox.setAlignment(Pos.CENTER);
-            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().getCardsInHand().size()));
+            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().size()));
             HBox cardBack = new HBox(cardsRemaining);
 //            ImageView avatarImage = new ImageView(image);
             ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));

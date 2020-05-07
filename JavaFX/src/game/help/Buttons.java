@@ -30,6 +30,14 @@ public class Buttons {
         return pickUpButton;
     }
 
+    public Button skipTurn() {
+        Button skipTurnButton = new Button();
+        skipTurnButton.setAlignment(Pos.CENTER);
+        skipTurnButton.setId("skipTurn");
+        skipTurnButton.getStylesheets().add(getClass().getResource("/css/buttons.css").toExternalForm());
+        return skipTurnButton;
+    }
+
     public Button exit() {
         Button exitButton = new Button();
         exitButton.setMinSize(minWidth, minHeight);

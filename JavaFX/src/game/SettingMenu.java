@@ -4,7 +4,6 @@ package game;
 import game.help.Buttons;
 import game.help.Resolution;
 import javafx.beans.binding.Bindings;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -71,10 +70,10 @@ public class SettingMenu {
 
         fullscreenButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
         backButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 13d));
-        settingsMenu.setPadding(new Insets(100, 0, 0, 100));
         settingsMenu.setAlignment(Pos.CENTER);
 
-        settingsMenu.getChildren().addAll(fullscreenButton, resolutionChoices, customResolution, alwaysOnTop, scrollInversion, backButton);
+        settingsMenu.getChildren().addAll(fullscreenButton, resolutionChoices, customResolution, alwaysOnTop,
+                scrollInversion, backButton);
         settingsStackpane.getChildren().addAll(settingsMenu);
 
         return settingsStackpane;
@@ -130,14 +129,13 @@ public class SettingMenu {
                 window.hide();
                 window.getScene().setRoot(mainStackpane);
                 play.setMenu(window.getScene());
-                play.setSettings(invertScroll, window.isFullScreen(), resolution.isFixedResolution());
+                play.setSettings(invertScroll, window.isFullScreen(), resolution);
                 resolution.change(window.getScene().getWidth(), window.getScene().getHeight());
                 play.start(window);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-
         return gameStackPane;
     }
 }

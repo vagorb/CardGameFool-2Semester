@@ -8,15 +8,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 
-//    public Deck getDeck() {
+    //    public Deck getDeck() {
 //        return deck;
 //    }
 //
 //    public Card getTrumpCard() {
 //        return trumpCard;
 //    }
-    public JsonObject moveMessage(JsonObject json, GameInfo gameInfo) {
-        JsonObject obj = new JsonObject();
+    public void moveMessage(JsonObject json, GameInfo gameInfo) {
         String suit = json.get("Suit").toString();
         suit = suit.replace("\"", "");
         String value = json.get("Value").toString();
@@ -26,8 +25,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         trump = trump.replace("\"", "");
         Boolean tru = Boolean.parseBoolean(trump);
         Card card = new Card(suit, val, tru);
-        gameInfo.setMoveCard(card);
-        return obj;
+        gameInfo.addMoveCard(card);
     }
 
     public synchronized JsonObject getMessage(GameInfo gameinfo) {
@@ -89,10 +87,10 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         return obj;
     }
 
-    public JsonObject updateTable(GameInfo gameInfo) {
+    public JsonObject updateTable(GameInfo gameInfo, Integer size) {
         JsonObject obj = new JsonObject();
         obj.addProperty("MessageType", "getOpponentCard");
-        if (!gameInfo.getMoveCard().equals(new Card("Test", 100, false))) {
+        if (gameInfo.getCards().size() > size) {
             Card card = gameInfo.getMoveCard();
             obj.addProperty("MessageType", "Send");
             obj.addProperty("Suit", card.getSuit());
@@ -104,6 +102,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
             obj.addProperty("MessageType", "WAIT");
             return obj;
         }
+
     }
 
 

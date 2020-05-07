@@ -1,7 +1,5 @@
 package Server;
 
-import com.card.game.fool.cards.Card;
-import com.card.game.fool.cards.Deck;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -16,15 +14,12 @@ import io.netty.handler.codec.string.StringEncoder;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Server {
-    public static List<String> gameForTwo = Collections.synchronizedList(new ArrayList<String>());
+    public static List<String> gameForTwo = Collections.synchronizedList(new ArrayList<>());
     public static List<String> gameForThree = new ArrayList<>();
     public static List<String> gameForFour = new ArrayList<>();
     public static List<GameInfo> games = Collections.synchronizedList(new ArrayList<GameInfo>());
@@ -83,14 +78,14 @@ public class Server {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1000, Delimiters.lineDelimiter()));
                             ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(new StringEncoder());
                             ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(5201).sync();
+            ChannelFuture f = b.bind(5200).sync();
             System.out.println("Starting nio server at " + f.channel().localAddress());
             f.channel().closeFuture().sync();
         } finally {

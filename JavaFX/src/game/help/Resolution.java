@@ -6,7 +6,6 @@ import javafx.scene.control.ComboBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Resolution {
@@ -15,43 +14,31 @@ public class Resolution {
     private double windowHeight;
     private double xOffset = 0;
     private double yOffset = 0;
-    private boolean fixedResolution = true;
     private CheckBox customResolution;
     private ComboBox<String> resolutionChoices;
 
     public Resolution(Stage window) {
         this.window = window;
+        resizeWindow();
+        dragWindow();
         makeCustomResoCheckbox();
         makeResolutionChoices();
-        actions();
     }
 
-    private void actions() {
-        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
+    private void resizeWindow() {
+        ChangeListener<Number> windowSizeListener = (observable, oldValue, newValue) -> {
             if (!customResolution.isSelected() && !window.isFullScreen()) {
                 window.setX((Screen.getPrimary().getBounds().getWidth() - windowWidth) / 2);
                 window.setY((Screen.getPrimary().getBounds().getHeight() - windowHeight) / 2);
             }
         };
 
-        window.getScene().setOnMousePressed(event -> {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-        });
-
-        window.getScene().setOnMouseDragged(event -> {
-            if (!window.isFullScreen()) {
-                window.setX(event.getScreenX() - xOffset);
-                window.setY(event.getScreenY() - yOffset);
-            }
-        });
-
-        window.heightProperty().addListener(stageSizeListener);
+        window.heightProperty().addListener(windowSizeListener);
         window.minWidthProperty().bind(window.heightProperty().multiply(16d / 9));
         window.maxWidthProperty().bind(window.heightProperty().multiply(16d / 9));
 
         window.getScene().setOnScroll(scrollEvent -> {
-            if (!fixedResolution) {
+            if (window.isResizable()) {
                 double newHeight = window.getHeight() + scrollEvent.getDeltaY();
                 if (newHeight >= 720 && newHeight <= Screen.getPrimary().getBounds().getHeight()) {
                     window.setHeight(newHeight);
@@ -60,10 +47,26 @@ public class Resolution {
         });
     }
 
+    public boolean isCustomResolution() {
+        return customResolution.isSelected();
+    }
+    public void dragWindow() {
+        window.getScene().setOnMousePressed(event -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+
+        window.getScene().setOnMouseDragged(event -> {
+            if (!window.isFullScreen()) {
+                window.setX(event.getScreenX() - xOffset);
+                window.setY(event.getScreenY() - yOffset);
+            }
+        });
+    }
+
     private void makeCustomResoCheckbox() {
         CheckBox customResolution = new CheckBox();
         customResolution.setOnAction(actionEvent -> {
-            fixedResolution = !customResolution.isSelected();
             window.setResizable(customResolution.isSelected());
             resolutionChoices.setDisable(customResolution.isSelected());
             resolutionChoices.setValue("");
@@ -92,10 +95,6 @@ public class Resolution {
         this.resolutionChoices = choices;
     }
 
-    public boolean isFixedResolution() {
-        return fixedResolution;
-    }
-
     public CheckBox getCustomResolution() {
         return customResolution;
     }
@@ -115,9 +114,6 @@ public class Resolution {
     private Double[] max(double width, double height) {
         if (width > Screen.getPrimary().getBounds().getWidth()) {
             width = Screen.getPrimary().getBounds().getWidth();
-        }
-        if (height > Screen.getPrimary().getBounds().getHeight()) {
-            height = Screen.getPrimary().getBounds().getHeight();
         }
         return new Double[]{width, height};
     }

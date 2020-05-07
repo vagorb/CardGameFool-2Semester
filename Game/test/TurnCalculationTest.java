@@ -1,6 +1,5 @@
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.logic.TurnCalculation;
-import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
 import com.card.game.fool.tables.Table;
 import org.junit.jupiter.api.Test;
@@ -13,10 +12,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestAddToPile() {
-        Hand hand1 = new Hand();
-        Player player1 = new Player("Ja", 0, hand1);
-        Hand hand2 = new Hand();
-        Player player2 = new Player("Ochen", 0, hand2);
+        Player player1 = new Player("Ja", 0);
+        Player player2 = new Player("Ochen", 0);
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         Card card2 = new Card("Hearts", 12, false);
@@ -31,10 +28,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestAddToPlayerHand() {
-        Hand hand1 = new Hand();
-        Player player1 = new Player("Ja", 0, hand1);
-        Hand hand2 = new Hand();
-        Player player2 = new Player("Ochen", 0, hand2);
+        Player player1 = new Player("Ja", 0);
+        Player player2 = new Player("Ochen", 0);
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         Card card2 = new Card("Hearts", 6, false);
@@ -46,18 +41,15 @@ public class TurnCalculationTest {
         assertFalse(turnCalculation.getDefenseSuccess());
         turnCalculation.addAttackAndDefenseCardsToPileOrPlayer(player2);
         System.out.println(tableForTwo.getPile().getPile().size());
-        System.out.println(tableForTwo.getPlayers().get(1).getHand().getCardsInHand().size());
+        System.out.println(tableForTwo.getPlayers().get(1).getHand().size());
     }
 
     @Test
     public void TestPutAttackCard() {
-        Hand hand1 = new Hand();
-        Player player1 = new Player("Ja", 0, hand1);
-        Hand hand2 = new Hand();
-        Player player2 = new Player("Ochen", 0, hand2);
+        Player player1 = new Player("Ja", 0);
+        Player player2 = new Player("Ochen", 0);
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
-        Card card2 = new Card("Hearts", 12, false);
         TurnCalculation turnCalculation = new TurnCalculation(tableForTwo);
         turnCalculation.putAttackCard(player1, card);
         assertEquals(card, turnCalculation.getAttackCard());
@@ -65,10 +57,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestPutDefenseCard() {
-        Hand hand1 = new Hand();
-        Player player1 = new Player("Ja", 0, hand1);
-        Hand hand2 = new Hand();
-        Player player2 = new Player("Ochen", 0, hand2);
+        Player player1 = new Player("Ja", 0);
+        Player player2 = new Player("Ochen", 0);
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         Card card2 = new Card("Hearts", 12, false);
@@ -81,10 +71,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestAttackAndDefenseTurns() {
-        Hand hand1 = new Hand();
-        Player player1 = new Player("Ja", 0, hand1);
-        Hand hand2 = new Hand();
-        Player player2 = new Player("Ochen", 0, hand2);
+        Player player1 = new Player("Ja", 0);
+        Player player2 = new Player("Ochen", 0);
         Table tableForTwo = new Table(player1, player2);
         TurnCalculation turnCalculation = new TurnCalculation(tableForTwo);
         Card card1 = new Card("Hearts", 6, false);
@@ -101,28 +89,28 @@ public class TurnCalculationTest {
         Card card11 = new Card("Hearts", 10, false);
         Card card12 = new Card("Hearts", 11, false);
 
-        player1.getHand().addCard(card1);
-        player1.getHand().addCard(card2);
-        player1.getHand().addCard(card3);
-        player1.getHand().addCard(card4);
-        player1.getHand().addCard(card5);
-        player1.getHand().addCard(card6);
+        player1.getHand().add(card1);
+        player1.getHand().add(card2);
+        player1.getHand().add(card3);
+        player1.getHand().add(card4);
+        player1.getHand().add(card5);
+        player1.getHand().add(card6);
 
-        player2.getHand().addCard(card7);
-        player2.getHand().addCard(card8);
-        player2.getHand().addCard(card9);
-        player2.getHand().addCard(card10);
-        player2.getHand().addCard(card11);
-        player2.getHand().addCard(card12);
+        player2.getHand().add(card7);
+        player2.getHand().add(card8);
+        player2.getHand().add(card9);
+        player2.getHand().add(card10);
+        player2.getHand().add(card11);
+        player2.getHand().add(card12);
 
-        turnCalculation.putAttackCard(player1, player1.getHand().getCardsInHand().get(0));
-        turnCalculation.putDefenseCard(player2, player2.getHand().getCardsInHand().get(3));
+        turnCalculation.putAttackCard(player1, player1.getHand().get(0));
+        turnCalculation.putDefenseCard(player2, player2.getHand().get(3));
 
-        turnCalculation.putAttackCard(player1, player1.getHand().getCardsInHand().get(0));
-        turnCalculation.putDefenseCard(player2, player2.getHand().getCardsInHand().get(3));
+        turnCalculation.putAttackCard(player1, player1.getHand().get(0));
+        turnCalculation.putDefenseCard(player2, player2.getHand().get(3));
 
-        System.out.println(player1.getHand().getCardsInHand());
-        System.out.println(player2.getHand().getCardsInHand());
+        System.out.println(player1.getHand());
+        System.out.println(player2.getHand());
 
 
 
