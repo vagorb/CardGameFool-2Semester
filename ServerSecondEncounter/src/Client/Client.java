@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
 
@@ -16,23 +17,27 @@ public class Client {
 
     public static void sendMessage(JsonObject object) throws IOException {
 
-
+        try {
+            TimeUnit.SECONDS.sleep((long) 0.5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String host = "localhost";
-        int port = 5201;
+        int port = 5200;
         JsonObject message = object;
-
 //        for (int i = 0; i < 35; i++) {
-            try (Socket socket = new Socket(host, port)) {
-                PrintWriter writer = new PrintWriter(socket.getOutputStream());
-                writer.println(message);
-                writer.flush();
+        try (Socket socket = new Socket(host, port)) {
 
-                log("send > " + message);
+            PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            writer.println(message);
+            writer.flush();
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                response = reader.readLine();
-                log("received < " + response);
-            }
+            log("send > " + message);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            response = reader.readLine();
+            log("received < " + response);
+        }
 //        }
     }
 

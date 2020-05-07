@@ -11,12 +11,16 @@ import java.util.UUID;
 
 public class GameInfo {
 
+    public List<Card> getCards() {
+        return cards;
+    }
+
     private List<String> players = new ArrayList<>();
     private Deck deck;
 
     private Card trump;
 
-    private Card card = new Card("Test", 100, false);
+    private static List<Card> cards = new ArrayList<>();
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -58,12 +62,12 @@ public class GameInfo {
         return trump;
     }
 
-    public synchronized Card getMoveCard() {
-        return this.card;
+    public Card getMoveCard() {
+        return cards.get(cards.size() - 1);
     }
 
-    public synchronized void setMoveCard(Card card) {
-        this.card = card;
+    public synchronized void addMoveCard(Card card) {
+        cards.add(card);
     }
 
     public static void main(String[] args) {

@@ -90,7 +90,7 @@ public class Server {
                             ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(5201).sync();
+            ChannelFuture f = b.bind(5200).sync();
             System.out.println("Starting nio server at " + f.channel().localAddress());
             f.channel().closeFuture().sync();
         } finally {
