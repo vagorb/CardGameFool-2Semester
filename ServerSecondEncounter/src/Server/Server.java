@@ -26,6 +26,7 @@ public class Server {
     public static List<String> players = new ArrayList<>();
     public static Map<String, GameInfo> playersToGames = Collections.synchronizedMap(new HashMap<String, GameInfo>());
 
+
 //    private static Deck deck = new Deck();
 //    private static Card card = Server.decideTrump();
 //
@@ -53,6 +54,7 @@ public class Server {
 //    public static void makeTrump() {
 //        deck.makeCardsTrump(card.getSuit());
 //    }
+
 
     public static void runServer() throws InterruptedException {
         System.out.println("LONG LINE OF TEXT THAT WE CAN SEE ??????????");
@@ -83,7 +85,7 @@ public class Server {
                             ch.pipeline().addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(5201).sync();
+            ChannelFuture f = b.bind(5200).sync();
             System.out.println("Starting nio server at " + f.channel().localAddress());
             f.channel().closeFuture().sync();
         } finally {

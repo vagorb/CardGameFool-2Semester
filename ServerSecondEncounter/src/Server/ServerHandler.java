@@ -1,8 +1,10 @@
 package Server;
 
+import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -37,42 +39,42 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //                    Server.games.add(gameInfo);
 //                    ctx.write("WAIT" + "\r\n");
 //                    ctx.writeAndFlush(UUID.fromString(uuid));
-                 if (Server.gameForTwo.size() == 2) {
-                     if (uuid.equalsIgnoreCase(Server.gameForTwo.get(0))) {
-                         GameInfo gameInfo = new GameInfo(new Deck(), List.of(Server.gameForTwo.get(0), Server.gameForTwo.get(1)));
-                         Server.games.add(gameInfo);
-                         for (String player : Server.gameForTwo) {
-                             Server.playersToGames.put(player, gameInfo);
-                         }
-                         ctx.write(message.canAttackGameStart(gameInfo) + "\r\n");
-                         ctx.writeAndFlush(UUID.fromString(uuid));
-                     } else {
-                         if (Server.playersToGames.containsKey(uuid)) {
-                             GameInfo gameInfo = Server.games.get(0);
-                             ctx.write(message.canDefGameStart(gameInfo) + "\r\n");
-                             ctx.writeAndFlush(UUID.fromString(uuid));
-                             Server.games.clear();
-                             Server.gameForTwo.clear();
-                         } else {
-                             ctx.write("WAIT" + "\r\n");
-                             ctx.writeAndFlush(UUID.fromString(uuid));
-                         }
+                if (Server.gameForTwo.size() == 2) {
+                    if (uuid.equalsIgnoreCase(Server.gameForTwo.get(0))) {
+                        GameInfo gameInfo = new GameInfo(new Deck(), List.of(Server.gameForTwo.get(0), Server.gameForTwo.get(1)));
+                        Server.games.add(gameInfo);
+                        for (String player : Server.gameForTwo) {
+                            Server.playersToGames.put(player, gameInfo);
+                        }
+                        ctx.write(message.canAttackGameStart(gameInfo) + "\r\n");
+                        ctx.writeAndFlush(UUID.fromString(uuid));
+                    } else {
+                        if (Server.playersToGames.containsKey(uuid)) {
+                            GameInfo gameInfo = Server.games.get(0);
+                            ctx.write(message.canDefGameStart(gameInfo) + "\r\n");
+                            ctx.writeAndFlush(UUID.fromString(uuid));
+                            Server.games.clear();
+                            Server.gameForTwo.clear();
+                        } else {
+                            ctx.write("WAIT" + "\r\n");
+                            ctx.writeAndFlush(UUID.fromString(uuid));
+                        }
 
-                     }
-                         //                           System.out.println(Server.playersToGames);
-                         //                           System.out.println(Server.gameForTwo);
+                    }
+                    //                           System.out.println(Server.playersToGames);
+                    //                           System.out.println(Server.gameForTwo);
 //                        Server.gameForTwo.clear(); TODO This
-                 } else {
-                     if (!Server.gameForTwo.contains(uuid)) {
-                         Server.gameForTwo.add(uuid);
-                         System.out.println(Server.playersToGames);
-                     }
+                } else {
+                    if (!Server.gameForTwo.contains(uuid)) {
+                        Server.gameForTwo.add(uuid);
+                        System.out.println(Server.playersToGames);
+                    }
 //                        System.out.println(Server.playersToGames);
 //                        System.out.println(Server.gameForTwo);
-                         ctx.write("WAIT" + "\r\n");
-                         ctx.writeAndFlush(UUID.fromString(uuid));
-                     }
-           }
+                    ctx.write("WAIT" + "\r\n");
+                    ctx.writeAndFlush(UUID.fromString(uuid));
+                }
+            }
         } else if (messageType.equalsIgnoreCase("replenish")) {
             String uuid = jsonObject.get("UUID").toString();
             uuid = uuid.replace("\"", "");
@@ -111,80 +113,33 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             String uuid = jsonObject.get("UUID").toString();
             uuid = uuid.replace("\"", "");
             GameInfo game = Server.playersToGames.get(uuid);
-            for (String player : game.getPlayers()) {
-                if (!player.equalsIgnoreCase(uuid)) {
-                    System.out.println("LUL KEK");
-                    ctx.write(message.moveMessage(jsonObject) + "\r\n");
-                } else {
-                    System.out.println("RECEIVED");
-                    ctx.write("RECEIVED" + "\r\n");
-                }
+//            for (String player : game.getPlayers()) {
+//                if (!player.equalsIgnoreCase(uuid)) {
+//                    System.out.println("LUL KEK");
+//                    ctx.write(message.updateTable(game) + "\r\n");
+//                    ctx.writeAndFlush(UUID.fromString(uuid));
+//                } else {
+//                    System.out.println("RECEIVED");
+//                    //ctx.write("RECEIVED" + "\r\n");
+//                }
+//            }
+            message.moveMessage(jsonObject, game);
+            if (game.getMoveCard().getValue() != 100) {
+                ctx.write("RECEIVED" + "\r\n");
                 ctx.writeAndFlush(UUID.fromString(uuid));
             }
+        } else if (messageType.equalsIgnoreCase("getOpponentCard")) {
+            String uuid = jsonObject.get("UUID").toString();
+            uuid = uuid.replace("\"", "");
+            String size = jsonObject.get("SIZE").toString();
+            size = size.replace("\"", "");
+            Integer intSize = Integer.parseInt(size);
+            GameInfo game = Server.playersToGames.get(uuid);
+            ctx.write(message.updateTable(game, intSize) + "\r\n");
+            ctx.writeAndFlush(UUID.fromString(uuid));
+//                Card card = new Card("Test", 100, false);
+//                game.setMoveCard(card);
         }
-
-
-//            // starting new game
-//            Game game = new Game()
-//                    //add player 1
-//            // add player 2
-////            game.addPlayer()
-////            game.addPlayer()
-////            Deck deck = new Deck();
-////            game.add(deck)
-//            Server.games.add(game);
-//        }
-//
-//        if(message.type == "PlayerMOve") {
-//            game = Server.games.getGameByPlayer(playerId);
-//            game.move(mesage)
-//        }
-
-//        if (messageType.equalsIgnoreCase("gameStart")) {
-//            //
-//            Server.players.add("Player1");
-//
-//            //todo wait for other players
-//            // creating new game
-//            List<String> gamePLayers = new ArrayList<>();
-//            gamePLayers.add(Server.players.get(0));
-//            GameInfo gameInfo = new GameInfo(new Deck(), gamePLayers);
-//            Server.games.add(gameInfo);
-//            Server.playersToGames.put("Player1", gameInfo);
-//            // send gameinfo id to clients
-
-//            ctx.write(message.getTrumpMessage() + "\r\n");
-//            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
-
-//        } else if (messageType.equalsIgnoreCase("Replenish")) {
-//            // change this later
-//            ctx.write(message.getMessage() + "\r\n");
-//            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER); //UUID sjuda ebat
-//        } else if (messageType.equalsIgnoreCase("Skip")) {
-//            String hand = jsonObject.get("HandSize").toString();
-//            hand = hand.replace("\"", "");
-//            ctx.write(message.refreshCardsMessage(6 - Integer.parseInt(hand)) + "\r\n");
-//            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
-//        } else if (messageType.equalsIgnoreCase("GameMove")) {
-//
-//        //playerID = message.getPlayerId()
-////            Server.playersToGames.get(playerId);
-//        GameInfo game = Server.playersToGames.get("Player1");
-//        //todo apply move to game
-////            game.getDeck();
-////            game.ge
-//
-//        ctx.write(message.getMessage() + "\r\n");
-//        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
-//        }
-//        ctx.write(message.getMessage() + "\r\n");
-//        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
-        //JsonObject msgg = message.getMessage();
-        //System.out.println(msgg);
-//        ctx.write(message.getGameStartMessage() + "\r\n");
-//        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
-
-            //.addListener(ChannelFutureListener.CLOSE);
     }
 
 

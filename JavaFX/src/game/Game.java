@@ -47,6 +47,7 @@ public class Game extends Application {
     private String uuid = UUID.randomUUID().toString();
     private int playersInTable = 2;
     private boolean gameIsGoing = true;
+    private List<Card> sizeOfCards= new ArrayList<>();
 
     private double windowHeight;
     private double windowWidth;
@@ -667,6 +668,7 @@ public class Game extends Application {
         JsonObject opponent = new JsonObject();
         opponent.addProperty("MessageType", "getOpponentCard");
         opponent.addProperty("UUID", uuid);
+        opponent.addProperty("SIZE", sizeOfCards.size());
         client.setMessage(opponent);
         try {
             Client.sendMessage(opponent);
@@ -676,6 +678,7 @@ public class Game extends Application {
                 System.out.println(Client.getResponse());
             } else {
                 Card card = cardFromResponse(response);
+                sizeOfCards.add(card);
                 listOfCardsOnUITable.add(card.getValue());
                 for (int i = 0; i < 6; i++) {
                     Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
@@ -697,6 +700,7 @@ public class Game extends Application {
         JsonObject opponent = new JsonObject();
         opponent.addProperty("MessageType", "getOpponentCard");
         opponent.addProperty("UUID", uuid);
+        opponent.addProperty("SIZE", sizeOfCards.size());
         client.setMessage(opponent);
         try {
             Client.sendMessage(opponent);
@@ -710,6 +714,7 @@ public class Game extends Application {
 //                        System.out.println(response = Client.getResponse());
             } else {
                 Card card = cardFromResponse(response.toString());
+                sizeOfCards.add(card);
                 listOfCardsOnUITable.add(card.getValue());
                 for (int i = 0; i < 6; i++) {
                     Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);

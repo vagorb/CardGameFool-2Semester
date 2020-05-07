@@ -8,15 +8,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
 
-//    public Deck getDeck() {
+    //    public Deck getDeck() {
 //        return deck;
 //    }
 //
 //    public Card getTrumpCard() {
 //        return trumpCard;
 //    }
-    public JsonObject moveMessage(JsonObject json) {
-        JsonObject obj = new JsonObject();
+    public void moveMessage(JsonObject json, GameInfo gameInfo) {
         String suit = json.get("Suit").toString();
         suit = suit.replace("\"", "");
         String value = json.get("Value").toString();
@@ -26,12 +25,7 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         trump = trump.replace("\"", "");
         Boolean tru = Boolean.parseBoolean(trump);
         Card card = new Card(suit, val, tru);
-        obj.addProperty("MessageType", "GameMove");
-        obj.addProperty("Suit", card.getSuit());
-        obj.addProperty("Value", card.getValue());
-        obj.addProperty("Trump", card.getTrump());
-        obj.addProperty("Id", card.getId());
-        return obj;
+        gameInfo.addMoveCard(card);
     }
 
     public synchronized JsonObject getMessage(GameInfo gameinfo) {
@@ -91,6 +85,24 @@ public class ServerGameStartMessage extends ChannelInboundHandlerAdapter {
         JsonObject obj = new JsonObject();
         obj.addProperty("MessageType", "TAKE");
         return obj;
+    }
+
+    public JsonObject updateTable(GameInfo gameInfo, Integer size) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("MessageType", "getOpponentCard");
+        if (gameInfo.getCards().size() > size) {
+            Card card = gameInfo.getMoveCard();
+            obj.addProperty("MessageType", "Send");
+            obj.addProperty("Suit", card.getSuit());
+            obj.addProperty("Value", card.getValue());
+            obj.addProperty("Trump", card.getTrump());
+            obj.addProperty("Id", card.getId());
+            return obj;
+        } else {
+            obj.addProperty("MessageType", "WAIT");
+            return obj;
+        }
+
     }
 
 

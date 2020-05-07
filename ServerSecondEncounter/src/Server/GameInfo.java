@@ -5,15 +5,16 @@ import com.card.game.fool.cards.Deck;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class GameInfo {
 
-    private final List<String> players;
-    private final List<Card> cardsOnTable = new LinkedList<>();
-    private final Deck deck;
-    private final Card trump;
+
+    private List<String> players;
+    private Deck deck;
+    private Card trump;
+
+    private static List<Card> cards = new ArrayList<>();
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -27,8 +28,8 @@ public class GameInfo {
         deck.makeCardsTrump(trump.getSuit());
     }
 
-    public List<Card> getCardsOnTable() {
-        return cardsOnTable;
+    public List<Card> getCards() {
+        return cards;
     }
 
     public void addPlayers(String player) {
@@ -57,6 +58,14 @@ public class GameInfo {
         return trump;
     }
 
+    public Card getMoveCard() {
+        return cards.get(cards.size() - 1);
+    }
+
+    public synchronized void addMoveCard(Card card) {
+        cards.add(card);
+    }
+
     public static void main(String[] args) {
         List<String> players = new ArrayList<>();
         players.add("player1");
@@ -69,6 +78,5 @@ public class GameInfo {
         // client receives
         GameInfo receivedInfo = gson.fromJson(json, GameInfo.class);
         System.out.println(receivedInfo);
-
     }
 }
