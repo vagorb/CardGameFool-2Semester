@@ -47,6 +47,7 @@ public class Game extends Application {
     private boolean fixedResolution;
     private String uuid = UUID.randomUUID().toString();
     private int playersInTable = 2;
+    private boolean bool = false;
 
     private double windowHeight;
     private double windowWidth;
@@ -116,6 +117,11 @@ public class Game extends Application {
             String response = Client.getResponse();
             while (response.equals("WAIT")) {
                 Client.sendMessage(start);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 response = Client.getResponse();
             }
             JsonObject obj = JsonParser.parseString(response).getAsJsonObject();
@@ -319,47 +325,55 @@ public class Game extends Application {
                     }
                 });
             }
-//            if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
-//                JsonObject opponent = new JsonObject();
-//                opponent.addProperty("MessageType", "getOpponentCard");
-//                opponent.addProperty("UUID", uuid);
-//                client.setMessage(opponent);
-//                try {
-//                    Client.sendMessage(opponent);
-//                    String response = Client.getResponse();
-//                    while (response.equals("WAIT")) {
-//                        Client.sendMessage(opponent);
-//                        System.out.println(response = Client.getResponse());
-//                    }
-//                    Card card = cardFromResponse(response);
-//                    listOfCardsOnUITable.add(card.getValue());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            } else if (playerState == Player.PlayerState.DEFENSE && listOfCardsOnUITable.size() % 2 == 0) {
-//                JsonObject opponent = new JsonObject();
-//                opponent.addProperty("MessageType", "getOpponentCard");
-//                opponent.addProperty("UUID", uuid);
-//                client.setMessage(opponent);
-//                try {
-//                    Client.sendMessage(opponent);
-////                    String response = Client.getResponse();
-//                    JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
-//                    String strResponse = response.get("MessageType").toString();
-//                    strResponse = strResponse.replace("\"", "");
-//
-//                    while (strResponse.equals("WAIT")) {
-//                        Client.sendMessage(opponent);
-////                        System.out.println(response = Client.getResponse());
-//                    }
-//                    Card card = cardFromResponse(response.toString());
-//                    listOfCardsOnUITable.add(card.getValue());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
         }
+
+//        if (bool = true) {
+            if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
+                JsonObject opponent = new JsonObject();
+                opponent.addProperty("MessageType", "getOpponentCard");
+                opponent.addProperty("UUID", uuid);
+                client.setMessage(opponent);
+                try {
+                    Client.sendMessage(opponent);
+                    String response = Client.getResponse();
+                    while (response.equals("WAIT")) {
+                        Client.sendMessage(opponent);
+                        System.out.println(response = Client.getResponse());
+                    }
+                    Card card = cardFromResponse(response);
+                    listOfCardsOnUITable.add(card.getValue());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (playerState == Player.PlayerState.DEFENSE && listOfCardsOnUITable.size() % 2 == 0) {
+                JsonObject opponent = new JsonObject();
+                opponent.addProperty("MessageType", "getOpponentCard");
+                opponent.addProperty("UUID", uuid);
+                client.setMessage(opponent);
+                try {
+                    Client.sendMessage(opponent);
+//                    String response = Client.getResponse();
+                    JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
+                    String strResponse = response.get("MessageType").toString();
+                    strResponse = strResponse.replace("\"", "");
+
+                    if (strResponse.equals("WAIT")) {
+                        Client.sendMessage(opponent);
+//                        System.out.println(response = Client.getResponse());
+                    } else {
+                        Card card = cardFromResponse(response.toString());
+                        listOfCardsOnUITable.add(card.getValue());
+//                        Button buttonCard = cardToButton(card, cardBox, cardWidth, cardHeight);
+
+
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+//        }
+//        this.bool = true;
 
         HBox gameFields = new CardPackField(cardUnitSize, windowWidth, throwCards).addFields(playField, trumpCard);
         gameFields.setTranslateX(windowWidth * 9 / 40);
@@ -473,6 +487,50 @@ public class Game extends Application {
         exitButton.prefHeightProperty().bind(backButton.prefHeightProperty());
 
         window.show();
+
+//                    if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
+//                JsonObject opponent = new JsonObject();
+//                opponent.addProperty("MessageType", "getOpponentCard");
+//                opponent.addProperty("UUID", uuid);
+//                client.setMessage(opponent);
+//                try {
+//                    Client.sendMessage(opponent);
+//                    String response = Client.getResponse();
+//                    while (response.equals("WAIT")) {
+//                        Client.sendMessage(opponent);
+//                        System.out.println(response = Client.getResponse());
+//                    }
+//                    Card card = cardFromResponse(response);
+//                    listOfCardsOnUITable.add(card.getValue());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            } else if (playerState == Player.PlayerState.DEFENSE && listOfCardsOnUITable.size() % 2 == 0) {
+//                JsonObject opponent = new JsonObject();
+//                opponent.addProperty("MessageType", "getOpponentCard");
+//                opponent.addProperty("UUID", uuid);
+//                client.setMessage(opponent);
+//                try {
+//                    Client.sendMessage(opponent);
+////                    String response = Client.getResponse();
+//                    JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
+//                    String strResponse = response.get("MessageType").toString();
+//                    strResponse = strResponse.replace("\"", "");
+//
+//                    while (strResponse.equals("WAIT")) {
+//                        Client.sendMessage(opponent);
+////                        System.out.println(response = Client.getResponse());
+//                    }
+//                    Card card = cardFromResponse(response.toString());
+//                    listOfCardsOnUITable.add(card.getValue());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+
+        // actions loop
+//        for
     }
 
     public JsonObject gameStart() {

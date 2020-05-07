@@ -134,7 +134,7 @@ public class SettingMenu {
                 resolution.change(window.getScene().getWidth(), window.getScene().getHeight());
                 play.start(window);
             } catch (Exception e) {
-                System.out.println(Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
             }
         });
 
