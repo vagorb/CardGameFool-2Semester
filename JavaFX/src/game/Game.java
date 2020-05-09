@@ -36,7 +36,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,7 @@ public class Game extends Application {
     private String playerId = UUID.randomUUID().toString();
     private List<Card> sizeOfCards = new ArrayList<>();
     private boolean uiIsLocked = true;
+    private Map<Integer, HBox> playFieldButtons;
 
     private double windowHeight;
     private double windowWidth;
@@ -93,8 +96,7 @@ public class Game extends Application {
         Button button = new Button();
         Buttons.oneSizeOnly(button, cardWidth, cardHeight);
         button.setId(card.getId());
-        button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
-                + "url('/images/cards/%s/%s.png')", card.getSuit(), card.getId()));
+        button.setStyle(card.getStyleForButton());
         destination.getChildren().add(button);
         button.setOnAction(actionEvent -> {
             if (activeCard != null) {
@@ -184,6 +186,7 @@ public class Game extends Application {
         HBox upperLayer = (HBox) playFieldClass.createPlayfield().get(1);
         HBox lowerLayer = (HBox) playFieldClass.createPlayfield().get(2);
         Map<Integer, HBox> playFieldButtons = playFieldClass.createButtons();
+        this.playFieldButtons = playFieldButtons;
 //
 
         GameField gameFieldClass = new GameField(cardUnitSize, windowWidth);
@@ -480,10 +483,75 @@ public class Game extends Application {
         System.out.println(playerId + " Updating UI with changes");
 
         List<Card> cardsOnTable = game.getCardsOnTable();
-        listOfCardsOnUITable.clear();
-        for (Card cardOnTable : cardsOnTable) {
-            listOfCardsOnUITable.add(cardOnTable.getValue());
+        if(cardsOnTable.isEmpty()){
+            //todo reset buttons
+        } else {
+
+
+            int cardsOnTableCounter = 0;
+            for (HBox attackDefPair:  playFieldButtons.values()) {
+                Node attack = attackDefPair.getChildrenUnmodifiable().get(0);
+                Node defense = attackDefPair.getChildrenUnmodifiable().get(1);
+
+                if(cardsOnTableCounter < cardsOnTable.size()) {
+                    Card card = cardsOnTable.get(cardsOnTableCounter);
+                    attack.setDisable(true);
+                    attack.setVisible(true);
+                    attack.setStyle(card.getStyleForButton() + ";-fx-opacity: 1");
+                    cardsOnTableCounter++;
+                } else {
+                    // No matching card on table, so this is next button that should be active
+                    attack.setVisible(true);
+                    attack.setDisable(false);
+                    break;
+                }
+
+                if(cardsOnTableCounter < cardsOnTable.size()) {
+                    Card card = cardsOnTable.get(cardsOnTableCounter);
+                    defense.setDisable(true);
+                    defense.setVisible(true);
+                    defense.setStyle(card.getStyleForButton() + ";-fx-opacity: 1");
+                    cardsOnTableCounter++;
+                } else {
+                    // No matching card on table, so this is next button that should be active
+                    defense.setVisible(true);
+                    defense.setDisable(false);
+                    break;
+                }
+
+
+            }
+
+//            int counter = 0;
+//            for (Card card : cardsOnTable) {
+//                HBox attackDefensePair = playFieldButtons.get(counter + 1);
+//                if (counter % 2 == 0) {
+//                    Node attack = attackDefensePair.getChildrenUnmodifiable().get(0);
+//                    attack.setDisable(true);
+//                    attack.setStyle(card.getStyleForButton() + ";-fx-opacity: 1");
+//                } else {
+//                    Node defense = attackDefensePair.getChildrenUnmodifiable().get(1);
+//                    defense.setDisable(true);
+//                    defense.setStyle(card.getStyleForButton() + ";-fx-opacity: 1");
+//                }
+//                counter++;
+//            }
+//
+//            HBox attackDefensePair = playFieldButtons.get(counter + 1);
+//            if (counter % 2 == 0) {
+//                Node attack = attackDefensePair.getChildrenUnmodifiable().get(0);
+//                attack.setDisable(false);
+//                attack.setVisible(true);
+//            } else {
+//                Node defense = attackDefensePair.getChildrenUnmodifiable().get(1);
+//                defense.setDisable(false);
+//                defense.setVisible(true);
+//            }
+
+//
         }
+//        playFieldButtons
+
 
 //        listOfCardsOnUITable.add(attackCard.getValue());
 //        cardBox.getChildren().remove(activeCard);

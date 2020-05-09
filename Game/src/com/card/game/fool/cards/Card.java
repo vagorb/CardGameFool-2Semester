@@ -109,6 +109,11 @@ public class Card {
         return valueMap.get(value);
     }
 
+    public String getStyleForButton() {
+        return String.format("-fx-background-size: cover;-fx-background-image: "
+                + "url('/images/cards/%s/%s.png')", this.getSuit(), this.getId());
+    }
+
 
     @Override
     public boolean equals(Object o) {
