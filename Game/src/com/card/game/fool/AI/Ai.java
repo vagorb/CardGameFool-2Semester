@@ -3,6 +3,7 @@ package com.card.game.fool.AI;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.PlayerState;
 import com.card.game.fool.players.gamerInterface;
 import com.card.game.fool.tables.Table;
 
@@ -174,7 +175,7 @@ public class Ai implements gamerInterface {
 
 
     public Optional<Card> getAiMove(Table table) {
-        if (table.getPlayers().get(0).getPlayerState().equals(Player.PlayerState.ATTACK)) {
+        if (table.getPlayers().get(0).getPlayerState().equals(PlayerState.ATTACK)) {
             if (table.getGameDeck().size() < 1) {
                 return suitableDefMoveWhenDeckEnds(table);
             } else {

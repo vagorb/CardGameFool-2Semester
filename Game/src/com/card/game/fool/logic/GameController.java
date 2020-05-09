@@ -2,6 +2,7 @@ package com.card.game.fool.logic;
 
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.PlayerState;
 import com.card.game.fool.tables.Table;
 
 import java.util.Random;
@@ -108,11 +109,11 @@ public class GameController {
         System.out.println(table.getTrumpSuit());
         // I can add this if statement in my main code to prevent this from going weird.
         if (attackDefenseDecider % 2 == 0) {
-            player1.setPlayerState(Player.PlayerState.ATTACK);
-            player2.setPlayerState(Player.PlayerState.DEFENSE);
+            player1.setPlayerState(PlayerState.ATTACK);
+            player2.setPlayerState(PlayerState.DEFENSE);
         } else if (attackDefenseDecider % 2 == 1) {
-            player1.setPlayerState(Player.PlayerState.DEFENSE);
-            player2.setPlayerState(Player.PlayerState.ATTACK);
+            player1.setPlayerState(PlayerState.DEFENSE);
+            player2.setPlayerState(PlayerState.ATTACK);
         }
     }
 
@@ -127,7 +128,7 @@ public class GameController {
         for (int i = 0; i < 12; i++) {
             if (!turnCalculation.getDefenseSuccess()) {
                 for (Player defender : table.getPlayers()) {
-                    if (defender.getPlayerState() == Player.PlayerState.DEFENSE) {
+                    if (defender.getPlayerState() == PlayerState.DEFENSE) {
                         turnCalculation.addAttackAndDefenseCardsToPileOrPlayer(defender);
                         System.out.println(defender.getHand());
                         turnCalculation.setDefenseSuccess(true);
@@ -144,7 +145,7 @@ public class GameController {
                 if (playerAttackerOrDefender.getHand().size() == 0) {
                     break;
                 }
-                if (playerAttackerOrDefender.getPlayerState() == Player.PlayerState.ATTACK) {
+                if (playerAttackerOrDefender.getPlayerState() == PlayerState.ATTACK) {
                     System.out.println("Choose card for attack from your hand of size " + (playerAttackerOrDefender.getHand().size() - 1));
                     System.out.println(playerAttackerOrDefender.getHand());
                     String attackCard = input.next();
@@ -157,7 +158,7 @@ public class GameController {
                     System.out.println("We will attack with " + playerAttackerOrDefender.getHand().get(integer));
 //                    turnCalculation.putAttackCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer));
                 }
-                if (playerAttackerOrDefender.getPlayerState() == Player.PlayerState.DEFENSE && table.getTable().size() % 2 == 1) {
+                if (playerAttackerOrDefender.getPlayerState() == PlayerState.DEFENSE && table.getTable().size() % 2 == 1) {
                     System.out.println("Choose card for defense from your hand of size " + (playerAttackerOrDefender.getHand().size() - 1));
                     System.out.println(playerAttackerOrDefender.getHand());
                     String defenseCard = input.next();

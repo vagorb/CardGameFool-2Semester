@@ -2,6 +2,7 @@ package Server;
 
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
+import com.card.game.fool.players.PlayerState;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -9,12 +10,16 @@ import java.util.List;
 
 public class GameInfo {
 
-
     private List<String> players;
     private Deck deck;
     private Card trump;
     private boolean gameStarted;
     private List<Card> cards = new ArrayList<>();
+    private String currentPlayerTurn;
+    private String attackingPlayer;
+    private String defendingPlayer;
+    // Cards on table that attacked and defender are putting
+    private List<Card> cardsOnTable = new ArrayList<>();
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -26,6 +31,39 @@ public class GameInfo {
         deck.removeCard(trump);
         deck.getDeck().add(trump);
         deck.makeCardsTrump(trump.getSuit());
+    }
+
+    public void addCardToTable(Card card) {
+        cardsOnTable.add(card);
+    }
+
+    public void playerMadeMove(String player) {
+        if(attackingPlayer.equals(player)) {
+            currentPlayerTurn = defendingPlayer;
+        } else {
+            currentPlayerTurn = attackingPlayer;
+        }
+    }
+
+    public void startGame() {
+        attackingPlayer = players.get(0);
+        currentPlayerTurn = players.get(0);
+        defendingPlayer = players.get(1);
+        gameStarted = true;
+    }
+
+    public PlayerState getPlayerState(String player) {
+        if (attackingPlayer.equals(player)) {
+            return PlayerState.ATTACK;
+        } else if (defendingPlayer.equals(player)) {
+            return PlayerState.DEFENSE;
+        } else {
+            return PlayerState.WAITING;
+        }
+    }
+
+    public boolean isPlayersTurn(String player) {
+        return currentPlayerTurn.equals(player);
     }
 
     public List<Card> getCards() {
@@ -72,5 +110,21 @@ public class GameInfo {
 
     public void setGameStarted(boolean gameStarted) {
         this.gameStarted = gameStarted;
+    }
+
+    public String getCurrentPlayerTurn() {
+        return currentPlayerTurn;
+    }
+
+    public String getAttackingPlayer() {
+        return attackingPlayer;
+    }
+
+    public String getDefendingPlayer() {
+        return defendingPlayer;
+    }
+
+    public List<Card> getCardsOnTable() {
+        return cardsOnTable;
     }
 }

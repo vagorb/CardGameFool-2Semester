@@ -26,9 +26,22 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (messageType.equalsIgnoreCase("newPlayer")) {
             GameInfo game = Server.addPlayerToGame(player);
             ctx.writeAndFlush(gson.toJson(game) + "\r\n");
+            // todo start game when required amount of players has joined, not only when two
+            if (game.getPlayers().size() >= 2) {
+                game.startGame();
+            }
         } else if (messageType.equalsIgnoreCase("replenish")) {
             List<Card> cards = Server.replenishPlayerCards(player, message.get("cardsInHand").getAsInt());
             ctx.writeAndFlush(gson.toJson(cards) + "\r\n");
+        } else if (messageType.equalsIgnoreCase("getGameInfo")) {
+            GameInfo game = Server.playersToGames.get(player);
+            ctx.writeAndFlush(gson.toJson(game) + "\r\n");
+        } else if (messageType.equalsIgnoreCase("gameMove")) {
+            GameInfo game = Server.playersToGames.get(player);
+            Card card = gson.fromJson(message.getAsJsonObject("card"), Card.class);
+            game.addCardToTable(card);
+            game.playerMadeMove(player);
+            ctx.writeAndFlush(gson.toJson(game) + "\r\n");
         }
 
 

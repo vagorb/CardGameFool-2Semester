@@ -23,15 +23,6 @@ public class Player implements gamerInterface{
     }
 
     /**
-     * PlayerState
-     * Attack state - player is attacking
-     * Defense state - player is defending
-     */
-    public enum PlayerState {
-        ATTACK, DEFENSE, SKIP
-    }
-
-    /**
      * Getter
      * @return List of Cards of this player
      */

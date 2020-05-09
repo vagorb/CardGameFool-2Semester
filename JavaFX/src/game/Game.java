@@ -6,6 +6,7 @@ import Server.model.NewPlayer;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.PlayerState;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -49,16 +50,14 @@ public class Game extends Application {
     private boolean fullscreenStatus;
     private boolean invertScroll;
     private Resolution resolution;
-    private String uuid = UUID.randomUUID().toString();
-    private int playersInTable = 2;
-    private boolean gameIsGoing = true;
+    private String playerId = UUID.randomUUID().toString();
     private List<Card> sizeOfCards = new ArrayList<>();
+    private boolean uiIsLocked = true;
 
     private double windowHeight;
     private double windowWidth;
 
     private Player thePlayer;
-    private Client client = new Client();
 
     private Card attackCard;
     private Card defenseCard;
@@ -110,19 +109,11 @@ public class Game extends Application {
 
     private GameInfo sendNewPlayerMsg() throws IOException {
         NewPlayer newPlayerMsg = new NewPlayer();
-        // todo do we need both playerId and clientId?
-        newPlayerMsg.playerId = uuid;
+        newPlayerMsg.playerId = playerId;
         String response = Client.sendMessage(newPlayerMsg);
         return gson.fromJson(response, GameInfo.class);
     }
 
-    private Card getTrumpCardMsg() throws IOException {
-        JsonObject trump = new JsonObject();
-        trump.addProperty("UUID", uuid);
-        trump.addProperty("MessageType", "getTrump");
-        String response = Client.sendMessage(trump);
-        return cardFromResponse(response);
-    }
 
     public void start(Stage window) throws IOException {
         GameInfo gameInfo = sendNewPlayerMsg();
@@ -145,7 +136,7 @@ public class Game extends Application {
         menu.setStyle("-fx-background-color: rgba(16,16,16,0.9)");
 
         window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-        window.setTitle(uuid + "_Play.exe");
+        window.setTitle(playerId + "_Play.exe");
         window.setFullScreen(fullscreenStatus);
         window.setScene(playScene);
 
@@ -225,7 +216,7 @@ public class Game extends Application {
 
         skipTurn.setOnAction(actionEvent -> {
 //            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
-            thePlayer.setPlayerState(Player.PlayerState.SKIP);   // need to send that info to Server as well
+            thePlayer.setPlayerState(PlayerState.SKIP);   // need to send that info to Server as well
             cardBoxScroll.setDisable(true);
 //            }
         });
@@ -345,43 +336,45 @@ public class Game extends Application {
             }
 
             attack.setOnMouseClicked(mouseEvent -> {
+                if (uiIsLocked) {
+                    return;
+                }
                 if (activeCard != null && !attack.isDisable()) {
                     attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
                             .collect(Collectors.toList()).get(0);
                     if (listOfCardsOnUITable.size() == 0) {
                         JsonObject sendToServer = cardToJson(attackCard);
-//                        client.setMessage(sendToServer);
+                        GameInfo updatedGame = null;
                         try {
-                            Client.sendMessage(sendToServer);
+                            String response = Client.sendMessage(sendToServer);
+                            updatedGame = gameInfoFromResponse(response);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
-//                        Card card = cardFromResponse(resp);
-//                        System.out.println(card);
                         listOfCardsOnUITable.add(attackCard.getValue());
                         cardBox.getChildren().remove(activeCard);
                         attack.setDisable(true);
                         attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                         defence.setVisible(true);
                         activeCard = null;
+                        waitForMyTurn(updatedGame);
                     } else {
                         if (listOfCardsOnUITable.contains(attackCard.getValue())) {
                             JsonObject sendToServer = cardToJson(attackCard);
-//                            client.setMessage(sendToServer);
+                            GameInfo updatedGame = null;
                             try {
                                 Client.sendMessage(sendToServer);
+                                String response = Client.sendMessage(sendToServer);
+                                updatedGame = gameInfoFromResponse(response);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-//                                String resp = Client.getResponse();
-//                                Card card = cardFromResponse(resp);
-//                                System.out.println(card);
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
                             attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                             defence.setVisible(true);
                             activeCard = null;
+                            waitForMyTurn(updatedGame);
                         } else {
                             activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                         }
@@ -389,15 +382,20 @@ public class Game extends Application {
                 }
             });
             defence.setOnMouseClicked(mouseEvent -> {
+                if (uiIsLocked) {
+                    return;
+                }
                 if (activeCard != null && !defence.isDisable()) {
                     defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
                             .collect(Collectors.toList()).get(0);
                     if (attackCard.getSuit().equals(defenseCard.getSuit())) {
                         if (defenseCard.getValue() > attackCard.getValue()) {
                             JsonObject sendToServer = cardToJson(defenseCard);
-//                            client.setMessage(sendToServer);
+                            GameInfo updatedGame = null;
                             try {
                                 Client.sendMessage(sendToServer);
+                                String response = Client.sendMessage(sendToServer);
+                                updatedGame = gameInfoFromResponse(response);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -407,54 +405,148 @@ public class Game extends Application {
                             defence.setDisable(true);
                             defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                             playFieldClass.nextAttackVisible(defence);
+                            waitForMyTurn(updatedGame);
                         } else {
                             activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                         }
                         activeCard = null;
                     } else if (defenseCard.getSuit().equals(gameInfo.getTrump().getSuit())) {
                         JsonObject sendToServer = cardToJson(defenseCard);
-//                        client.setMessage(sendToServer);
+                        GameInfo updatedGame = null;
                         try {
                             Client.sendMessage(sendToServer);
+                            String response = Client.sendMessage(sendToServer);
+                            updatedGame = gameInfoFromResponse(response);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-//                        String resp = Client.getResponse();
-//                        Card card = cardFromResponse(resp);
-//                        System.out.println(card);
                         listOfCardsOnUITable.add(defenseCard.getValue());
                         cardBox.getChildren().remove(activeCard);
                         defence.setDisable(true);
                         defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                         activeCard = null;
                         playFieldClass.nextAttackVisible(defence);
+                        waitForMyTurn(updatedGame);
                     } else {
                         activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                     }
                 }
             });
         }
-//        beginGame();
+
+        Thread gameStartWaiter = new Thread(() -> {
+            while (true) {
+                try {
+                    GameInfo updatedInfo = getGameInfo();
+                    if (updatedInfo.isGameStarted()) {
+                        // start game
+                        System.out.println(playerId + " Starting game");
+                        doGameAction(updatedInfo);
+                        return;
+                    } else {
+                        Thread.sleep(500);
+                    }
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        gameStartWaiter.start();
     }
 
-    public void beginGame() {
-        try {
-            Card trumpCard = getTrumpCardMsg();
-            // Game loop
+    private void waitForMyTurn(GameInfo game) {
+        uiIsLocked = true;
+        Thread waitingForOpponent = new Thread(() -> {
             while (true) {
-
+                try {
+                    GameInfo updatedInfo = getGameInfo();
+                    if (updatedInfo.isPlayersTurn(playerId)) {
+                        System.out.println(playerId + " Opponent made his move");
+                        updateUI(updatedInfo);
+                        doGameAction(updatedInfo);
+                        return;
+                    } else {
+                        Thread.sleep(500);
+                    }
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        });
+        waitingForOpponent.start();
+    }
+
+    private void updateUI(GameInfo game) {
+        System.out.println(playerId + " Updating UI with changes");
+
+        List<Card> cardsOnTable = game.getCardsOnTable();
+        listOfCardsOnUITable.clear();
+        for (Card cardOnTable : cardsOnTable) {
+            listOfCardsOnUITable.add(cardOnTable.getValue());
         }
 
+//        listOfCardsOnUITable.add(attackCard.getValue());
+//        cardBox.getChildren().remove(activeCard);
+//        attack.setDisable(true);
+//        attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
+//        defence.setVisible(true);
+//        activeCard = null;
+
+
     }
+
+
+
+    private void doGameAction(GameInfo gameInfo) {
+        PlayerState state = gameInfo.getPlayerState(playerId);
+        if (state == PlayerState.ATTACK) {
+            //todo show in UI that I am attacking
+            if (gameInfo.isPlayersTurn(playerId)) {
+                // unlock UI to do attack move
+                uiIsLocked = false;
+                System.out.println(playerId + " I am attacking");
+            } else {
+                uiIsLocked = true;
+                System.out.println(playerId + " I am attacking and waiting for other player turn");
+                waitForMyTurn(gameInfo);
+                // wait for other player move
+            }
+        } else if (state == PlayerState.DEFENSE) {
+            //todo show in UI that I am defending
+            if (gameInfo.isPlayersTurn(playerId)) {
+                // unlock UI to do defense move
+                uiIsLocked = false;
+                System.out.println(playerId + " I am defending");
+            } else {
+                System.out.println(playerId + "  I am defending and waiting for other player turn");
+                uiIsLocked = true;
+                waitForMyTurn(gameInfo);
+                // wait for other player move
+            }
+        } else if (state == PlayerState.WAITING) {
+            //todo show in UI that I am waiting
+            // ui is locked
+            System.out.println(playerId + " I am waiting for my turn");
+            waitForMyTurn(gameInfo);
+            uiIsLocked = true;
+        }
+    }
+
+    private GameInfo getGameInfo() throws IOException {
+        JsonObject getGameInfo = new JsonObject();
+        getGameInfo.addProperty("playerId", playerId);
+        getGameInfo.addProperty("type", "getGameInfo");
+        String response = Client.sendMessage(getGameInfo);
+        return gson.fromJson(response, GameInfo.class);
+    }
+
+
 
 
     public void attackerLogic(Map<Integer, Pane> playFieldButtons, double cardWidth, double cardHeight) {
         JsonObject opponent = new JsonObject();
         opponent.addProperty("MessageType", "getOpponentCard");
-        opponent.addProperty("UUID", uuid);
+        opponent.addProperty("UUID", playerId);
         opponent.addProperty("SIZE", sizeOfCards.size());
 //        client.setMessage(opponent);
 //        try {
@@ -486,7 +578,7 @@ public class Game extends Application {
     public void defenderLogic(Map<Integer, HBox> playFieldButtons, double cardWidth, double cardHeight) {
         JsonObject opponent = new JsonObject();
         opponent.addProperty("MessageType", "getOpponentCard");
-        opponent.addProperty("UUID", uuid);
+        opponent.addProperty("UUID", playerId);
         opponent.addProperty("SIZE", sizeOfCards.size());
 //        client.setMessage(opponent);
 //        try {
@@ -529,7 +621,7 @@ public class Game extends Application {
     public JsonObject gameCardsReplenish(int cardsInHand) {
         JsonObject obj = new JsonObject();
         obj.addProperty("type", "replenish");
-        obj.addProperty("playerId", uuid);
+        obj.addProperty("playerId", playerId);
         obj.addProperty("cardsInHand", cardsInHand);
         return obj;
     }
@@ -551,13 +643,9 @@ public class Game extends Application {
 
     public JsonObject cardToJson(Card card) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("UUID", uuid);
-        obj.addProperty("MessageType", "GameMove");
-//        obj.addProperty("PlayerName", "Sanja"); //player.getName()
-        obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
-        obj.addProperty("Value", card.getValue()); //table.getLastCardOnTable().getId());
-        obj.addProperty("Suit", card.getSuit());
-        obj.addProperty("Trump", card.getTrump());
+        obj.addProperty("playerId", playerId);
+        obj.addProperty("type", "gameMove");
+        obj.add("card", gson.toJsonTree(card));
         return obj;
     }
 
@@ -572,6 +660,10 @@ public class Game extends Application {
         trump = trump.replace("\"", "");
         Boolean tru = Boolean.parseBoolean(trump);
         return new Card(suit, val, tru);
+    }
+
+    public GameInfo gameInfoFromResponse(String resp) {
+        return gson.fromJson(resp, GameInfo.class);
     }
 
 

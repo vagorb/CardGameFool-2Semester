@@ -22,33 +22,37 @@ import java.util.List;
 import java.util.Map;
 
 public class Server {
-    public static List<GameInfo> games = Collections.synchronizedList(new ArrayList<GameInfo>());
-    public static Map<String, GameInfo> playersToGames = Collections.synchronizedMap(new HashMap<String, GameInfo>());
+    public static final List<GameInfo> games = Collections.synchronizedList(new ArrayList<GameInfo>());
+    public static final Map<String, GameInfo> playersToGames = Collections.synchronizedMap(new HashMap<String, GameInfo>());
 
 
-    public static synchronized GameInfo addPlayerToGame(String player) {
-        GameInfo game;
-        if (games.isEmpty()) {
-            List<String> playersList = new ArrayList<>();
-            playersList.add(player);
-            game = new GameInfo(new Deck(), playersList);
-            games.add(game);
-        } else {
-            // todo add players to other games
-            game = games.get(0);
-            game.addPlayers(player);
+    public static GameInfo addPlayerToGame(String player) {
+        synchronized (games) {
+            GameInfo game;
+            if (games.isEmpty()) {
+                List<String> playersList = new ArrayList<>();
+                playersList.add(player);
+                game = new GameInfo(new Deck(), playersList);
+                games.add(game);
+            } else {
+                // todo add players to other games
+                game = games.get(0);
+                game.addPlayers(player);
+            }
+            playersToGames.put(player, game);
+            return game;
         }
-        playersToGames.put(player, game);
-        return game;
     }
 
-    public static synchronized List<Card> replenishPlayerCards(String player, int cardsInHand) {
-        GameInfo game = playersToGames.get(player);
-        List<Card> replenishedCards = new ArrayList<>();
-        for (int i = cardsInHand; i < 6; i++) {
-            replenishedCards.add(game.replenishCard());
+    public static List<Card> replenishPlayerCards(String player, int cardsInHand) {
+        synchronized (games) {
+            GameInfo game = playersToGames.get(player);
+            List<Card> replenishedCards = new ArrayList<>();
+            for (int i = cardsInHand; i < 6; i++) {
+                replenishedCards.add(game.replenishCard());
+            }
+            return replenishedCards;
         }
-        return replenishedCards;
     }
 
 
