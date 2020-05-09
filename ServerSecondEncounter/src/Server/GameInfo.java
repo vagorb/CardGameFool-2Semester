@@ -13,8 +13,8 @@ public class GameInfo {
     private List<String> players;
     private Deck deck;
     private Card trump;
-
-    private static List<Card> cards = new ArrayList<>();
+    private boolean gameStarted;
+    private List<Card> cards = new ArrayList<>();
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -48,7 +48,7 @@ public class GameInfo {
         return deck;
     }
 
-    public synchronized Card getCard() {
+    public Card replenishCard() {
         Card card = deck.getDeck().get(0);
         deck.getDeck().remove(card);
         return card;
@@ -66,17 +66,11 @@ public class GameInfo {
         cards.add(card);
     }
 
-    public static void main(String[] args) {
-        List<String> players = new ArrayList<>();
-        players.add("player1");
-        players.add("player2");
-        GameInfo info = new GameInfo(new Deck(), players);
-        Gson gson = new Gson();
-        String json = gson.toJson(info);
-        System.out.println(json);
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
 
-        // client receives
-        GameInfo receivedInfo = gson.fromJson(json, GameInfo.class);
-        System.out.println(receivedInfo);
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
     }
 }

@@ -1,5 +1,8 @@
 package Server;
 
+import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
+import com.card.game.fool.players.Player;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -19,41 +22,34 @@ import java.util.List;
 import java.util.Map;
 
 public class Server {
-    public static List<String> gameForTwo = Collections.synchronizedList(new ArrayList<>());
-    public static List<String> gameForThree = new ArrayList<>();
-    public static List<String> gameForFour = new ArrayList<>();
     public static List<GameInfo> games = Collections.synchronizedList(new ArrayList<GameInfo>());
-    public static List<String> players = new ArrayList<>();
     public static Map<String, GameInfo> playersToGames = Collections.synchronizedMap(new HashMap<String, GameInfo>());
 
 
-//    private static Deck deck = new Deck();
-//    private static Card card = Server.decideTrump();
-//
-//    public static Deck getDeck() {
-//        return deck;
-//    }
-//
-//    public static Card getTrump() {
-//        return card;
-//    }
-//
-//    public static Card decideTrump() {
-//        //Server.Server.shuffle();
-//        Card card = deck.getDeck().get(12);
-//        card.setTrump(true);
-//        deck.getDeck().remove(card);
-//        deck.getDeck().add(card);
-//        return card;
-//    }
-//
-//    public static void shuffle() {
-//        deck.shuffleDeck();
-//    }
-//
-//    public static void makeTrump() {
-//        deck.makeCardsTrump(card.getSuit());
-//    }
+    public static synchronized GameInfo addPlayerToGame(String player) {
+        GameInfo game;
+        if (games.isEmpty()) {
+            List<String> playersList = new ArrayList<>();
+            playersList.add(player);
+            game = new GameInfo(new Deck(), playersList);
+            games.add(game);
+        } else {
+            // todo add players to other games
+            game = games.get(0);
+            game.addPlayers(player);
+        }
+        playersToGames.put(player, game);
+        return game;
+    }
+
+    public static synchronized List<Card> replenishPlayerCards(String player, int cardsInHand) {
+        GameInfo game = playersToGames.get(player);
+        List<Card> replenishedCards = new ArrayList<>();
+        for (int i = cardsInHand; i < 6; i++) {
+            replenishedCards.add(game.replenishCard());
+        }
+        return replenishedCards;
+    }
 
 
     public static void runServer() throws InterruptedException {
