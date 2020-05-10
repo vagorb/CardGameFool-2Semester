@@ -20,6 +20,7 @@ public class GameInfo {
     private String defendingPlayer;
     // Cards on table that attacked and defender are putting
     private List<Card> cardsOnTable = new ArrayList<>();
+    private int turnCounter;
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -126,5 +127,17 @@ public class GameInfo {
 
     public List<Card> getCardsOnTable() {
         return cardsOnTable;
+    }
+
+    public void setCurrentPlayerTurn(String currentPlayerTurn) {
+        this.currentPlayerTurn = currentPlayerTurn;
+    }
+
+    public int getTurnCounter() {
+        return turnCounter;
+    }
+
+    public void increaseTurnCounter() {
+        this.turnCounter++;
     }
 }

@@ -55,6 +55,16 @@ public class Server {
         }
     }
 
+    public static void playerPicksUpCards(String player) {
+        synchronized (games) {
+            GameInfo game = playersToGames.get(player);
+            game.getCardsOnTable().clear();
+            game.increaseTurnCounter();
+            // todo if more than 2 players then cycle who attacks next
+            game.setCurrentPlayerTurn(game.getAttackingPlayer());
+        }
+    }
+
 
     public static void runServer() throws InterruptedException {
         System.out.println("LONG LINE OF TEXT THAT WE CAN SEE ??????????");

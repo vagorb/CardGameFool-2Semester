@@ -9,7 +9,6 @@ import com.card.game.fool.players.Player;
 import com.card.game.fool.players.PlayerState;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import game.help.AvatarBox;
 import game.help.Buttons;
@@ -22,7 +21,6 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -30,14 +28,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -47,9 +39,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,9 +56,9 @@ public class Game extends Application {
     private boolean invertScroll;
     private Resolution resolution;
     private String playerId = UUID.randomUUID().toString();
-    private List<Card> sizeOfCards = new ArrayList<>();
     private boolean uiIsLocked = true;
     private Map<Integer, HBox> playFieldButtons;
+    private GameInfo currentGameState;
 
     private double windowHeight;
     private double windowWidth;
@@ -239,17 +229,24 @@ public class Game extends Application {
 //            }
         });
 
-        /// playfield reset w/ cards from table to hand
+        /// When unable to beat, pick all cards
         pickUpCards.setOnAction(actionEvent -> {
-//            if (thePlayer.getPlayerState().equals(Player.PlayerState.DEFENSE)) {
-            playFieldClass.setDefault(playFieldButtons);
-            for (Card card : cardsOnTable) {
-                cardToButton(card, cardBox, cardWidth, cardHeight);
+            JsonObject msg = new JsonObject();
+            msg.addProperty("type", "pickCardsFromTable");
+            msg.addProperty("playerId", playerId);
+            try {
+                String response = Client.sendMessage(msg);
+                List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
+                for (Card card : cards) {
+                    cardToButton(card, cardBox, cardWidth, cardHeight);
+                }
+                cardsInHand.addAll(cards);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            cardsInHand.addAll(cardsOnTable);
-            listOfCardsOnUITable.clear();
-            cardsOnTable.clear();
-//            }
+            resetAttackDefButtons();
+            waitForMyTurn();
+
         });
 
         /// throw cards to pile
@@ -338,9 +335,8 @@ public class Game extends Application {
         waitForMyTurnService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent workerStateEvent) {
-//                System.out.println(playerId + "waitForMyTurnService OnSucceeded FIRED");
                 GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
-                updateUI(game);
+                updateAttackDefButtons(game);
                 doGameAction(game);
             }
         });
@@ -354,6 +350,11 @@ public class Game extends Application {
             public void handle(WorkerStateEvent workerStateEvent) {
                 System.out.println(playerId + "Starting game");
                 GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+
+                if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
+                    showFirstAttackBtn();
+                }
+
                 doGameAction(game);
             }
         });
@@ -363,6 +364,7 @@ public class Game extends Application {
             Button attack = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(0);
             attack.setId("Attack");
             attack.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+            attack.setVisible(false);
 
             attack.setTranslateX(cardUnitSize);
             attack.setTranslateY(cardUnitSize);
@@ -457,6 +459,25 @@ public class Game extends Application {
         gameStartService.start();
     }
 
+    private void resetAttackDefButtons() {
+        for (HBox attackDefPairs : playFieldButtons.values()) {
+            for (int i = 0; i < 2; i++) {
+                Button button = (Button) attackDefPairs.getChildrenUnmodifiable().get(i);
+                button.setDisable(false);
+                button.setStyle("-fx-background-image: null");
+                button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+                button.setVisible(false);
+            }
+        }
+    }
+
+    private void showFirstAttackBtn(){
+        HBox pair = playFieldButtons.get(1);
+        pair.setVisible(true);
+        Node attackBtn = pair.getChildrenUnmodifiable().get(0);
+        attackBtn.setVisible(true);
+    }
+
     private void waitForMyTurn() {
         uiIsLocked = true;
         if (waitForMyTurnService.getState() == SUCCEEDED) {
@@ -465,12 +486,15 @@ public class Game extends Application {
         waitForMyTurnService.start();
     }
 
-    private void updateUI(GameInfo game) {
+    private void updateAttackDefButtons(GameInfo game) {
         System.out.println(playerId + " Updating UI with changes");
 
         List<Card> cardsOnTable = game.getCardsOnTable();
-        if(cardsOnTable.isEmpty()){
-            //todo reset buttons
+        if (cardsOnTable.isEmpty()) {
+            resetAttackDefButtons();
+            if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
+                showFirstAttackBtn();
+            }
         } else {
 
             int cardCounter = 0;
@@ -501,6 +525,8 @@ public class Game extends Application {
             if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
                 attackDefPair.setVisible(true);
+                Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
+                attackBtn.setVisible(true);
             } else if(game.getPlayerState(playerId) == PlayerState.DEFENSE) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
                 Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
@@ -520,6 +546,13 @@ public class Game extends Application {
 
     private void doGameAction(GameInfo gameInfo) {
         PlayerState state = gameInfo.getPlayerState(playerId);
+
+        if (currentGameState.getTurnCounter() != gameInfo.getTurnCounter()) {
+//            if()
+            //todo replenish hand
+//            replenishHand();
+        }
+
         if (state == PlayerState.ATTACK) {
             //todo show in UI that I am attacking
             if (gameInfo.isPlayersTurn(playerId)) {
@@ -551,93 +584,10 @@ public class Game extends Application {
             waitForMyTurn();
             uiIsLocked = true;
         }
+
+        this.currentGameState = gameInfo;
     }
 
-    private GameInfo getGameInfo() throws IOException {
-        JsonObject getGameInfo = new JsonObject();
-        getGameInfo.addProperty("playerId", playerId);
-        getGameInfo.addProperty("type", "getGameInfo");
-        String response = Client.sendMessage(getGameInfo);
-        return gson.fromJson(response, GameInfo.class);
-    }
-
-
-
-
-    public void attackerLogic(Map<Integer, Pane> playFieldButtons, double cardWidth, double cardHeight) {
-        JsonObject opponent = new JsonObject();
-        opponent.addProperty("MessageType", "getOpponentCard");
-        opponent.addProperty("UUID", playerId);
-        opponent.addProperty("SIZE", sizeOfCards.size());
-//        client.setMessage(opponent);
-//        try {
-//            Client.sendMessage(opponent);
-//            String response = Client.getResponse();
-//            if (response.equals("WAIT")) {
-//                Client.sendMessage(opponent);
-//                System.out.println(Client.getResponse());
-//            } else {
-//                Card card = cardFromResponse(response);
-//                sizeOfCards.add(card);
-//                listOfCardsOnUITable.add(card.getValue());
-//                for (int i = 0; i < 6; i++) {
-//                    Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
-//                    if (defence.getStyle().contains("-fx-background-image: null")) {
-//                        // cardBox ??
-////                        Button buttonCard = cardToButton(card, playFieldButtons.get(i), cardWidth, cardHeight);
-//                        break;
-//                    }
-//                }
-//            }
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-    }
-
-    public void defenderLogic(Map<Integer, HBox> playFieldButtons, double cardWidth, double cardHeight) {
-        JsonObject opponent = new JsonObject();
-        opponent.addProperty("MessageType", "getOpponentCard");
-        opponent.addProperty("UUID", playerId);
-        opponent.addProperty("SIZE", sizeOfCards.size());
-//        client.setMessage(opponent);
-//        try {
-//            Client.sendMessage(opponent);
-////                    String response = Client.getResponse();
-//            JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
-//            String strResponse = response.get("MessageType").toString();
-//            strResponse = strResponse.replace("\"", "");
-//
-//            if (strResponse.equals("WAIT")) {
-//                Client.sendMessage(opponent);
-////                        System.out.println(response = Client.getResponse());
-//            } else {
-//                Card card = cardFromResponse(response.toString());
-//                sizeOfCards.add(card);
-//                listOfCardsOnUITable.add(card.getValue());
-//                for (int i = 0; i < 6; i++) {
-//                    Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
-//                    if (defence.getStyle().contains("-fx-background-image: null")) {
-//                        // cardBox ??
-//                        cardToButton(card, playFieldButtons.get(i), cardWidth, cardHeight);
-//                        break;
-//                    }
-//                }
-////                        Button buttonCard = cardToButton(card, cardBox, cardWidth, cardHeight);
-//
-//
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    public JsonObject gameStart() {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("MessageType", "GameStart");
-        return obj;
-    }
 
     public JsonObject gameCardsReplenish(int cardsInHand) {
         JsonObject obj = new JsonObject();
@@ -669,26 +619,6 @@ public class Game extends Application {
         obj.add("card", gson.toJsonTree(card));
         return obj;
     }
-
-    public Card cardFromResponse(String resp) {
-        JsonObject jsonObject = JsonParser.parseString(resp).getAsJsonObject();
-        String suit = jsonObject.get("Suit").toString();
-        suit = suit.replace("\"", "");
-        String value = jsonObject.get("Value").toString();
-        value = value.replace("\"", "");
-        Integer val = Integer.parseInt(value);
-        String trump = jsonObject.get("Trump").toString();
-        trump = trump.replace("\"", "");
-        Boolean tru = Boolean.parseBoolean(trump);
-        return new Card(suit, val, tru);
-    }
-
-    public GameInfo gameInfoFromResponse(String resp) {
-        return gson.fromJson(resp, GameInfo.class);
-    }
-
-
-    // TODO account for trump card not being part of the DECK in the current gameplay
 
 
     public static void main(String[] args) {
