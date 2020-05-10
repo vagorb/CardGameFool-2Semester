@@ -34,6 +34,14 @@ public class GameInfo {
         deck.makeCardsTrump(trump.getSuit());
     }
 
+    public void switchAttackerAndDefender() {
+        String prevAtt = this.attackingPlayer;
+        String prevDef = this.defendingPlayer;
+        this.attackingPlayer = prevDef;
+        this.defendingPlayer = prevAtt;
+        this.currentPlayerTurn = this.attackingPlayer;
+    }
+
     public void addCardToTable(Card card) {
         cardsOnTable.add(card);
     }

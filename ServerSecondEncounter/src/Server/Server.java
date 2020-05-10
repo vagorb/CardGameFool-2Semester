@@ -65,6 +65,16 @@ public class Server {
         }
     }
 
+    public static void cardsToPile(String player) {
+        synchronized (games) {
+            GameInfo game = playersToGames.get(player);
+            game.getCardsOnTable().clear();
+            game.increaseTurnCounter();
+            game.switchAttackerAndDefender();
+        }
+    }
+
+
 
     public static void runServer() throws InterruptedException {
         System.out.println("LONG LINE OF TEXT THAT WE CAN SEE ??????????");

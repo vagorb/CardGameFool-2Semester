@@ -48,6 +48,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             String cardsToPickUp = gson.toJson(game.getCardsOnTable());
             Server.playerPicksUpCards(player);
             ctx.writeAndFlush(cardsToPickUp + "\r\n");
+        } else if (messageType.equalsIgnoreCase("throwCardsToPile")){
+            Server.cardsToPile(player);
+            ctx.writeAndFlush("\r\n");
         }
 
 
