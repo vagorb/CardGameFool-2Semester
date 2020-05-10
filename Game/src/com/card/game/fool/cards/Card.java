@@ -123,18 +123,6 @@ public class Card {
                 + "url('%s');", imageLocation);
     }
 
-    public Image getImageForButton() {
-        String imageName = String.format("/images/cards/%s/%s.png", this.getSuit(), this.getId());
-        File file = new File(this.getClass().getResource(imageName).getFile());
-        Image img = new Image(file.getAbsoluteFile().toURI().toString());
-        BackgroundImage bgImg = new BackgroundImage(img,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.DEFAULT,
-                BackgroundSize.DEFAULT);
-        return img;
-    }
-
 
     @Override
     public boolean equals(Object o) {
