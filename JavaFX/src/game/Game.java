@@ -1,20 +1,27 @@
 package game;
 
 import Client.Client;
+import Server.GameInfo;
+import Server.model.NewPlayer;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.PlayerState;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import game.help.AvatarBox;
 import game.help.Buttons;
 import game.help.GameField;
 import game.help.PlayField;
 import game.help.Resolution;
+import game.service.WaitForGameStartService;
+import game.service.WaitForMyTurnService;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -23,7 +30,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -31,36 +37,38 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static javafx.concurrent.Worker.State.SUCCEEDED;
+
 public class Game extends Application {
+    private Gson gson = new Gson();
     private Scene menuScene;
     private boolean fullscreenStatus;
     private boolean invertScroll;
     private Resolution resolution;
-    private String uuid = UUID.randomUUID().toString();
-    private int playersInTable = 2;
-    private boolean gameIsGoing = true;
-    private List<Card> sizeOfCards= new ArrayList<>();
+    private String playerId = UUID.randomUUID().toString();
+
+    private boolean uiIsLocked = true;
+    private Map<Integer, HBox> playFieldButtons;
+    private GameInfo currentGameState;
+    private List<Card> cardsOnTable = new ArrayList<>();
+    private List<Card> cardsInHand = new ArrayList<>();
+    private HBox cardBox;
+    private ScrollPane cardBoxScroll;
 
     private double windowHeight;
     private double windowWidth;
 
-    //    private final Deck deck = new Deck();
-    private Player.PlayerState playerState;
-    private Player thePlayer;
-    private Client client = new Client();
+    private WaitForMyTurnService waitForMyTurnService;
 
     private Card attackCard;
     private Card defenseCard;
-    private Card trumpCard;
-    private Set<Integer> listOfCardsOnUITable = new HashSet<>();
 
     private Button activeCard = null;
     private final int AIcount;
@@ -86,15 +94,13 @@ public class Game extends Application {
         this.fullscreenStatus = fullscreenStatus;
         this.invertScroll = invertScroll;
         this.resolution = resolution;
-        resolution.dragWindow();
     }
 
     private Button cardToButton(Card card, HBox destination, double cardWidth, double cardHeight) {
         Button button = new Button();
         Buttons.oneSizeOnly(button, cardWidth, cardHeight);
         button.setId(card.getId());
-        button.setStyle(String.format("-fx-background-size: cover;-fx-background-image: "
-                + "url('/images/cards/%s/%s.png')", card.getSuit(), card.getId()));
+        button.setStyle(card.getStyleForButton());
         destination.getChildren().add(button);
         button.setOnAction(actionEvent -> {
             if (activeCard != null) {
@@ -107,55 +113,26 @@ public class Game extends Application {
         return button;
     }
 
-    public void start(Stage window) {
+    private GameInfo sendNewPlayerMsg() throws IOException {
+        NewPlayer newPlayerMsg = new NewPlayer();
+        newPlayerMsg.playerId = playerId;
+        String response = Client.sendMessage(newPlayerMsg);
+        return gson.fromJson(response, GameInfo.class);
+    }
+
+
+    public void start(Stage window) throws IOException {
+        GameInfo gameInfo = sendNewPlayerMsg();
         window.setResizable(false);
-        JsonObject start = new JsonObject();
-        start.addProperty("MessageType", "gameStart");
-        start.addProperty("UUID", uuid);
-        start.addProperty("GameSize", playersInTable);
-        client.setMessage(start);
-        try {
-            Client.sendMessage(start);
-            String response = Client.getResponse();
-            while (response.equals("WAIT")) {
-                Client.sendMessage(start);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                response = Client.getResponse();
-            }
-            JsonObject obj = JsonParser.parseString(response).getAsJsonObject();
-            String state = obj.get("State").toString();
-            state = state.replace("\"", "");
-            if (state.equalsIgnoreCase("ATTACK")) {
-                playerState = Player.PlayerState.ATTACK;
-            } else if (state.equalsIgnoreCase("DEFENCE")) {
-                playerState = Player.PlayerState.DEFENSE;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // TODO ASK for trump CARD
-        try {
-            JsonObject trump = new JsonObject();
-            trump.addProperty("UUID", uuid);
-            trump.addProperty("MessageType", "getTrump");
-            Client.sendMessage(trump);
-            String response = Client.getResponse();
-            trumpCard = cardFromResponse(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         Buttons buttons = new Buttons();
         StackPane gameStackPane = new StackPane();
         Scene playScene = new Scene(gameStackPane, windowWidth, windowHeight);
         HBox cardBoxBase = new HBox(20);
-        HBox cardBox = new HBox(2);
+        cardBox = new HBox(2);
 
 
-        ScrollPane cardBoxScroll = new ScrollPane(cardBox);
+        cardBoxScroll = new ScrollPane(cardBox);
         cardBoxScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         cardBoxScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         cardBoxBase.setAlignment(Pos.CENTER);
@@ -165,7 +142,7 @@ public class Game extends Application {
         menu.setStyle("-fx-background-color: rgba(16,16,16,0.9)");
 
         window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-        window.setTitle("Play.exe");
+        window.setTitle(playerId + "_Play.exe");
         window.setFullScreen(fullscreenStatus);
         window.setScene(playScene);
 
@@ -201,13 +178,11 @@ public class Game extends Application {
         }
         HBox avatarPage = avatars.showAvatars();
 
-        this.thePlayer = players.get(players.size() - 1);
+//        this.thePlayer = players.get(players.size() - 1);
 
-        // card generator
-//        deck.shuffleDeck();
-        List<Card> cardsInHand = new LinkedList<>();
-        List<Card> cardsOnTable = new LinkedList<>();  // need to get that info from Server
-        replenishHand(cardBox, cardWidth, cardHeight, cardsInHand);
+        cardsInHand = new ArrayList<>();
+        cardsOnTable = new ArrayList<>();
+        replenishHand();
 
         /// playfield elements
         PlayField playFieldClass = new PlayField(cardUnitSize);
@@ -215,173 +190,16 @@ public class Game extends Application {
         HBox upperLayer = (HBox) playFieldClass.createPlayfield().get(1);
         HBox lowerLayer = (HBox) playFieldClass.createPlayfield().get(2);
         Map<Integer, HBox> playFieldButtons = playFieldClass.createButtons();
-//        for (int i = 1; i <= 6; i++) {
-//            Button attack = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(0);
-//            Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
-//
-//            if (i < 4) {
-//                upperLayer.getChildren().addAll(playFieldButtons.get(i));
-//            } else {
-//                lowerLayer.getChildren().addAll(playFieldButtons.get(i));
-//            }
-//
-//            if (playerState == Player.PlayerState.ATTACK) {
-//                attack.setOnMouseClicked(mouseEvent -> {
-//                    if (activeCard != null && !attack.isDisable()) {
-//                        attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-//                                .collect(Collectors.toList()).get(0);
-//                        if (listOfCardsOnUITable.size() == 0) {
-//                            JsonObject sendToServer = cardToJson(attackCard);
-//                            client.setMessage(sendToServer);
-//                            try {
-//                                Client.sendMessage(sendToServer);
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        String resp = Client.getResponse();
-//                            System.out.println(resp);
-////                        Card card = cardFromResponse(resp);
-////                        System.out.println(card);
-//                            listOfCardsOnUITable.add(attackCard.getValue());
-//                            cardBox.getChildren().remove(activeCard);
-//                            attack.setDisable(true);
-//                            attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-//                            defence.setVisible(true);
-//                            activeCard = null;
-//                        } else {
-//                            if (listOfCardsOnUITable.contains(attackCard.getValue())) {
-//                                JsonObject sendToServer = cardToJson(attackCard);
-//                                client.setMessage(sendToServer);
-//                                try {
-//                                    Client.sendMessage(sendToServer);
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-////                                String resp = Client.getResponse();
-////                                Card card = cardFromResponse(resp);
-////                                System.out.println(card);
-//                                cardBox.getChildren().remove(activeCard);
-//                                attack.setDisable(true);
-//                                attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-//                                defence.setVisible(true);
-//                                activeCard = null;
-//                            } else {
-//                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-//                            }
-//                        }
-//                    }
-//                });
-//            } else if (playerState == Player.PlayerState.DEFENSE) {
-//                defence.setOnMouseClicked(mouseEvent -> {
-//                    if (activeCard != null && !defence.isDisable()) {
-//                        defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-//                                .collect(Collectors.toList()).get(0);
-//                        if (attackCard.getSuit().equals(defenseCard.getSuit())) {
-//                            if (defenseCard.getValue() > attackCard.getValue()) {
-//                                JsonObject sendToServer = cardToJson(defenseCard);
-//                                client.setMessage(sendToServer);
-//                                try {
-//                                    Client.sendMessage(sendToServer);
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                String resp = Client.getResponse();
-//                                listOfCardsOnUITable.add(defenseCard.getValue());
-//                                cardBox.getChildren().remove(activeCard);
-//                                defence.setDisable(true);
-//                                defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-//                                playFieldClass.nextAttackVisible(defence);
-//                            } else {
-//                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-//                            }
-//                            activeCard = null;
-//                        } else if (defenseCard.getSuit().equals(trumpCard.getSuit())) {
-//                            JsonObject sendToServer = cardToJson(defenseCard);
-//                            client.setMessage(sendToServer);
-//                            try {
-//                                Client.sendMessage(sendToServer);
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                            String resp = Client.getResponse();
-//                            Card card = cardFromResponse(resp);
-//                            System.out.println(card);
-//                            listOfCardsOnUITable.add(defenseCard.getValue());
-//                            cardBox.getChildren().remove(activeCard);
-//                            defence.setDisable(true);
-//                            defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-//                            activeCard = null;
-//                            playFieldClass.nextAttackVisible(defence);
-//                        } else {
-//                            activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-//                        }
-//                    }
-//                });
-//            }
-//        }
-
-//        if (bool = true) {
-//            if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
-//                JsonObject opponent = new JsonObject();
-//                opponent.addProperty("MessageType", "getOpponentCard");
-//                opponent.addProperty("UUID", uuid);
-//                client.setMessage(opponent);
-//                try {
-//                    Client.sendMessage(opponent);
-//                    String response = Client.getResponse();
-//                    while (response.equals("WAIT")) {
-//                        Client.sendMessage(opponent);
-//                        System.out.println(response = Client.getResponse());
-//                    }
-//                    Card card = cardFromResponse(response);
-//                    listOfCardsOnUITable.add(card.getValue());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            } else if (playerState == Player.PlayerState.DEFENSE && listOfCardsOnUITable.size() % 2 == 0) {
-//                JsonObject opponent = new JsonObject();
-//                opponent.addProperty("MessageType", "getOpponentCard");
-//                opponent.addProperty("UUID", uuid);
-//                client.setMessage(opponent);
-//                try {
-//                    Client.sendMessage(opponent);
-////                    String response = Client.getResponse();
-//                    JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
-//                    String strResponse = response.get("MessageType").toString();
-//                    strResponse = strResponse.replace("\"", "");
-//
-//                    if (strResponse.equals("WAIT")) {
-//                        Client.sendMessage(opponent);
-////                        System.out.println(response = Client.getResponse());
-//                    } else {
-//                        Card card = cardFromResponse(response.toString());
-//                        listOfCardsOnUITable.add(card.getValue());
-//                        for (int i = 0; i < 6; i++) {
-//                            Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
-//                            if (defence.getStyle().contains("-fx-background-image: null")) {
-//                                // cardBox ??
-//                                Button buttonCard = cardToButton(card, playFieldButtons.get(i), cardWidth, cardHeight);
-//                                break;
-//                            }
-//                        }
-////                        Button buttonCard = cardToButton(card, cardBox, cardWidth, cardHeight);
-//
-//
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        this.bool = true;
+        this.playFieldButtons = playFieldButtons;
 
         GameField gameFieldClass = new GameField(cardUnitSize, windowWidth);
-        HBox gameFields = gameFieldClass.addFields(playField, trumpCard);
+        HBox gameFields = gameFieldClass.addFields(playField, gameInfo.getTrump());
         gameFields.setTranslateX(windowWidth * 9 / 40);
         gameFields.setTranslateY((windowHeight / 2 - 4 * cardUnitSize));
 
         /// actions for buttons
+        resolution.dragWindow();
+
         cardBoxScroll.setOnScroll(scrollEvent -> {
             if (invertScroll) {
                 cardBoxScroll.setHvalue(cardBoxScroll.getHvalue() - scrollEvent.getDeltaY() / 1000);
@@ -404,59 +222,47 @@ public class Game extends Application {
 
         skipTurn.setOnAction(actionEvent -> {
 //            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
-            thePlayer.setPlayerState(Player.PlayerState.SKIP);   // need to send that info to Server as well
+//            thePlayer.setPlayerState(PlayerState.SKIP);   // need to send that info to Server as well
+//            cardBoxScroll.setDisable(true);
 //            }
         });
 
-        /// playfield reset w/ cards from table to hand
+        /// When unable to beat, pick all cards
         pickUpCards.setOnAction(actionEvent -> {
-//            if (thePlayer.getPlayerState().equals(Player.PlayerState.DEFENSE)) {
-            playFieldClass.setDefault(playFieldButtons);
-            for (Card card : cardsOnTable) {
-                cardToButton(card, cardBox, cardWidth, cardHeight);
+            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0) {
+                JsonObject msg = new JsonObject();
+                msg.addProperty("type", "pickCardsFromTable");
+                msg.addProperty("playerId", playerId);
+                try {
+                    String response = Client.sendMessage(msg);
+                    List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
+                    for (Card card : cards) {
+                        cardToButton(card, cardBox, cardWidth, cardHeight);
+                    }
+                    cardsInHand.addAll(cards);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                resetAttackDefButtons();
+                waitForMyTurn();
             }
-            cardsInHand.addAll(cardsOnTable);
-            listOfCardsOnUITable.clear();
-            cardsOnTable.clear();
-//            }
         });
 
         /// throw cards to pile
         throwCards.setOnAction(actionEvent -> {
-//            if (thePlayer.getPlayerState().equals(Player.PlayerState.DEFENSE)) {
-            boolean clearable = true;
-            for (Pane value : playFieldButtons.values()) {
-                ObservableList<Node> x = value.getChildren();
-                if ((!x.get(0).getStyle().contains("-fx-background-image: null")
-                        && x.get(1).getStyle().contains("-fx-background-image: null"))
-                        || (x.get(0).getStyle().contains("-fx-background-image: null")
-                        && !x.get(1).getStyle().contains("-fx-background-image: null"))) {
-                    clearable = false;
-                    break;
+            if(currentGameState.getPlayerState(playerId) == PlayerState.ATTACK && cardsOnTable.size() % 2 == 0) {
+                JsonObject msg = new JsonObject();
+                msg.addProperty("type", "throwCardsToPile");
+                msg.addProperty("playerId", playerId);
+                try {
+                    Client.sendMessage(msg);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
-            if (clearable) {
-
-                listOfCardsOnUITable.clear();
+                resetAttackDefButtons();
                 cardsOnTable.clear();
-                playFieldClass.setDefault(playFieldButtons);
-                replenishHand(cardBox, cardWidth, cardHeight, cardsInHand);
-                HBox deckcards = (HBox) ((HBox) gameFields.getChildren().get(0)).getChildren().get(0);
-                deckcards.getChildren().remove(deckcards.getChildren().size() - 1);
-            }
-        });
-
-        throwCards.setOnAction(actionEvent -> {
-//            if (thePlayer.getPlayerState().equals(Player.PlayerState.DEFENSE &&
-            if (playFieldClass.validToThrowCards() && cardsOnTable.size() != 0) {
-                listOfCardsOnUITable.clear();
-                for (Card card : cardsOnTable) {
-                    gameFieldClass.throwCardToPile();
-//                    getDeck().removeCard(card);   // need to get deck from Server
-                }
-                cardsOnTable.clear();
-                playFieldClass.setDefault(playFieldButtons);
-                replenishHand(cardBox, cardWidth, cardHeight, cardsInHand);
+                replenishHand();
+                waitForMyTurn();
             }
         });
 
@@ -488,7 +294,7 @@ public class Game extends Application {
         cardBoxBase.setId("cardBoxBase");
         cardBoxBase.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
 
-        cardBoxBase.getChildren().addAll(pickUpCards, throwCards);
+        cardBoxBase.getChildren().addAll(pickUpCards, throwCards, skipTurn);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
         gameStackPane.getChildren().addAll(avatarPage, gameFields, cardBoxBase, cardBoxScroll, menu);
@@ -499,14 +305,44 @@ public class Game extends Application {
         exitButton.prefHeightProperty().bind(backButton.prefHeightProperty());
 
         window.show();
-//        boolean goIn = true;
-//        while (gameIsGoing) {
-//            if (goIn) {
+
+        // Service for waiting for opponent move
+        waitForMyTurnService = new WaitForMyTurnService();
+        waitForMyTurnService.setPlayerId(playerId);
+
+        waitForMyTurnService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+                updateAttackDefButtons(game);
+                doGameAction(game);
+            }
+        });
+
+        // Service for waiting for game start
+        WaitForGameStartService gameStartService = new WaitForGameStartService();
+        gameStartService.setPlayerId(playerId);
+
+        gameStartService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                System.out.println(playerId + "Starting game");
+                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+
+                if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
+                    showFirstAttackBtn();
+                }
+
+                doGameAction(game);
+            }
+        });
+
+
         for (int i = 1; i <= 6; i++) {
-//                    goIn = false;
             Button attack = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(0);
             attack.setId("Attack");
             attack.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+            attack.setVisible(false);
 
             attack.setTranslateX(cardUnitSize);
             attack.setTranslateY(cardUnitSize);
@@ -522,240 +358,241 @@ public class Game extends Application {
                 lowerLayer.getChildren().addAll(playFieldButtons.get(i));
             }
 
-            if (playerState == Player.PlayerState.ATTACK) {
-                attack.setOnMouseClicked(mouseEvent -> {
-                    if (activeCard != null && !attack.isDisable()) {
-                        attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-                                .collect(Collectors.toList()).get(0);
-                        if (listOfCardsOnUITable.size() == 0) {
+            attack.setOnMouseClicked(mouseEvent -> {
+                if (uiIsLocked) {
+                    return;
+                }
+                if (activeCard != null) {
+                    attackCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
+                            .collect(Collectors.toList()).get(0);
+                    if (cardsOnTable.isEmpty()) {
+                        JsonObject sendToServer = cardToJson(attackCard);
+                        try {
+                            Client.sendMessage(sendToServer);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        cardBox.getChildren().remove(activeCard);
+                        attack.setDisable(true);
+                        attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                        waitForMyTurn();
+                    } else {
+                        // Check that I have cards with same value that are on table
+                        Optional<Card> matchingCard = cardsOnTable.stream().filter(card -> card.getValue().equals(attackCard.getValue())).findAny();
+                        if (matchingCard.isPresent()) {
                             JsonObject sendToServer = cardToJson(attackCard);
-                            client.setMessage(sendToServer);
                             try {
                                 Client.sendMessage(sendToServer);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            String resp = Client.getResponse();
-                            System.out.println(resp);
-//                        Card card = cardFromResponse(resp);
-//                        System.out.println(card);
-                            listOfCardsOnUITable.add(attackCard.getValue());
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
-                            attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                            defence.setVisible(true);
-                            activeCard = null;
-                        } else {
-                            if (listOfCardsOnUITable.contains(attackCard.getValue())) {
-                                JsonObject sendToServer = cardToJson(attackCard);
-                                client.setMessage(sendToServer);
-                                try {
-                                    Client.sendMessage(sendToServer);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-//                                String resp = Client.getResponse();
-//                                Card card = cardFromResponse(resp);
-//                                System.out.println(card);
-                                cardBox.getChildren().remove(activeCard);
-                                attack.setDisable(true);
-                                attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                                defence.setVisible(true);
-                                activeCard = null;
-                            } else {
-                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-                            }
+                            attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                            waitForMyTurn();
                         }
+
                     }
-                });
-            } else if (playerState == Player.PlayerState.DEFENSE) {
-                defence.setOnMouseClicked(mouseEvent -> {
-                    if (activeCard != null && !defence.isDisable()) {
-                        defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
-                                .collect(Collectors.toList()).get(0);
-                        if (attackCard.getSuit().equals(defenseCard.getSuit())) {
-                            if (defenseCard.getValue() > attackCard.getValue()) {
-                                JsonObject sendToServer = cardToJson(defenseCard);
-                                client.setMessage(sendToServer);
-                                try {
-                                    Client.sendMessage(sendToServer);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                String resp = Client.getResponse();
-                                listOfCardsOnUITable.add(defenseCard.getValue());
-                                cardBox.getChildren().remove(activeCard);
-                                defence.setDisable(true);
-                                defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                                playFieldClass.nextAttackVisible(defence);
-                            } else {
-                                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
-                            }
-                            activeCard = null;
-                        } else if (defenseCard.getSuit().equals(trumpCard.getSuit())) {
+                }
+            });
+            defence.setOnMouseClicked(mouseEvent -> {
+                if (uiIsLocked) {
+                    return;
+                }
+                if (activeCard != null) {
+                    defenseCard = cardsInHand.stream().filter(card -> card.getId().equals(activeCard.getId()))
+                            .collect(Collectors.toList()).get(0);
+                    if (attackCard.getSuit().equals(defenseCard.getSuit())) {
+                        if (defenseCard.getValue() > attackCard.getValue()) {
                             JsonObject sendToServer = cardToJson(defenseCard);
-                            client.setMessage(sendToServer);
                             try {
                                 Client.sendMessage(sendToServer);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            String resp = Client.getResponse();
-                            Card card = cardFromResponse(resp);
-                            System.out.println(card);
-                            listOfCardsOnUITable.add(defenseCard.getValue());
+
                             cardBox.getChildren().remove(activeCard);
                             defence.setDisable(true);
-                            defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
-                            activeCard = null;
-                            playFieldClass.nextAttackVisible(defence);
+                            defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                            waitForMyTurn();
                         } else {
-                            activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                            activeCard.setStyle(activeCard.getStyle() + " -fx-opacity: 1; -fx-border-color: null");
                         }
+                        activeCard = null;
+                    } else if (defenseCard.getSuit().equals(gameInfo.getTrump().getSuit())) {
+                        JsonObject sendToServer = cardToJson(defenseCard);
+                        try {
+                            Client.sendMessage(sendToServer);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        cardBox.getChildren().remove(activeCard);
+                        defence.setDisable(true);
+                        defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                        activeCard = null;
+                        waitForMyTurn();
                     }
-                });
+                }
+            });
+        }
+
+        gameStartService.start();
+    }
+
+    private void resetAttackDefButtons() {
+        for (HBox attackDefPairs : playFieldButtons.values()) {
+            for (int i = 0; i < 2; i++) {
+                Button button = (Button) attackDefPairs.getChildrenUnmodifiable().get(i);
+                button.setDisable(false);
+                button.setStyle("-fx-background-image: null");
+                button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+                button.setVisible(false);
             }
         }
     }
-//        }
 
-//                    if (playerState == Player.PlayerState.ATTACK && listOfCardsOnUITable.size() % 2 == 1) {
-//                JsonObject opponent = new JsonObject();
-//                opponent.addProperty("MessageType", "getOpponentCard");
-//                opponent.addProperty("UUID", uuid);
-//                client.setMessage(opponent);
-//                try {
-//                    Client.sendMessage(opponent);
-//                    String response = Client.getResponse();
-//                    while (response.equals("WAIT")) {
-//                        Client.sendMessage(opponent);
-//                        System.out.println(response = Client.getResponse());
-//                    }
-//                    Card card = cardFromResponse(response);
-//                    listOfCardsOnUITable.add(card.getValue());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            } else if (playerState == Player.PlayerState.DEFENSE && listOfCardsOnUITable.size() % 2 == 0) {
-//                JsonObject opponent = new JsonObject();
-//                opponent.addProperty("MessageType", "getOpponentCard");
-//                opponent.addProperty("UUID", uuid);
-//                client.setMessage(opponent);
-//                try {
-//                    Client.sendMessage(opponent);
-////                    String response = Client.getResponse();
-//                    JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
-//                    String strResponse = response.get("MessageType").toString();
-//                    strResponse = strResponse.replace("\"", "");
-//
-//                    while (strResponse.equals("WAIT")) {
-//                        Client.sendMessage(opponent);
-////                        System.out.println(response = Client.getResponse());
-//                    }
-//                    Card card = cardFromResponse(response.toString());
-//                    listOfCardsOnUITable.add(card.getValue());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+    private void showFirstAttackBtn(){
+        HBox pair = playFieldButtons.get(1);
+        pair.setVisible(true);
+        Node attackBtn = pair.getChildrenUnmodifiable().get(0);
+        attackBtn.setVisible(true);
+    }
 
-    // actions loop
-//        for
+    private void waitForMyTurn() {
+        uiIsLocked = true;
+        if (waitForMyTurnService.getState() == SUCCEEDED) {
+            waitForMyTurnService.reset();
+        }
+        waitForMyTurnService.start();
+    }
 
+    private void updateAttackDefButtons(GameInfo game) {
+        System.out.println(playerId + " Updating UI with changes");
 
-    public void attackerLogic(Map<Integer, Pane> playFieldButtons, double cardWidth, double cardHeight) {
-        JsonObject opponent = new JsonObject();
-        opponent.addProperty("MessageType", "getOpponentCard");
-        opponent.addProperty("UUID", uuid);
-        opponent.addProperty("SIZE", sizeOfCards.size());
-        client.setMessage(opponent);
-        try {
-            Client.sendMessage(opponent);
-            String response = Client.getResponse();
-            if (response.equals("WAIT")) {
-                Client.sendMessage(opponent);
-                System.out.println(Client.getResponse());
-            } else {
-                Card card = cardFromResponse(response);
-                sizeOfCards.add(card);
-                listOfCardsOnUITable.add(card.getValue());
-                for (int i = 0; i < 6; i++) {
-                    Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
-                    if (defence.getStyle().contains("-fx-background-image: null")) {
-                        // cardBox ??
-//                        Button buttonCard = cardToButton(card, playFieldButtons.get(i), cardWidth, cardHeight);
-                        break;
-                    }
+        List<Card> cardsOnTable = game.getCardsOnTable();
+        if (cardsOnTable.isEmpty()) {
+            resetAttackDefButtons();
+            if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
+                showFirstAttackBtn();
+            }
+        } else {
+            int cardCounter = 0;
+            int pairCounter = 1;
+            for (Card card : cardsOnTable) {
+                HBox attackDefPair = playFieldButtons.get(pairCounter);
+                attackDefPair.setVisible(true);
+
+                Node node;
+                if (cardCounter % 2 == 0) {
+                    node = attackDefPair.getChildrenUnmodifiable().get(0);
+                } else {
+                    node = attackDefPair.getChildrenUnmodifiable().get(1);
+                }
+                node.setDisable(true);
+                node.setVisible(true);
+                node.setStyle(card.getStyleForButton() + " -fx-opacity: 1");
+
+                cardCounter++;
+                if (cardCounter % 2 == 0) {
+                    pairCounter++;
                 }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            attackCard = cardsOnTable.get(cardsOnTable.size() - 1);
+
+
+            if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
+                HBox attackDefPair = playFieldButtons.get(pairCounter);
+                attackDefPair.setVisible(true);
+                Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
+                attackBtn.setVisible(true);
+            } else if(game.getPlayerState(playerId) == PlayerState.DEFENSE) {
+                HBox attackDefPair = playFieldButtons.get(pairCounter);
+                Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
+                Node defButton = attackDefPair.getChildrenUnmodifiable().get(1);
+                attackBtn.setVisible(true);
+                attackBtn.setDisable(true);
+
+                defButton.setVisible(true);
+                defButton.setDisable(false);
+            }
+
         }
 
     }
 
-    public void defenderLogic(Map<Integer, HBox> playFieldButtons, double cardWidth, double cardHeight) {
-        JsonObject opponent = new JsonObject();
-        opponent.addProperty("MessageType", "getOpponentCard");
-        opponent.addProperty("UUID", uuid);
-        opponent.addProperty("SIZE", sizeOfCards.size());
-        client.setMessage(opponent);
-        try {
-            Client.sendMessage(opponent);
-//                    String response = Client.getResponse();
-            JsonObject response = JsonParser.parseString(Client.getResponse()).getAsJsonObject();
-            String strResponse = response.get("MessageType").toString();
-            strResponse = strResponse.replace("\"", "");
 
-            if (strResponse.equals("WAIT")) {
-                Client.sendMessage(opponent);
-//                        System.out.println(response = Client.getResponse());
+
+    private void doGameAction(GameInfo gameInfo) {
+        PlayerState state = gameInfo.getPlayerState(playerId);
+
+        // Set first gameInfo when game starts
+        if (currentGameState == null) {
+            currentGameState = gameInfo;
+        }
+
+        if (currentGameState.getTurnCounter() != gameInfo.getTurnCounter()) {
+            replenishHand();
+        }
+
+        if (state == PlayerState.ATTACK) {
+            //todo show in UI that I am attacking
+            if (gameInfo.isPlayersTurn(playerId)) {
+                // unlock UI to do attack move
+                uiIsLocked = false;
+                System.out.println(playerId + " I am attacking");
             } else {
-                Card card = cardFromResponse(response.toString());
-                sizeOfCards.add(card);
-                listOfCardsOnUITable.add(card.getValue());
-                for (int i = 0; i < 6; i++) {
-                    Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
-                    if (defence.getStyle().contains("-fx-background-image: null")) {
-                        // cardBox ??
-                        cardToButton(card, playFieldButtons.get(i), cardWidth, cardHeight);
-                        break;
-                    }
-                }
-//                        Button buttonCard = cardToButton(card, cardBox, cardWidth, cardHeight);
-
-
+                uiIsLocked = true;
+                System.out.println(playerId + " I am attacking and waiting for other player turn");
+                waitForMyTurn();
+                // wait for other player move
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else if (state == PlayerState.DEFENSE) {
+            //todo show in UI that I am defending
+            if (gameInfo.isPlayersTurn(playerId)) {
+                // unlock UI to do defense move
+                uiIsLocked = false;
+                System.out.println(playerId + " I am defending");
+            } else {
+                System.out.println(playerId + "  I am defending and waiting for other player turn");
+                uiIsLocked = true;
+                waitForMyTurn();
+                // wait for other player move
+            }
+        } else if (state == PlayerState.WAITING) {
+            //todo show in UI that I am waiting
+            // ui is locked
+            System.out.println(playerId + " I am waiting for my turn");
+            waitForMyTurn();
+            uiIsLocked = true;
         }
+
+        this.currentGameState = gameInfo;
+        this.cardsOnTable = gameInfo.getCardsOnTable();
+
     }
 
-    public JsonObject gameStart() {
+
+    public JsonObject gameCardsReplenish(int cardsInHand) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("MessageType", "GameStart");
+        obj.addProperty("type", "replenish");
+        obj.addProperty("playerId", playerId);
+        obj.addProperty("cardsInHand", cardsInHand);
         return obj;
     }
 
-    public JsonObject gameCardsReplenish() {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("MessageType", "replenish");
-        obj.addProperty("UUID", uuid);
-        return obj;
-    }
-
-    public void replenishHand(HBox cardBox, double cardWidth, double cardHeight, List<Card> cardsInHand) {
-        JsonObject obj = gameCardsReplenish();
-        while (cardBox.getChildren().size() < 6) {
-            try {
-                Client.sendMessage(obj);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String resp = Client.getResponse();
-            Card card = cardFromResponse(resp);
+    public void replenishHand() {
+        double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;
+        double cardWidth = cardHeight / 90 * 59;
+        JsonObject obj = gameCardsReplenish(cardBox.getChildren().size());
+        String response = null;
+        try {
+            response = Client.sendMessage(obj);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
+        for (Card card : cards) {
             cardsInHand.add(card);
             cardToButton(card, cardBox, cardWidth, cardHeight);
         }
@@ -763,32 +600,11 @@ public class Game extends Application {
 
     public JsonObject cardToJson(Card card) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("UUID", uuid);
-        obj.addProperty("MessageType", "GameMove");
-//        obj.addProperty("PlayerName", "Sanja"); //player.getName()
-        obj.addProperty("MoveType", card.toString()); //player.getPlayerState().toString()
-        obj.addProperty("Value", card.getValue()); //table.getLastCardOnTable().getId());
-        obj.addProperty("Suit", card.getSuit());
-        obj.addProperty("Trump", card.getTrump());
+        obj.addProperty("playerId", playerId);
+        obj.addProperty("type", "gameMove");
+        obj.add("card", gson.toJsonTree(card));
         return obj;
     }
-
-    public Card cardFromResponse(String resp) {
-        JsonObject jsonObject = JsonParser.parseString(resp).getAsJsonObject();
-        String suit = jsonObject.get("Suit").toString();
-        suit = suit.replace("\"", "");
-        String value = jsonObject.get("Value").toString();
-        value = value.replace("\"", "");
-        Integer val = Integer.parseInt(value);
-        String trump = jsonObject.get("Trump").toString();
-        trump = trump.replace("\"", "");
-        Boolean tru = Boolean.parseBoolean(trump);
-        return new Card(suit, val, tru);
-    }
-
-
-
-    // TODO account for trump card not being part of the DECK in the current gameplay
 
 
     public static void main(String[] args) {

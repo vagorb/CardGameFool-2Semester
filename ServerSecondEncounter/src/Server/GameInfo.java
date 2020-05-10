@@ -2,6 +2,7 @@ package Server;
 
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
+import com.card.game.fool.players.PlayerState;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -9,15 +10,17 @@ import java.util.List;
 
 public class GameInfo {
 
-    public List<Card> getCards() {
-        return cards;
-    }
-
-    private List<String> players = new ArrayList<>();
+    private List<String> players;
     private Deck deck;
     private Card trump;
-
-    private static List<Card> cards = new ArrayList<>();
+    private boolean gameStarted;
+    private List<Card> cards = new ArrayList<>();
+    private String currentPlayerTurn;
+    private String attackingPlayer;
+    private String defendingPlayer;
+    // Cards on table that attacked and defender are putting
+    private List<Card> cardsOnTable = new ArrayList<>();
+    private int turnCounter;
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -31,7 +34,50 @@ public class GameInfo {
         deck.makeCardsTrump(trump.getSuit());
     }
 
+    public void switchAttackerAndDefender() {
+        String prevAtt = this.attackingPlayer;
+        String prevDef = this.defendingPlayer;
+        this.attackingPlayer = prevDef;
+        this.defendingPlayer = prevAtt;
+        this.currentPlayerTurn = this.attackingPlayer;
+    }
 
+    public void addCardToTable(Card card) {
+        cardsOnTable.add(card);
+    }
+
+    public void playerMadeMove(String player) {
+        if(attackingPlayer.equals(player)) {
+            currentPlayerTurn = defendingPlayer;
+        } else {
+            currentPlayerTurn = attackingPlayer;
+        }
+    }
+
+    public void startGame() {
+        attackingPlayer = players.get(0);
+        currentPlayerTurn = players.get(0);
+        defendingPlayer = players.get(1);
+        gameStarted = true;
+    }
+
+    public PlayerState getPlayerState(String player) {
+        if (attackingPlayer.equals(player)) {
+            return PlayerState.ATTACK;
+        } else if (defendingPlayer.equals(player)) {
+            return PlayerState.DEFENSE;
+        } else {
+            return PlayerState.WAITING;
+        }
+    }
+
+    public boolean isPlayersTurn(String player) {
+        return currentPlayerTurn.equals(player);
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
 
     public void addPlayers(String player) {
         players.add(player);
@@ -49,7 +95,7 @@ public class GameInfo {
         return deck;
     }
 
-    public synchronized Card getCard() {
+    public Card replenishCard() {
         Card card = deck.getDeck().get(0);
         deck.getDeck().remove(card);
         return card;
@@ -67,17 +113,39 @@ public class GameInfo {
         cards.add(card);
     }
 
-    public static void main(String[] args) {
-        List<String> players = new ArrayList<>();
-        players.add("player1");
-        players.add("player2");
-        GameInfo info = new GameInfo(new Deck(), players);
-        Gson gson = new Gson();
-        String json = gson.toJson(info);
-        System.out.println(json);
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
 
-        // client receives
-        GameInfo receivedInfo = gson.fromJson(json, GameInfo.class);
-        System.out.println(receivedInfo);
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
+    }
+
+    public String getCurrentPlayerTurn() {
+        return currentPlayerTurn;
+    }
+
+    public String getAttackingPlayer() {
+        return attackingPlayer;
+    }
+
+    public String getDefendingPlayer() {
+        return defendingPlayer;
+    }
+
+    public List<Card> getCardsOnTable() {
+        return cardsOnTable;
+    }
+
+    public void setCurrentPlayerTurn(String currentPlayerTurn) {
+        this.currentPlayerTurn = currentPlayerTurn;
+    }
+
+    public int getTurnCounter() {
+        return turnCounter;
+    }
+
+    public void increaseTurnCounter() {
+        this.turnCounter++;
     }
 }

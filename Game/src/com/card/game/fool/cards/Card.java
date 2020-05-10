@@ -1,5 +1,12 @@
 package com.card.game.fool.cards;
 
+import javafx.scene.image.Image;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -107,6 +114,13 @@ public class Card {
      */
     public String getValueName() {
         return valueMap.get(value);
+    }
+
+    public String getStyleForButton() {
+        String imageName = String.format("/images/cards/%s/%s.png", this.getSuit(), this.getId());
+        String imageLocation = this.getClass().getResource(imageName).toExternalForm();
+        return String.format("-fx-background-size: cover;-fx-background-image: "
+                + "url('%s');", imageLocation);
     }
 
 
