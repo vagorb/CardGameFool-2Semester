@@ -7,10 +7,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import Client.Client;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 
 public class WaitForMyTurnService extends Service<GameInfo> {
 

@@ -229,7 +229,7 @@ public class Game extends Application {
 
         /// When unable to beat, pick all cards
         pickUpCards.setOnAction(actionEvent -> {
-            if(currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE) {
+            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("type", "pickCardsFromTable");
                 msg.addProperty("playerId", playerId);
@@ -476,7 +476,6 @@ public class Game extends Application {
                 showFirstAttackBtn();
             }
         } else {
-
             int cardCounter = 0;
             int pairCounter = 1;
             for (Card card : cardsOnTable) {
