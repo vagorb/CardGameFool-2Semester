@@ -16,17 +16,27 @@ import game.help.Buttons;
 import game.help.GameField;
 import game.help.PlayField;
 import game.help.Resolution;
+import game.service.WaitForGameStartService;
+import game.service.WaitForMyTurnService;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -62,6 +72,8 @@ public class Game extends Application {
 
     private Player thePlayer;
 
+    private WaitForMyTurnService waitForMyTurnService;
+
     private Card attackCard;
     private Card defenseCard;
     private Set<Integer> listOfCardsOnUITable = new HashSet<>();
@@ -79,6 +91,8 @@ public class Game extends Application {
             computer = new Ai();
         }
     }
+    //todo debug change
+    private Button skipTurnRef;
 
     void setMenu(Scene menu) {
         this.menuScene = menu;
@@ -147,6 +161,7 @@ public class Game extends Application {
         Button throwCards = buttons.throwCards();
         Button pickUpCards = buttons.pickCardsUp();
         Button skipTurn = buttons.skipTurn();
+        skipTurnRef = skipTurn;
 
         cardBoxBase.setMaxSize(windowWidth, windowHeight / 12);
         cardBoxScroll.setMaxSize(windowWidth / 4, windowHeight / 12);
@@ -315,11 +330,36 @@ public class Game extends Application {
         exitButton.prefHeightProperty().bind(backButton.prefHeightProperty());
 
         window.show();
-//        boolean goIn = true;
-//        while (gameIsGoing) {
-//            if (goIn) {
+
+        // Service for waiting for opponent move
+        waitForMyTurnService = new WaitForMyTurnService();
+        waitForMyTurnService.setPlayerId(playerId);
+
+        waitForMyTurnService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+//                System.out.println(playerId + "waitForMyTurnService OnSucceeded FIRED");
+                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+                updateUI(game);
+                doGameAction(game);
+            }
+        });
+
+        // Service for waiting for game start
+        WaitForGameStartService gameStartService = new WaitForGameStartService();
+        gameStartService.setPlayerId(playerId);
+
+        gameStartService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                System.out.println(playerId + "Starting game");
+                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+                doGameAction(game);
+            }
+        });
+
+
         for (int i = 1; i <= 6; i++) {
-//                    goIn = false;
             Button attack = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(0);
             attack.setId("Attack");
             attack.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
@@ -360,7 +400,7 @@ public class Game extends Application {
                         attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                         defence.setVisible(true);
                         activeCard = null;
-                        waitForMyTurn(updatedGame);
+                        waitForMyTurn();
                     } else {
                         if (listOfCardsOnUITable.contains(attackCard.getValue())) {
                             JsonObject sendToServer = cardToJson(attackCard);
@@ -377,7 +417,7 @@ public class Game extends Application {
                             attack.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                             defence.setVisible(true);
                             activeCard = null;
-                            waitForMyTurn(updatedGame);
+                            waitForMyTurn();
                         } else {
                             activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                         }
@@ -408,7 +448,7 @@ public class Game extends Application {
                             defence.setDisable(true);
                             defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                             playFieldClass.nextAttackVisible(defence);
-                            waitForMyTurn(updatedGame);
+                            waitForMyTurn();
                         } else {
                             activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                         }
@@ -429,7 +469,7 @@ public class Game extends Application {
                         defence.setStyle(activeCard.getStyle() + ";-fx-opacity: 1");
                         activeCard = null;
                         playFieldClass.nextAttackVisible(defence);
-                        waitForMyTurn(updatedGame);
+                        waitForMyTurn();
                     } else {
                         activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
                     }
@@ -437,46 +477,12 @@ public class Game extends Application {
             });
         }
 
-        Thread gameStartWaiter = new Thread(() -> {
-            while (true) {
-                try {
-                    GameInfo updatedInfo = getGameInfo();
-                    if (updatedInfo.isGameStarted()) {
-                        // start game
-                        System.out.println(playerId + " Starting game");
-                        doGameAction(updatedInfo);
-                        return;
-                    } else {
-                        Thread.sleep(500);
-                    }
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        gameStartWaiter.start();
+        gameStartService.start();
     }
 
-    private void waitForMyTurn(GameInfo game) {
+    private void waitForMyTurn() {
         uiIsLocked = true;
-        Thread waitingForOpponent = new Thread(() -> {
-            while (true) {
-                try {
-                    GameInfo updatedInfo = getGameInfo();
-                    if (updatedInfo.isPlayersTurn(playerId)) {
-                        System.out.println(playerId + " Opponent made his move");
-                        updateUI(updatedInfo);
-                        doGameAction(updatedInfo);
-                        return;
-                    } else {
-                        Thread.sleep(500);
-                    }
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        waitingForOpponent.start();
+        waitForMyTurnService.start();
     }
 
     private void updateUI(GameInfo game) {
@@ -486,7 +492,6 @@ public class Game extends Application {
         if(cardsOnTable.isEmpty()){
             //todo reset buttons
         } else {
-
 
             int cardsOnTableCounter = 0;
             for (HBox attackDefPair:  playFieldButtons.values()) {
@@ -510,7 +515,7 @@ public class Game extends Application {
                     Card card = cardsOnTable.get(cardsOnTableCounter);
                     defense.setDisable(true);
                     defense.setVisible(true);
-                    defense.setStyle(card.getStyleForButton() + ";-fx-opacity: 1");
+                    defense.setStyle(card.getStyleForButton());
                     cardsOnTableCounter++;
                 } else {
                     // No matching card on table, so this is next button that should be active
@@ -519,36 +524,8 @@ public class Game extends Application {
                     break;
                 }
 
-
             }
 
-//            int counter = 0;
-//            for (Card card : cardsOnTable) {
-//                HBox attackDefensePair = playFieldButtons.get(counter + 1);
-//                if (counter % 2 == 0) {
-//                    Node attack = attackDefensePair.getChildrenUnmodifiable().get(0);
-//                    attack.setDisable(true);
-//                    attack.setStyle(card.getStyleForButton() + ";-fx-opacity: 1");
-//                } else {
-//                    Node defense = attackDefensePair.getChildrenUnmodifiable().get(1);
-//                    defense.setDisable(true);
-//                    defense.setStyle(card.getStyleForButton() + ";-fx-opacity: 1");
-//                }
-//                counter++;
-//            }
-//
-//            HBox attackDefensePair = playFieldButtons.get(counter + 1);
-//            if (counter % 2 == 0) {
-//                Node attack = attackDefensePair.getChildrenUnmodifiable().get(0);
-//                attack.setDisable(false);
-//                attack.setVisible(true);
-//            } else {
-//                Node defense = attackDefensePair.getChildrenUnmodifiable().get(1);
-//                defense.setDisable(false);
-//                defense.setVisible(true);
-//            }
-
-//
         }
 //        playFieldButtons
 
@@ -576,7 +553,7 @@ public class Game extends Application {
             } else {
                 uiIsLocked = true;
                 System.out.println(playerId + " I am attacking and waiting for other player turn");
-                waitForMyTurn(gameInfo);
+                waitForMyTurn();
                 // wait for other player move
             }
         } else if (state == PlayerState.DEFENSE) {
@@ -588,14 +565,14 @@ public class Game extends Application {
             } else {
                 System.out.println(playerId + "  I am defending and waiting for other player turn");
                 uiIsLocked = true;
-                waitForMyTurn(gameInfo);
+                waitForMyTurn();
                 // wait for other player move
             }
         } else if (state == PlayerState.WAITING) {
             //todo show in UI that I am waiting
             // ui is locked
             System.out.println(playerId + " I am waiting for my turn");
-            waitForMyTurn(gameInfo);
+            waitForMyTurn();
             uiIsLocked = true;
         }
     }
