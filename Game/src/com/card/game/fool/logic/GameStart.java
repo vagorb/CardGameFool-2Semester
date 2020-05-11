@@ -1,7 +1,5 @@
 package com.card.game.fool.logic;
 
-import com.card.game.fool.logic.GameController;
-
 public class GameStart {
 //    private com.card.game.fool.tables.Table playingTable;
 //    private List<com.card.game.fool.cards.Card> trumpCard = new ArrayList<>();

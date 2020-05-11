@@ -15,8 +15,8 @@ import java.util.Arrays;
 
 public class Menu extends Application {
     protected Buttons buttons = new Buttons();
-    private Resolution resolution = new Resolution();
     private Scene menuScene;
+    private final StackPane openingStackpane = new StackPane();
 
     public void start(Stage window) {
         window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
@@ -24,18 +24,15 @@ public class Menu extends Application {
         window.setResizable(false);
         window.setMinWidth(1280);
         window.setMinHeight(720);
-        StackPane openingStackpane = new StackPane();
         menuScene = new Scene(openingStackpane, 1280, 720);
-        resolution.change(window, menuScene.getWidth(), menuScene.getHeight());
         window.setScene(menuScene);
+
+        Resolution resolution = new Resolution(window);
+        resolution.change(menuScene.getWidth(), menuScene.getHeight());
 
         SettingMenu settings = new SettingMenu(window, openingStackpane, resolution);
         StackPane settingsStackpane = settings.settings();
         StackPane playStackpane = settings.game();
-
-        // window settings
-//        window.setX(0.0);
-//        window.setY(0.0);
 
         /// main menu
         VBox mainMenu = new VBox(50);

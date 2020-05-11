@@ -10,7 +10,7 @@ public class Card {
     Integer value;
     Visibility visibility;
     Boolean trump;
-    private Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
+    private final Map<Integer, String> valueMap = new HashMap<>(Map.of(6, "6", 7, "7", 8, "8",
             9, "9", 10, "10", 11, "Jack", 12, "Queen", 13, "King",
             14, "Ace"));
 
@@ -29,21 +29,6 @@ public class Card {
     /* So for us not to rewrite what the card is we just add a server trump variable that just gives extra value points to the card
     before it's calculation process.
     */
-
-
-//    public enum Suite {
-//        DIAMONDS("Diamonds"), HEARTS("Hearts"), SPADES("Spades"), CLUBS("Clubs");
-//        private final String suiteString;
-//
-//        Suite(String suite) {
-//            suiteString = suite;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return suiteString;
-//        }
-//    }
 
     /**
      * Class constructor
@@ -124,6 +109,13 @@ public class Card {
         return valueMap.get(value);
     }
 
+    public String getStyleForButton() {
+        String imageName = String.format("/images/cards/%s/%s.png", this.getSuit(), this.getId());
+        String imageLocation = this.getClass().getResource(imageName).toExternalForm();
+        return String.format("-fx-background-size: cover;-fx-background-image: "
+                + "url('%s');", imageLocation);
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -133,21 +125,4 @@ public class Card {
         return suit.equals(card.suit) &&
                 value.equals(card.value);
     }
-
-//    public static Card javaFXCardToCard(String javafxId) {
-//        List<String> splitted = new ArrayList<>(Arrays.asList(javafxId.split("_")));
-//        int value = 0;
-//        if (splitted.get(0).equalsIgnoreCase("Jack")) {
-//            value = 11;
-//        } else if (splitted.get(0).equalsIgnoreCase("Queen")) {
-//            value = 12;
-//        } else if (splitted.get(0).equalsIgnoreCase("King")) {
-//            value = 13;
-//        } else if (splitted.get(0).equalsIgnoreCase("Ace")) {
-//            value = 14;
-//        } else
-//            value = Integer.parseInt(splitted.get(0));
-//        return new Card(splitted.get(2), value, false );
-//    }
 }
-

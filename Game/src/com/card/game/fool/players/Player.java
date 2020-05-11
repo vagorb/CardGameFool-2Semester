@@ -2,9 +2,12 @@ package com.card.game.fool.players;
 
 import com.card.game.fool.cards.Card;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Player implements gamerInterface{
-    private Hand hand;
-    private String name;
+    private final List<Card> cardsInHand = new LinkedList<>();
+    private final String name;
     private Integer score;
     private PlayerState playerState;
 
@@ -12,30 +15,19 @@ public class Player implements gamerInterface{
      * com.card.game.fool.players.Player class constructor
      * @param name of the player ( String )
      * @param score of the player ( Integer )
-     * @param hand of the player ( com.card.game.fool.players.Hand object )
      */
-    public Player(String name, Integer score, Hand hand) { //PlayerState playerState) {
+    public Player(String name, Integer score) { //PlayerState playerState) {
         //this.playerState = playerState;
         this.name = name;
         this.score = score;
-        this.hand = hand;
-    }
-
-    /**
-     * PlayerState
-     * Attack state - player is attacking
-     * Defense state - player is defending
-     */
-    public enum PlayerState {
-        ATTACK, DEFENSE, SKIP
     }
 
     /**
      * Getter
-     * @return com.card.game.fool.players.Hand of this player
+     * @return List of Cards of this player
      */
-    public Hand getHand() {
-        return hand;
+    public List<Card> getHand() {
+        return cardsInHand;
     }
 
     /**
@@ -81,17 +73,4 @@ public class Player implements gamerInterface{
     public PlayerState getPlayerState() {
         return this.playerState;
     }
-
-    /**
-     * Method that decides what card we will take from our list of cards
-     * @param cardNumber value we give to our list of cards , which we use to take the card with
-     * @return card that we plan on taking
-     */
-    public Card chooseCard(Integer cardNumber) {
-        Integer handSize = getHand().getCardsInHand().size();
-        return getHand().getCardsInHand().get(cardNumber);
-
-    }
-
-
 }

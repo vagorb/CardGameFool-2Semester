@@ -45,7 +45,7 @@ public class AvatarBox {
             Label name = new Label(gamer.getName());
             HBox nameBox = new HBox(name);
             nameBox.setAlignment(Pos.CENTER);
-            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().getCardsInHand().size()));
+            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().size()));
             HBox cardBack = new HBox(cardsRemaining);
 //            ImageView avatarImage = new ImageView(image);
             ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));
@@ -61,8 +61,8 @@ public class AvatarBox {
             avatarImage.setFitWidth(elementSize * 0.6);
             avatarImage.setFitHeight(elementSize * 0.6);
             name.setWrapText(true);
-            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: lawngreen");
-            nameBox.setStyle("-fx-border-color: black");
+            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: lawngreen;");
+            nameBox.setStyle("-fx-border-color: black;");
 
             cardBack.setAlignment(Pos.CENTER);
             avatarBox.setAlignment(Pos.TOP_CENTER);

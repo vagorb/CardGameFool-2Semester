@@ -1,8 +1,8 @@
 package com.card.game.fool.logic;
 
 import com.card.game.fool.cards.Card;
-import com.card.game.fool.players.Hand;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.PlayerState;
 import com.card.game.fool.tables.Table;
 
 import java.util.Random;
@@ -58,14 +58,12 @@ public class GameController {
         input = new Scanner(System.in);
         System.out.println("Please enter your name : ");
         String s = input.next();
-        Hand hand1 = new Hand();
-        Player player1 = new Player(s, 0, hand1);
+        Player player1 = new Player(s, 0);
         this.player1 = player1;
 
         System.out.println("Please enter your name : ");
         String x = input.next();
-        Hand hand2 = new Hand();
-        Player player2 = new Player(x, 0, hand2);
+        Player player2 = new Player(x, 0);
         this.player2 = player2;
 
         Table table = new Table(player1, player2);
@@ -77,7 +75,6 @@ public class GameController {
     /**
      * Method (randomly) decides what card suit will be a trump card suit
      * Method fills hands of 2 players with cards
-     * @param table com.card.game.fool.tables.Table on which this exact MATCH ( Game ) is happening
      */
     public void assignTrumpAndFillHands() {
         Random generator = new Random();
@@ -92,10 +89,10 @@ public class GameController {
         }
         for (int i = 0; i < 6; i++) {
             Card cardForPlayer1 = table.getGameDeck().get(table.getGameDeck().size() - 1);
-            table.getPlayers().get(0).getHand().addCard(cardForPlayer1);
+            table.getPlayers().get(0).getHand().add(cardForPlayer1);
             table.getGameDeck().remove(cardForPlayer1);
             Card cardForPlayer2 = table.getGameDeck().get(table.getGameDeck().size() - 1);
-            table.getPlayers().get(1).getHand().addCard(cardForPlayer2);
+            table.getPlayers().get(1).getHand().add(cardForPlayer2);
             table.getGameDeck().remove(cardForPlayer2);
         }
         attackDefenseDecider = 0;
@@ -112,11 +109,11 @@ public class GameController {
         System.out.println(table.getTrumpSuit());
         // I can add this if statement in my main code to prevent this from going weird.
         if (attackDefenseDecider % 2 == 0) {
-            player1.setPlayerState(Player.PlayerState.ATTACK);
-            player2.setPlayerState(Player.PlayerState.DEFENSE);
+            player1.setPlayerState(PlayerState.ATTACK);
+            player2.setPlayerState(PlayerState.DEFENSE);
         } else if (attackDefenseDecider % 2 == 1) {
-            player1.setPlayerState(Player.PlayerState.DEFENSE);
-            player2.setPlayerState(Player.PlayerState.ATTACK);
+            player1.setPlayerState(PlayerState.DEFENSE);
+            player2.setPlayerState(PlayerState.ATTACK);
         }
     }
 
@@ -131,48 +128,48 @@ public class GameController {
         for (int i = 0; i < 12; i++) {
             if (!turnCalculation.getDefenseSuccess()) {
                 for (Player defender : table.getPlayers()) {
-                    if (defender.getPlayerState() == Player.PlayerState.DEFENSE) {
+                    if (defender.getPlayerState() == PlayerState.DEFENSE) {
                         turnCalculation.addAttackAndDefenseCardsToPileOrPlayer(defender);
-                        System.out.println(defender.getHand().getCardsInHand());
+                        System.out.println(defender.getHand());
                         turnCalculation.setDefenseSuccess(true);
                     }
                 }
                 break;
             } else if (turnEnded) {
                 turnCalculation.addAttackAndDefenseCardsToPileOrPlayer(player1);
-                System.out.println(player1.getHand().getCardsInHand());
+                System.out.println(player1.getHand());
                 System.out.println(turnCalculation.getPlayingTable().getPile().getPile());
                 break;
             }
             for (Player playerAttackerOrDefender : table.getPlayers()) {
-                if (playerAttackerOrDefender.getHand().getCardsInHand().size() == 0) {
+                if (playerAttackerOrDefender.getHand().size() == 0) {
                     break;
                 }
-                if (playerAttackerOrDefender.getPlayerState() == Player.PlayerState.ATTACK) {
-                    System.out.println("Choose card for attack from your hand of size " + (playerAttackerOrDefender.getHand().getCardsInHand().size() - 1));
-                    System.out.println(playerAttackerOrDefender.getHand().getCardsInHand());
+                if (playerAttackerOrDefender.getPlayerState() == PlayerState.ATTACK) {
+                    System.out.println("Choose card for attack from your hand of size " + (playerAttackerOrDefender.getHand().size() - 1));
+                    System.out.println(playerAttackerOrDefender.getHand());
                     String attackCard = input.next();
                     if (attackCard.equals("Skip")) {
                         attackDefenseDecider += 1;
                         turnEnded = true;
                         break;
                     }
-                    Integer integer = Integer.valueOf(attackCard);
-                    System.out.println("We will attack with " + playerAttackerOrDefender.getHand().getCardsInHand().get(integer));
-                    turnCalculation.putAttackCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer));
+                    int integer = Integer.parseInt(attackCard);
+                    System.out.println("We will attack with " + playerAttackerOrDefender.getHand().get(integer));
+//                    turnCalculation.putAttackCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer));
                 }
-                if (playerAttackerOrDefender.getPlayerState() == Player.PlayerState.DEFENSE && table.getTable().size() % 2 == 1) {
-                    System.out.println("Choose card for defense from your hand of size " + (playerAttackerOrDefender.getHand().getCardsInHand().size() - 1));
-                    System.out.println(playerAttackerOrDefender.getHand().getCardsInHand());
+                if (playerAttackerOrDefender.getPlayerState() == PlayerState.DEFENSE && table.getTable().size() % 2 == 1) {
+                    System.out.println("Choose card for defense from your hand of size " + (playerAttackerOrDefender.getHand().size() - 1));
+                    System.out.println(playerAttackerOrDefender.getHand());
                     String defenseCard = input.next();
                     if (defenseCard.equals("Take")) {
                         turnEnded = true;
                         turnCalculation.setDefenseSuccess(false);
                         break;
                     }
-                    Integer integer = Integer.valueOf(defenseCard);
-                    System.out.println("We will defend with " + playerAttackerOrDefender.getHand().getCardsInHand().get(integer));
-                    turnCalculation.putDefenseCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer));
+                    int integer = Integer.parseInt(defenseCard);
+                    System.out.println("We will defend with " + playerAttackerOrDefender.getHand().get(integer));
+//                    turnCalculation.putDefenseCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer));
                     while (!turnCalculation.getDefenseSuccess()) {
                         System.out.println("You can't defend with this card. Please put another one, or write ( press ) Take");
                         String newDefenseCard = input.next();
@@ -182,9 +179,9 @@ public class GameController {
                             break;
                         }
                         else {
-                            Integer integer1 = Integer.valueOf(newDefenseCard);
-                            System.out.println("This time we will try to defend with " + playerAttackerOrDefender.getHand().getCardsInHand().get(integer1));
-                            turnCalculation.putDefenseCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer1));
+                            int integer1 = Integer.parseInt(newDefenseCard);
+                            System.out.println("This time we will try to defend with " + playerAttackerOrDefender.getHand().get(integer1));
+//                            turnCalculation.putDefenseCard(playerAttackerOrDefender, playerAttackerOrDefender.chooseCard(integer1));
                         }
                     }
                 }
@@ -201,58 +198,58 @@ public class GameController {
             if (table.getGameDeck().size() == 0) {
                 if (cardThatDecidesTrump != null) {
                     Card cardToAdd = cardThatDecidesTrump;
-                    if (player1.getHand().getCardsInHand().size() < 6) {
-                        player1.getHand().addCard(cardToAdd);
+                    if (player1.getHand().size() < 6) {
+                        player1.getHand().add(cardToAdd);
                         setCardThatDecidesTrump(null);
-                    } else if (player2.getHand().getCardsInHand().size() < 6) {
-                        player2.getHand().addCard(cardToAdd);
+                    } else if (player2.getHand().size() < 6) {
+                        player2.getHand().add(cardToAdd);
                         setCardThatDecidesTrump(null);
                     }
                 }
                 System.out.println("com.card.game.fool.cards.Deck is empty, you will not get 6 cards refilled");
                 break;
             }
-            if (player1.getHand().getCardsInHand().size() < 6) {
+            if (player1.getHand().size() < 6) {
                 Card cardToAdd = table.getGameDeck().get(table.getGameDeck().size() - 1);
-                player1.getHand().addCard(cardToAdd);
+                player1.getHand().add(cardToAdd);
                 table.getGameDeck().remove(cardToAdd);
                 System.out.println("Getting our number of cards back to 6 for player 1");
             }
             if (table.getGameDeck().size() == 0) {
                 if (cardThatDecidesTrump != null) {
                     Card cardToAdd = cardThatDecidesTrump;
-                    if (player1.getHand().getCardsInHand().size() < 6) {
-                        player1.getHand().addCard(cardToAdd);
+                    if (player1.getHand().size() < 6) {
+                        player1.getHand().add(cardToAdd);
                         setCardThatDecidesTrump(null);
-                    } else if (player2.getHand().getCardsInHand().size() < 6) {
-                        player2.getHand().addCard(cardToAdd);
+                    } else if (player2.getHand().size() < 6) {
+                        player2.getHand().add(cardToAdd);
                         setCardThatDecidesTrump(null);
                     }
                 }
                 System.out.println("com.card.game.fool.cards.Deck is empty, you will not get 6 cards refilled");
                 break;
             }
-            if (player2.getHand().getCardsInHand().size() < 6) {
+            if (player2.getHand().size() < 6) {
                 Card cardToAdd = table.getGameDeck().get(table.getGameDeck().size() - 1);
-                player2.getHand().addCard(cardToAdd);
+                player2.getHand().add(cardToAdd);
                 table.getGameDeck().remove(cardToAdd);
                 System.out.println("Getting our number of cards back to 6 for player 2");
             }
             if (table.getGameDeck().size() == 0) {
                 if (cardThatDecidesTrump != null) {
                     Card cardToAdd = cardThatDecidesTrump;
-                    if (player1.getHand().getCardsInHand().size() < 6) {
-                        player1.getHand().addCard(cardToAdd);
+                    if (player1.getHand().size() < 6) {
+                        player1.getHand().add(cardToAdd);
                         setCardThatDecidesTrump(null);
-                    } else if (player2.getHand().getCardsInHand().size() < 6) {
-                        player2.getHand().addCard(cardToAdd);
+                    } else if (player2.getHand().size() < 6) {
+                        player2.getHand().add(cardToAdd);
                         setCardThatDecidesTrump(null);
                     }
                 }
                 System.out.println("com.card.game.fool.cards.Deck is empty, you will not get 6 cards refilled");
                 break;
             }
-            if (player1.getHand().getCardsInHand().size() >= 6 && player2.getHand().getCardsInHand().size() >= 6) {
+            if (player1.getHand().size() >= 6 && player2.getHand().size() >= 6) {
                 System.out.println("Required amount of cards was reached");
                 break;
             }
@@ -265,11 +262,8 @@ public class GameController {
      * @return returns boolean false for ending the cycle, or true for continuing it.
      */
     public boolean endGame() {
-        if (player1.getHand().getCardsInHand().size() == 0 || player2.getHand().getCardsInHand().size() == 0) {
-            // Stops the cycle
-            return false;
-        }
-        return true;
+        // Stops the cycle
+        return player1.getHand().size() != 0 && player2.getHand().size() != 0;
     }
 
 
@@ -278,10 +272,10 @@ public class GameController {
      * Announces the match winner
      */
     public void ending() {
-        if (player1.getHand().getCardsInHand().size() == 0) {
-            System.out.println("Congratulations player1 " + player1.getName() + " you won against player2 who had " + player2.getHand().getCardsInHand().size() + "cards in hand left");
+        if (player1.getHand().size() == 0) {
+            System.out.println("Congratulations player1 " + player1.getName() + " you won against player2 who had " + player2.getHand().size() + "cards in hand left");
         } else {
-            System.out.println("Congratulations player2 " + player2.getName() + " you won against player1 who had " + player1.getHand().getCardsInHand().size() + "cards in hand left");
+            System.out.println("Congratulations player2 " + player2.getName() + " you won against player1 who had " + player1.getHand().size() + "cards in hand left");
         }
         System.out.println("Wish to return back to main menu?");
     }

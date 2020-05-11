@@ -5,13 +5,7 @@
     -fx-font: bold 10pt 'Arial Black';
 }
 
-#scrollInversion.check-box {
-    -fx-background-color: rgba(70, 200, 20, 0.5);
-    -fx-background-insets: 0 -5 -2 0, 0, 0;
-    -fx-font: bold 10pt 'Arial Black';
-}
-
-#AlwaysOnTop.check-box {
+.check-box {
     -fx-background-color: rgba(20, 200, 70, 0.5);
     -fx-background-insets: 0 -5 -2 0, 0, 0;
     -fx-font: bold 10pt 'Arial Black';
@@ -20,6 +14,11 @@
 #HumanCount.label {
     -fx-text-fill: rgb(0, 255, 200);
     -fx-font: bold 15pt 'Arial';
+}
+
+#EnterYourName.label {
+    -fx-text-fill: rgb(100, 255, 150);
+    -fx-font: bold 13pt 'Arial';
 }
 
 #MenuBar {
@@ -40,7 +39,7 @@
 
 #cardBoxBase {
     -fx-background-size: cover;
-    -fx-background-color: #867714;
+    -fx-background-image: url('/images/backgrounds/cardBox_bg.jpg');
 }
 
 #gameStackPane {
