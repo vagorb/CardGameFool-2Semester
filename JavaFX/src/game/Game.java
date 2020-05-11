@@ -3,6 +3,7 @@ package game;
 import Client.Client;
 import Server.GameInfo;
 import Server.model.NewPlayer;
+import Server.model.NewPlayerAI;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.players.Player;
@@ -120,9 +121,18 @@ public class Game extends Application {
         return gson.fromJson(response, GameInfo.class);
     }
 
+    private GameInfo sendNewAIPlayerMsg() throws IOException {
+        NewPlayerAI newPlayerMsg = new NewPlayerAI();
+        newPlayerMsg.playerId = playerId;
+        newPlayerMsg.AIGame = "AIGame";
+        newPlayerMsg.State = "Update";
+        String response = Client.sendMessage(newPlayerMsg);
+        return gson.fromJson(response, GameInfo.class);
+    }
+
 
     public void start(Stage window) throws IOException {
-        GameInfo gameInfo = sendNewPlayerMsg();
+        GameInfo gameInfo = sendNewAIPlayerMsg();
         window.setResizable(false);
 
         Buttons buttons = new Buttons();

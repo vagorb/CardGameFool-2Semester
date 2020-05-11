@@ -19,6 +19,7 @@ public class Pile {
     }
 
 
+
     public void addDiscardedCards(Card cardToAddToDiscard) {
         listOfDiscardedCards.add(cardToAddToDiscard);
 

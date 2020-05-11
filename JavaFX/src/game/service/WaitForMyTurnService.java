@@ -44,6 +44,7 @@ public class WaitForMyTurnService extends Service<GameInfo> {
         JsonObject getGameInfo = new JsonObject();
         getGameInfo.addProperty("playerId", playerId);
         getGameInfo.addProperty("type", "getGameInfo");
+        getGameInfo.addProperty("State", "Update");
         String response = Client.sendMessage(getGameInfo);
         return gson.fromJson(response, GameInfo.class);
     }

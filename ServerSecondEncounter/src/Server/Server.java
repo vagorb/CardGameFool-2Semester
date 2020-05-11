@@ -35,13 +35,22 @@ public class Server {
                 game = new GameInfo(new Deck(), playersList);
                 games.add(game);
             } else {
-                // todo add players to other games
                 game = games.get(0);
                 game.addPlayers(player);
+                games.remove(game);
             }
             playersToGames.put(player, game);
             return game;
         }
+    }
+
+    public static GameInfo newWithAIGame(String player) {
+        GameInfo game;
+        List<String> playersList = new ArrayList<>();
+        playersList.add(player);
+        game = new GameInfo(new Deck(), playersList);
+        playersToGames.put(player, game);
+        return game;
     }
 
     public static List<Card> replenishPlayerCards(String player, int cardsInHand) {
@@ -49,7 +58,13 @@ public class Server {
             GameInfo game = playersToGames.get(player);
             List<Card> replenishedCards = new ArrayList<>();
             for (int i = cardsInHand; i < 6; i++) {
-                replenishedCards.add(game.replenishCard());
+//                replenishedCards.add(game.replenishCard());
+                Card card = game.replenishCard();
+                if (card == null) {
+                    break;
+                } else {
+                    replenishedCards.add(card);
+                }
             }
             return replenishedCards;
         }
@@ -60,7 +75,16 @@ public class Server {
             GameInfo game = playersToGames.get(player);
             game.getCardsOnTable().clear();
             game.increaseTurnCounter();
-            // todo if more than 2 players then cycle who attacks next
+            game.setCurrentPlayerTurn(game.getAttackingPlayer());
+        }
+    }
+
+    public static void AIPicksUpCards(String player) {
+        synchronized (games) {
+            GameInfo game = playersToGames.get(player);
+            game.getAi().getHand().addAll(game.getCardsOnTable());
+            game.getCardsOnTable().clear();
+            game.increaseTurnCounter();
             game.setCurrentPlayerTurn(game.getAttackingPlayer());
         }
     }
@@ -68,6 +92,9 @@ public class Server {
     public static void cardsToPile(String player) {
         synchronized (games) {
             GameInfo game = playersToGames.get(player);
+            for (Card card : game.getCardsOnTable()) {
+                game.getPile().addDiscardedCards(card);
+            }
             game.getCardsOnTable().clear();
             game.increaseTurnCounter();
             game.switchAttackerAndDefender();
@@ -77,18 +104,6 @@ public class Server {
 
 
     public static void runServer() throws InterruptedException {
-        System.out.println("LONG LINE OF TEXT THAT WE CAN SEE ??????????");
-//        Server.makeTrump();
-//
-//        GameHlder = nbew GameHolder;
-//        gameholder.addPlayer(1)
-//        gameholder.addPlayer(2)
-//                Deck deck11 = new Deck()
-//        gameholder.addDeck(deck11)
-//         gameHolder.startGame();
-//        games.add(game1);
-//
-//        GameHlder game2
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
