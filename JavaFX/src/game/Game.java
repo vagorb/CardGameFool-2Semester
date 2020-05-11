@@ -250,7 +250,7 @@ public class Game extends Application {
 
         /// throw cards to pile
         throwCards.setOnAction(actionEvent -> {
-            if(currentGameState.getPlayerState(playerId) == PlayerState.ATTACK && cardsOnTable.size() % 2 == 0) {
+            if(currentGameState.getPlayerState(playerId) == PlayerState.ATTACK && cardsOnTable.size() % 2 == 0 && !cardsOnTable.isEmpty()) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("type", "throwCardsToPile");
                 msg.addProperty("playerId", playerId);
