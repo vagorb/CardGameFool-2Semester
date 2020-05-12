@@ -22,6 +22,8 @@ import game.service.WaitForMyTurnService;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -38,6 +40,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,8 +59,6 @@ public class Game extends Application {
     private boolean goHere = false;
     private Label winLabel = new Label();
     private Label loseLabel = new Label();
-    private final String playerId = UUID.randomUUID().toString();
-    private final Label stateLabel = new Label();
 
     private boolean uiIsLocked = true;
     private Map<Integer, HBox> playFieldButtons;
@@ -78,7 +79,7 @@ public class Game extends Application {
     private Button activeCard = null;
     private final int AIcount;
     private final int humanCount;
-    private final List<Player> players = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
     public Ai computer;
 
     public Game(int human, int AI) {
@@ -121,9 +122,20 @@ public class Game extends Application {
     private GameInfo sendNewPlayerMsg() throws IOException {
         NewPlayer newPlayerMsg = new NewPlayer();
         newPlayerMsg.playerId = playerId;
+        newPlayerMsg.type = "newPlayer";
         String response = Client.sendMessage(newPlayerMsg);
         return gson.fromJson(response, GameInfo.class);
     }
+
+    private GameInfo sendNewAIPlayerMsg() throws IOException {
+        NewPlayerAI newPlayerMsg = new NewPlayerAI();
+        newPlayerMsg.playerId = playerId;
+        newPlayerMsg.type = "AIGame";
+        newPlayerMsg.State = "Update";
+        String response = Client.sendMessage(newPlayerMsg);
+        return gson.fromJson(response, GameInfo.class);
+    }
+
 
 
     public void start(Stage window) throws IOException {
@@ -133,7 +145,7 @@ public class Game extends Application {
         loseLabel.setVisible(false);
         loseLabel.setTranslateX(100);
         loseLabel.setTranslateY(100);
-        GameInfo gameInfo = sendNewPlayerMsg();
+        GameInfo gameInfo = sendNewAIPlayerMsg();
         window.setResizable(false);
 
         Buttons buttons = new Buttons();
@@ -644,40 +656,40 @@ public class Game extends Application {
         }
 
 
-            if (state == PlayerState.ATTACK) {
-                //todo show in UI that I am attacking
-                if (gameInfo.isPlayersTurn(playerId)) {
-                    // unlock UI to do attack move
-                    uiIsLocked = false;
-                    System.out.println(playerId + " I am attacking");
-                } else {
-                    uiIsLocked = true;
-                    System.out.println(playerId + " I am attacking and waiting for other player turn");
-                    waitForMyTurn();
-                    // wait for other player move
-                }
-            } else if (state == PlayerState.DEFENSE) {
-                //todo show in UI that I am defending
-                if (gameInfo.isPlayersTurn(playerId)) {
-                    // unlock UI to do defense move
-                    uiIsLocked = false;
-                    System.out.println(playerId + " I am defending");
-                } else {
-                    System.out.println(playerId + "  I am defending and waiting for other player turn");
-                    uiIsLocked = true;
-                    waitForMyTurn();
-                    // wait for other player move
-                }
-            } else if (state == PlayerState.WAITING) {
-                //todo show in UI that I am waiting
-                // ui is locked
-                System.out.println(playerId + " I am waiting for my turn");
-                waitForMyTurn();
+        if (state == PlayerState.ATTACK) {
+            //todo show in UI that I am attacking
+            if (gameInfo.isPlayersTurn(playerId)) {
+                // unlock UI to do attack move
+                uiIsLocked = false;
+                System.out.println(playerId + " I am attacking");
+            } else {
                 uiIsLocked = true;
+                System.out.println(playerId + " I am attacking and waiting for other player turn");
+                waitForMyTurn();
+                // wait for other player move
             }
+        } else if (state == PlayerState.DEFENSE) {
+            //todo show in UI that I am defending
+            if (gameInfo.isPlayersTurn(playerId)) {
+                // unlock UI to do defense move
+                uiIsLocked = false;
+                System.out.println(playerId + " I am defending");
+            } else {
+                System.out.println(playerId + "  I am defending and waiting for other player turn");
+                uiIsLocked = true;
+                waitForMyTurn();
+                // wait for other player move
+            }
+        } else if (state == PlayerState.WAITING) {
+            //todo show in UI that I am waiting
+            // ui is locked
+            System.out.println(playerId + " I am waiting for my turn");
+            waitForMyTurn();
+            uiIsLocked = true;
+        }
 
-            this.currentGameState = gameInfo;
-            this.cardsOnTable = gameInfo.getCardsOnTable();
+        this.currentGameState = gameInfo;
+        this.cardsOnTable = gameInfo.getCardsOnTable();
     }
 
 
@@ -751,7 +763,4 @@ public class Game extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
-
 }
-

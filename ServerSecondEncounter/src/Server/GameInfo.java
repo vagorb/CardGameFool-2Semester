@@ -12,6 +12,23 @@ import java.util.List;
 
 public class GameInfo {
 
+    private boolean deckIsEmpty = false;
+    private boolean endTheGame = false;
+    private String fool = "";
+
+    public boolean getDeckIsEmpty() {
+        return deckIsEmpty;
+    }
+    //
+    public void setEndTheGame() {
+        endTheGame = true;
+    }
+
+    public boolean getEndTheGame() {
+        return endTheGame;
+    }
+
+
     private int firstMessage;
     public int getFirstMessage() {
         return firstMessage;
@@ -36,16 +53,10 @@ public class GameInfo {
     //    private List<Card> cards = new ArrayList<>();
     private String currentPlayerTurn;
     private String attackingPlayer;
-//    public int attackPlayerHandSize;
-//    public int defensePlayerHandSize;
     private String defendingPlayer;
     // Cards on table that attacked and defender are putting
     private List<Card> cardsOnTable = new ArrayList<>();
     private int turnCounter;
-    private boolean deckIsEmpty = false;
-    private boolean endTheGame = false;
-    private String fool = "";
-
     private Pile pile;
 
     public GameInfo(Deck deck, List<String> players) {
@@ -119,25 +130,13 @@ public class GameInfo {
         }
     }
 
-    public boolean getDeckIsEmpty() {
-        return deckIsEmpty;
-    }
-//
-    public void setEndTheGame() {
-        endTheGame = true;
-    }
-
-    public boolean getEndTheGame() {
-        return endTheGame;
-    }
-
     public boolean isPlayersTurn(String player) {
         return currentPlayerTurn.equals(player);
     }
 
-    public List<Card> getCards() {
-        return cards;
-    }
+//    public List<Card> getCards() {
+//        return cards;
+//    }
 
     public void addPlayers(String player) {
         players.add(player);
@@ -164,20 +163,20 @@ public class GameInfo {
             deckIsEmpty = true;
             return null;
         }
-
     }
+
 
     public synchronized Card getTrump() {
         return trump;
     }
 
-    public Card getMoveCard() {
-        return cards.get(cards.size() - 1);
-    }
-
-    public synchronized void addMoveCard(Card card) {
-        cards.add(card);
-    }
+//    public Card getMoveCard() {
+//        return cards.get(cards.size() - 1);
+//    }
+//
+//    public synchronized void addMoveCard(Card card) {
+//        cards.add(card);
+//    }
 
     public boolean isGameStarted() {
         return gameStarted;
@@ -211,15 +210,16 @@ public class GameInfo {
         return turnCounter;
     }
 
-    public void increaseTurnCounter() {
-        this.turnCounter++;
-    }
-
     public void setFool(String fool) {
         this.fool = fool;
     }
 
     public String getFool() {
         return fool;
+    }
+
+
+    public void increaseTurnCounter() {
+        this.turnCounter++;
     }
 }

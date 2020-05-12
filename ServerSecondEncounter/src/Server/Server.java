@@ -58,12 +58,6 @@ public class Server {
             GameInfo game = playersToGames.get(player);
             List<Card> replenishedCards = new ArrayList<>();
             for (int i = cardsInHand; i < 6; i++) {
-                Card card = game.replenishCard();
-                if (card == null) {
-                    break;
-                } else {
-                    replenishedCards.add(card);
-                }
 //                replenishedCards.add(game.replenishCard());
                 Card card = game.replenishCard();
                 if (card == null) {
@@ -76,7 +70,24 @@ public class Server {
         }
     }
 
-    public static void playerPicksUpCards(String player) {
+    public static void endGame(String player) {
+        synchronized (games) {
+            GameInfo game = playersToGames.get(player);
+            // TODO finish this
+            game.getCardsOnTable().clear();
+            if (game.getPlayers().size() > 1) {
+                game.getPlayers().remove(player);
+            }
+            if (game.getPlayers().size() == 1) {
+                game.setEndTheGame();
+                game.setFool(game.getPlayers().get(0));
+            }
+        }
+    }
+
+
+
+            public static void playerPicksUpCards(String player) {
         synchronized (games) {
             GameInfo game = playersToGames.get(player);
             game.getCardsOnTable().clear();
@@ -104,25 +115,6 @@ public class Server {
             game.getCardsOnTable().clear();
             game.increaseTurnCounter();
             game.switchAttackerAndDefender();
-        }
-    }
-
-    public static void endGame(String player) {
-        synchronized (games) {
-            GameInfo game = playersToGames.get(player);
-            // TODO finish this
-            game.getCardsOnTable().clear();
-            if (game.getPlayers().size() > 1) {
-                game.getPlayers().remove(player);
-            }
-            if (game.getPlayers().size() == 1) {
-                game.setEndTheGame();
-                game.setFool(game.getPlayers().get(0));
-            }
-
-
-
-//            game
         }
     }
 
@@ -157,3 +149,4 @@ public class Server {
         Server.runServer();
     }
 }
+

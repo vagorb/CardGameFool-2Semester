@@ -45,7 +45,6 @@ public class Menu extends Application {
 
         openingStackpane.setAlignment(Pos.BOTTOM_CENTER);
         openingStackpane.getChildren().addAll(mainMenu);
-
         /// actions for buttons and key
         openingStackpane.setOnKeyPressed(button -> {
             if (button.getCode() == KeyCode.ESCAPE) {

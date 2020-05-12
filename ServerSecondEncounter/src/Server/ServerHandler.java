@@ -34,6 +34,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if (game.getPlayers().size() == 2) {
                 game.startGame();
             }
+        } else if (messageType.equalsIgnoreCase("endGame")) {
+            Server.endGame(player);
+//            Label label = new Label();
+//            label.setText("The game has finished");
+            ctx.writeAndFlush("The game has finished" + "\r\n");
         } else if (messageType.equalsIgnoreCase("AIGame")) {
 
             GameInfo game = Server.newWithAIGame(player);
@@ -49,9 +54,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 game.setFirstMessage(1);
                 ctx.writeAndFlush(gson.toJson(game) + "\r\n");
             } else if (state.equals("Update")) {
-
                 Optional<Card> card = game.getAi().getAiMove(game.getPlayerState(player),  game.getDeck(), game.getCardsOnTable(), game.getTrump(), game.getPile());
-                if (card.isPresent() && game.getCardsOnTable().size() < 12) {
+                if (game.getDeck().getDeck().size() == 0 && game.getAi().getHand().size() == 0) {
+                    game.setEndTheGame();
+                    ctx.writeAndFlush(gson.toJson(game) + "\r\n");
+                } else if (card.isPresent() && game.getCardsOnTable().size() < 12) {
                     game.addCardToTable(card.get());
                     game.playerMadeMove(game.getAi().getName());
                     game.getAi().getHand().remove(card.get());
@@ -90,13 +97,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 ctx.writeAndFlush(cardsToPickUp + "\r\n");
             }
         } else if (messageType.equalsIgnoreCase("throwCardsToPile")){
-            Server.cardsToPile(player);
-            ctx.writeAndFlush("\r\n");
-        } else if (messageType.equalsIgnoreCase("endGame")) {
-            Server.endGame(player);
-//            Label label = new Label();
-//            label.setText("The game has finished");
-            ctx.writeAndFlush("The game has finished" + "\r\n");
             GameInfo game = Server.playersToGames.get(player);
             if (game.getAi() == null) {
                 Server.cardsToPile(player);
