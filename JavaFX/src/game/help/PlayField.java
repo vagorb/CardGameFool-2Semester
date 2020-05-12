@@ -51,7 +51,7 @@ public class PlayField {
             for (Node child : hbox.getChildren())
                 if (child.getClass() == Button.class) {
                     ((Button) child).setMinSize(cardUnitSize * 2, cardUnitSize * 3);
-                    child.setStyle("-fx-background-image: null");
+                    child.setStyle("-fx-background-image: null;");
                 }
         }
         playFieldButtons = Map.of(1, first, 2, second, 3, third, 4, fourth, 5, fifth, 6, sixth);
@@ -78,7 +78,7 @@ public class PlayField {
             for (int i = 0; i < 2; i++) {
                 Button button = (Button) hBox.getChildrenUnmodifiable().get(i);
                 button.setDisable(false);
-                button.setStyle("-fx-background-image: null");
+                button.setStyle("-fx-background-image: null;");
                 button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
                 button.setVisible(!button.getId().equals("Defence"));
             }

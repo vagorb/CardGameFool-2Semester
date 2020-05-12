@@ -16,6 +16,11 @@
     -fx-font: bold 15pt 'Arial';
 }
 
+#EnterYourName.label {
+    -fx-text-fill: rgb(100, 255, 150);
+    -fx-font: bold 13pt 'Arial';
+}
+
 #MenuBar {
     -fx-background-color: rgba(33, 137, 80, 0.2);
 }

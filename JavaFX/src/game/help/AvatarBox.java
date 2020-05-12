@@ -61,8 +61,8 @@ public class AvatarBox {
             avatarImage.setFitWidth(elementSize * 0.6);
             avatarImage.setFitHeight(elementSize * 0.6);
             name.setWrapText(true);
-            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: lawngreen");
-            nameBox.setStyle("-fx-border-color: black");
+            name.setStyle("-fx-font: 15px Arial; -fx-text-fill: lawngreen;");
+            nameBox.setStyle("-fx-border-color: black;");
 
             cardBack.setAlignment(Pos.CENTER);
             avatarBox.setAlignment(Pos.TOP_CENTER);

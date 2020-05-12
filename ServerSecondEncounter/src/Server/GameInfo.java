@@ -11,12 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameInfo {
+
+    private int firstMessage;
     public int getFirstMessage() {
         return firstMessage;
     }
 
-    public void setROFl(int ROFl) {
-        this.firstMessage = ROFl;
+    public void setROFl(int firstMessage) {
+        this.firstMessage = firstMessage;
     }
 
     public Ai getAi() {
@@ -32,7 +34,7 @@ public class GameInfo {
     private Deck deck;
     private Card trump;
     private boolean gameStarted;
-    //private List<Card> cards = new ArrayList<>();
+    //    private List<Card> cards = new ArrayList<>();
     private String currentPlayerTurn;
     private String attackingPlayer;
     private String defendingPlayer;
@@ -41,9 +43,24 @@ public class GameInfo {
     private int turnCounter;
     private Pile pile;
 
+    public int getROFl() {
+        return ROFl;
+    }
+
+    public void setROFl(int ROFl) {
+        this.ROFl = ROFl;
+    }
+
+    public Ai getAi() {
+        return ai;
+    }
+
+    public Pile getPile() {
+        return pile;
+    }
 
     public GameInfo(Deck deck, List<String> players) {
-        this.firstMessage = 0;
+        this.ROFl = 0;
         this.deck = deck;
         this.players = players;
 
@@ -64,18 +81,23 @@ public class GameInfo {
         this.currentPlayerTurn = this.attackingPlayer;
     }
 
-
-
     public void addCardToTable(Card card) {
         cardsOnTable.add(card);
     }
 
     public void playerMadeMove(String player) {
-        if(attackingPlayer.equals(player)) {
+        if (attackingPlayer.equals(player)) {
             currentPlayerTurn = defendingPlayer;
         } else {
             currentPlayerTurn = attackingPlayer;
         }
+    }
+
+    public void startGame() {
+        attackingPlayer = players.get(0);
+        currentPlayerTurn = players.get(0);
+        defendingPlayer = players.get(1);
+        gameStarted = true;
     }
 
     public void startGameWithAI() {
@@ -90,12 +112,12 @@ public class GameInfo {
         gameStarted = true;
     }
 
-
-    public void startGame() {
-        attackingPlayer = players.get(0);
-        currentPlayerTurn = players.get(0);
-        defendingPlayer = players.get(1);
-        gameStarted = true;
+    public void replenishAIHand() {
+        for (int i = ai.getHand().size(); i < 6; i++) {
+            if (getDeck().getDeck().size() > 0) {
+                ai.getHand().add(replenishCard());
+            }
+        }
     }
 
     public PlayerState getPlayerState(String player) {
@@ -105,14 +127,6 @@ public class GameInfo {
             return PlayerState.DEFENSE;
         } else {
             return PlayerState.WAITING;
-        }
-    }
-
-    public void replenishAIHand() {
-        for (int i = ai.getHand().size(); i < 6; i++) {
-            if (getDeck().getDeck().size() > 0) {
-                ai.getHand().add(replenishCard());
-            }
         }
     }
 
@@ -149,6 +163,7 @@ public class GameInfo {
             return null;
         }
     }
+
 
     public synchronized Card getTrump() {
         return trump;

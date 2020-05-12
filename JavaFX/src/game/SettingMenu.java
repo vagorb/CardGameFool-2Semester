@@ -10,12 +10,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class SettingMenu {
     private final Stage window;
@@ -82,6 +83,18 @@ public class SettingMenu {
     protected StackPane game() {
         StackPane gameStackPane = new StackPane();
         Button playButton = buttons.play();
+        playButton.setText("START");
+        playButton.setDisable(true);
+
+        Label enterYourName = new Label("Enter your name:");
+        enterYourName.setId("EnterYourName");
+        enterYourName.getStylesheets().add(getClass().getResource("/css/misc.css").toString());
+        TextField nameField = new TextField();
+        VBox nameEnteringVbox = new VBox(5, enterYourName, nameField);
+        nameField.setAlignment(Pos.CENTER);
+        nameEnteringVbox.setAlignment(Pos.CENTER);
+        nameField.textProperty().addListener((observableValue) ->
+                playButton.setDisable(!Pattern.matches("\\D\\w{3,21}", nameField.getText())));
 
         Label humanCountLabel = new Label("Human Opponents Count:");
         humanCountLabel.setId("HumanCount");
@@ -93,31 +106,24 @@ public class SettingMenu {
         checkBoxAI.setId("AIcheck");
         checkBoxAI.getStylesheets().add(getClass().getResource("/css/misc.css").toString());
         /// slider for number of players
-        Slider sliderHuman = new Slider(0, 3, 1);
+        Slider sliderHuman = new Slider(0, 1, 1);
         sliderHuman.setBlockIncrement(1);
         sliderHuman.setMinorTickCount(0);
         sliderHuman.setMajorTickUnit(1);
         sliderHuman.setShowTickLabels(true);
         sliderHuman.setSnapToTicks(true);
         sliderHuman.getStylesheets().add(getClass().getResource("/css/slider.css").toString());
+
         sliderHuman.setOnMouseExited(mouseEvent -> {
             if (!checkBoxAI.isSelected() && sliderHuman.getValue() == 0) {
                 sliderHuman.setValue(1);
             }
             playerHumanCount = (int) sliderHuman.getValue();
         });
-        checkBoxAI.setOnAction(actionEvent -> {
-            if (checkBoxAI.isSelected()) {
-                playerAI = 1;
-                sliderHuman.setMax(1);
-            } else {
-                playerAI = 0;
-                sliderHuman.setMax(3);
-            }
-        });
+
 
         VBox playerChoosingMenu = new VBox(25);
-        playerChoosingMenu.getChildren().addAll(checkBoxAI, humanCountLabel, sliderHuman, playButton);
+        playerChoosingMenu.getChildren().addAll(nameEnteringVbox, checkBoxAI, humanCountLabel, sliderHuman, playButton);
         playerChoosingMenu.setMaxSize(resolution.width() / 4, resolution.height() / 2);
         playerChoosingMenu.setAlignment(Pos.CENTER);
         gameStackPane.getChildren().addAll(playerChoosingMenu);
@@ -128,6 +134,7 @@ public class SettingMenu {
             try {
                 window.hide();
                 window.getScene().setRoot(mainStackpane);
+                play.setPlayerName(nameField.getText());
                 play.setMenu(window.getScene());
                 play.setSettings(invertScroll, window.isFullScreen(), resolution);
                 resolution.change(window.getScene().getWidth(), window.getScene().getHeight());

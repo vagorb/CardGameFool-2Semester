@@ -1,15 +1,20 @@
 package Server;
 
+import Server.model.Message;
 import com.card.game.fool.cards.Card;
+import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.PlayerState;
+import com.card.game.fool.tables.Pile;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private Gson gson = new Gson();
@@ -39,7 +44,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         } else if (messageType.equalsIgnoreCase("getGameInfo")) {
             String state = message.get("State").getAsString();
             GameInfo game = Server.playersToGames.get(player);
-            if (game.getAi() == null || game.getFirstMessage() == 0) {
+            if (game.getAi() == null || game.getROFl() == 0) {
                 game.setROFl(1);
                 ctx.writeAndFlush(gson.toJson(game) + "\r\n");
             } else if (state.equals("Update")) {
@@ -94,9 +99,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 ctx.writeAndFlush("\r\n");
             }
         }
-
-
-
     }
 
 

@@ -104,7 +104,6 @@ public class Server {
 
 
     public static void runServer() throws InterruptedException {
-
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
