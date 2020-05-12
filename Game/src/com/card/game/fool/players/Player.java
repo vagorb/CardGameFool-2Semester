@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Player implements gamerInterface{
-    private final List<Card> cardsInHand = new LinkedList<>();
+    private List<Card> cardsInHand = new LinkedList<>();
     private final String name;
     private Integer score;
     private PlayerState playerState;
@@ -27,7 +27,12 @@ public class Player implements gamerInterface{
      * @return List of Cards of this player
      */
     public List<Card> getHand() {
-        return cardsInHand;
+        if (cardsInHand == null) {
+            cardsInHand = new LinkedList<>();
+            return cardsInHand;
+        } else {
+            return cardsInHand;
+        }
     }
 
     /**
@@ -74,3 +79,4 @@ public class Player implements gamerInterface{
         return this.playerState;
     }
 }
+

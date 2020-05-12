@@ -24,7 +24,7 @@ public class Table {
     Ai ai;
     List<Card> table = new ArrayList<>();
     private boolean currentDefenseState;
-    private String trumpSuit;
+    private Card trumpSuit;
 
     /**
      * Constructor
@@ -146,7 +146,7 @@ public class Table {
      * Getter
      * @return trump suit of the table we are playing on
      */
-    public String getTrumpSuit() {
+    public Card getTrumpSuit() {
         return trumpSuit;
     }
 
@@ -155,7 +155,7 @@ public class Table {
      * @param card that we use to set trump suit for the game
      */
     public void setTrumpSuit(Card card) {
-        this.trumpSuit = card.getSuit();
+        this.trumpSuit = card;
     }
 
 

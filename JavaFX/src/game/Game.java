@@ -118,6 +118,7 @@ public class Game extends Application {
     private GameInfo sendNewPlayerMsg() throws IOException {
         NewPlayer newPlayerMsg = new NewPlayer();
         newPlayerMsg.playerId = playerId;
+        newPlayerMsg.type = "newPlayer";
         String response = Client.sendMessage(newPlayerMsg);
         return gson.fromJson(response, GameInfo.class);
     }
@@ -125,7 +126,7 @@ public class Game extends Application {
     private GameInfo sendNewAIPlayerMsg() throws IOException {
         NewPlayerAI newPlayerMsg = new NewPlayerAI();
         newPlayerMsg.playerId = playerId;
-        newPlayerMsg.AIGame = "AIGame";
+        newPlayerMsg.type = "AIGame";
         newPlayerMsg.State = "Update";
         String response = Client.sendMessage(newPlayerMsg);
         return gson.fromJson(response, GameInfo.class);
@@ -571,8 +572,6 @@ public class Game extends Application {
             stateLabel.setStyle("-fx-background-image: url(icons/black/waiting.png); -fx-background-size: cover;" +
                     "-fx-background-color: rgba(139,69,19,0.5);");
         }
-        waitForMyTurnService.start();
-    }
 
         this.currentGameState = gameInfo;
         this.cardsOnTable = gameInfo.getCardsOnTable();
@@ -635,3 +634,4 @@ public class Game extends Application {
 
 
 }
+

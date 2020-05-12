@@ -44,13 +44,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         } else if (messageType.equalsIgnoreCase("getGameInfo")) {
             String state = message.get("State").getAsString();
             GameInfo game = Server.playersToGames.get(player);
-            if (game.getAi() == null || game.getROFl() == 0) {
-                game.setROFl(1);
+            if (game.getAi() == null || game.getFirstMessage() == 0) {
+                game.setFirstMessage(1);
                 ctx.writeAndFlush(gson.toJson(game) + "\r\n");
             } else if (state.equals("Update")) {
 
                 Optional<Card> card = game.getAi().getAiMove(game.getPlayerState(player),  game.getDeck(), game.getCardsOnTable(), game.getTrump(), game.getPile());
-                if (card.isPresent()) {
+                if (card.isPresent() && game.getCardsOnTable().size() < 12) {
                     game.addCardToTable(card.get());
                     game.playerMadeMove(game.getAi().getName());
                     game.getAi().getHand().remove(card.get());
@@ -59,6 +59,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     Server.AIPicksUpCards(player);
                     ctx.writeAndFlush(gson.toJson(game) + "\r\n");
                 } else if(game.getPlayerState(player).equals(PlayerState.DEFENSE)) {
+                    Server.cardsToPile(player);
+                    game.replenishAIHand();
+                    ctx.writeAndFlush(gson.toJson(game) + "\r\n");
+                } else if (game.getCardsOnTable().size() == 12 && game.getPlayerState(player).equals(PlayerState.ATTACK)) {
                     Server.cardsToPile(player);
                     game.replenishAIHand();
                     ctx.writeAndFlush(gson.toJson(game) + "\r\n");

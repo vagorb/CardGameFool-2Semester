@@ -17,7 +17,7 @@ public class GameInfo {
         return firstMessage;
     }
 
-    public void setROFl(int firstMessage) {
+    public void setFirstMessage(int firstMessage) {
         this.firstMessage = firstMessage;
     }
 
@@ -28,7 +28,6 @@ public class GameInfo {
     public Pile getPile() {
         return pile;
     }
-    private int firstMessage;
     private Ai ai = null;
     private List<String> players;
     private Deck deck;
@@ -43,24 +42,8 @@ public class GameInfo {
     private int turnCounter;
     private Pile pile;
 
-    public int getROFl() {
-        return ROFl;
-    }
-
-    public void setROFl(int ROFl) {
-        this.ROFl = ROFl;
-    }
-
-    public Ai getAi() {
-        return ai;
-    }
-
-    public Pile getPile() {
-        return pile;
-    }
-
     public GameInfo(Deck deck, List<String> players) {
-        this.ROFl = 0;
+        this.firstMessage = 0;
         this.deck = deck;
         this.players = players;
 
