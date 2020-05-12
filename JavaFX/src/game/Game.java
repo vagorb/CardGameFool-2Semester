@@ -117,6 +117,7 @@ public class Game extends Application {
     private GameInfo sendNewPlayerMsg() throws IOException {
         NewPlayer newPlayerMsg = new NewPlayer();
         newPlayerMsg.playerId = playerId;
+        newPlayerMsg.type = "newPlayer";
         String response = Client.sendMessage(newPlayerMsg);
         return gson.fromJson(response, GameInfo.class);
     }
@@ -124,15 +125,15 @@ public class Game extends Application {
     private GameInfo sendNewAIPlayerMsg() throws IOException {
         NewPlayerAI newPlayerMsg = new NewPlayerAI();
         newPlayerMsg.playerId = playerId;
-        newPlayerMsg.AIGame = "AIGame";
         newPlayerMsg.State = "Update";
+        newPlayerMsg.type = "AIGame";
         String response = Client.sendMessage(newPlayerMsg);
         return gson.fromJson(response, GameInfo.class);
     }
 
 
     public void start(Stage window) throws IOException {
-        GameInfo gameInfo = sendNewAIPlayerMsg();
+        GameInfo gameInfo = sendNewPlayerMsg();
         window.setResizable(false);
 
         Buttons buttons = new Buttons();

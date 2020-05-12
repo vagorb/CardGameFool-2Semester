@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameInfo {
-    public int getROFl() {
-        return ROFl;
+    public int getFirstMessage() {
+        return firstMessage;
     }
 
     public void setROFl(int ROFl) {
-        this.ROFl = ROFl;
+        this.firstMessage = ROFl;
     }
 
     public Ai getAi() {
@@ -26,7 +26,7 @@ public class GameInfo {
     public Pile getPile() {
         return pile;
     }
-    private int ROFl;
+    private int firstMessage;
     private Ai ai = null;
     private List<String> players;
     private Deck deck;
@@ -43,7 +43,7 @@ public class GameInfo {
 
 
     public GameInfo(Deck deck, List<String> players) {
-        this.ROFl = 0;
+        this.firstMessage = 0;
         this.deck = deck;
         this.players = players;
 

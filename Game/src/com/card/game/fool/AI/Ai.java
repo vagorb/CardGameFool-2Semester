@@ -180,6 +180,11 @@ public class Ai implements gamerInterface {
 
 
     public Optional<Card> getAiMove(PlayerState state, Deck deck, List<Card> table, Card trump, Pile pile) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (state.equals(PlayerState.ATTACK)) {
             if (deck.getDeck().size() < 1) {
                 return suitableDefMoveWhenDeckEnds(table, trump, pile);
