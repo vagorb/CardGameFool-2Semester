@@ -2,6 +2,7 @@ package game;
 
 import Client.Client;
 import Server.GameInfo;
+import Server.Server;
 import Server.model.NewPlayer;
 import Server.model.NewPlayerAI;
 import com.card.game.fool.AI.Ai;
@@ -46,11 +47,15 @@ import java.util.stream.Collectors;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
 
 public class Game extends Application {
-    private final Gson gson = new Gson();
+    private Gson gson = new Gson();
     private Scene menuScene;
     private boolean fullscreenStatus;
     private boolean invertScroll;
     private Resolution resolution;
+    private String playerId = UUID.randomUUID().toString();
+    private boolean goHere = false;
+    private Label winLabel = new Label();
+    private Label loseLabel = new Label();
     private final String playerId = UUID.randomUUID().toString();
     private final Label stateLabel = new Label();
 
@@ -96,7 +101,7 @@ public class Game extends Application {
         this.resolution = resolution;
     }
 
-    private void cardToButton(Card card, HBox destination, double cardWidth, double cardHeight) {
+    private Button cardToButton(Card card, HBox destination, double cardWidth, double cardHeight) {
         Button button = new Button();
         Buttons.oneSizeOnly(button, cardWidth, cardHeight);
         button.setId(card.getId());
@@ -104,37 +109,31 @@ public class Game extends Application {
         destination.getChildren().add(button);
         button.setOnAction(actionEvent -> {
             if (activeCard != null) {
-                activeCard.setStyle(activeCard.getStyle() + "-fx-opacity: 1; -fx-border-color: null;");
+                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
             }
             activeCard = button;
             activeCard.setId(button.getId());
-            activeCard.setStyle(button.getStyle() + "-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0);");
+            activeCard.setStyle(button.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
         });
-    }
-
-    public void setPlayerName(String name) {
+        return button;
     }
 
     private GameInfo sendNewPlayerMsg() throws IOException {
         NewPlayer newPlayerMsg = new NewPlayer();
         newPlayerMsg.playerId = playerId;
-        newPlayerMsg.type = "newPlayer";
         String response = Client.sendMessage(newPlayerMsg);
         return gson.fromJson(response, GameInfo.class);
     }
 
-    private GameInfo sendNewAIPlayerMsg() throws IOException {
-        NewPlayerAI newPlayerMsg = new NewPlayerAI();
-        newPlayerMsg.playerId = playerId;
-        newPlayerMsg.type = "AIGame";
-        newPlayerMsg.State = "Update";
-        String response = Client.sendMessage(newPlayerMsg);
-        return gson.fromJson(response, GameInfo.class);
-    }
 
-    @Override
     public void start(Stage window) throws IOException {
-        GameInfo gameInfo = sendNewAIPlayerMsg();
+        winLabel.setVisible(false);
+        winLabel.setTranslateX(100);
+        winLabel.setTranslateY(100);
+        loseLabel.setVisible(false);
+        loseLabel.setTranslateX(100);
+        loseLabel.setTranslateY(100);
+        GameInfo gameInfo = sendNewPlayerMsg();
         window.setResizable(false);
 
         Buttons buttons = new Buttons();
@@ -143,6 +142,7 @@ public class Game extends Application {
         HBox cardBoxBase = new HBox(20);
         cardBox = new HBox(2);
 
+
         cardBoxScroll = new ScrollPane(cardBox);
         cardBoxScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         cardBoxScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -150,7 +150,7 @@ public class Game extends Application {
 
         HBox menu = new HBox(25);
         menu.setVisible(false);
-        menu.setStyle("-fx-background-color: rgba(16,16,16,0.9);");
+        menu.setStyle("-fx-background-color: rgba(16,16,16,0.9)");
 
         window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         window.setTitle(playerId + "_Play.exe");
@@ -165,22 +165,20 @@ public class Game extends Application {
 
         cardBoxBase.setMaxSize(windowWidth, windowHeight / 12);
         cardBoxScroll.setMaxSize(windowWidth / 4, windowHeight / 12);
-        cardBoxBase.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
-        cardBoxScroll.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
 
         for (Button btn : Arrays.asList(throwCards, pickUpCards, skipTurn)) {
             Buttons.oneSizeOnly(btn, cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
             btn.setTranslateX(cardBoxBase.getMaxWidth() / 2.5);
         }
-        stateLabel.setMinSize(cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
-        stateLabel.setMaxSize(cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
-        stateLabel.setTranslateX(-cardBoxBase.getMaxWidth() / 2);
+
+        cardBoxBase.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
+        cardBoxScroll.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
 
         double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;
         double cardWidth = cardHeight / 90 * 59;
         double cardUnitSize = cardWidth * 0.9;
 
-        // avatars (name's max length 22)
+        // avatars (name's max length 22-36 symbols)
         AvatarBox avatars = new AvatarBox(humanCount + AIcount, windowWidth);
         if (computer != null) {
             avatars.makeAvatar(new Ai());
@@ -242,14 +240,13 @@ public class Game extends Application {
 
         /// When unable to beat, pick all cards
         pickUpCards.setOnAction(actionEvent -> {
-            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0) {
+            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0 && !cardsOnTable.isEmpty()) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("type", "pickCardsFromTable");
                 msg.addProperty("playerId", playerId);
                 try {
                     String response = Client.sendMessage(msg);
-                    List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>() {
-                    }.getType());
+                    List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
                     for (Card card : cards) {
                         cardToButton(card, cardBox, cardWidth, cardHeight);
                     }
@@ -257,14 +254,18 @@ public class Game extends Application {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                resetAttackDefButtons();
-                waitForMyTurn();
+                if (gameInfo.getDeckIsEmpty() && gameInfo.getEndTheGame()) {
+                    gameEnd();
+                } else {
+                    resetAttackDefButtons();
+                    waitForMyTurn();
+                }
             }
         });
 
         /// throw cards to pile
         throwCards.setOnAction(actionEvent -> {
-            if (currentGameState.getPlayerState(playerId) == PlayerState.ATTACK && cardsOnTable.size() % 2 == 0 && !cardsOnTable.isEmpty()) {
+            if(currentGameState.getPlayerState(playerId) == PlayerState.ATTACK && cardsOnTable.size() % 2 == 0 && !cardsOnTable.isEmpty()) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("type", "throwCardsToPile");
                 msg.addProperty("playerId", playerId);
@@ -276,7 +277,31 @@ public class Game extends Application {
                 resetAttackDefButtons();
                 cardsOnTable.clear();
                 replenishHand();
-                waitForMyTurn();
+                if (cardsInHand.size() == 0 || !currentGameState.getFool().equals("")) {
+                    gameEnd();
+                } else {
+                    waitForMyTurn();
+                }
+//                if (cardsInHand.size() == 0) {
+//
+//                }
+                // TODO this has to end the game
+//                if (cardsInHand.size() == 0) {
+//                    System.out.println("LOCK THIS ");
+////                    goHere = true;
+////                uiIsLocked = true;
+//                    // Make the game end
+////                stop();
+//                    Label label = new Label();
+//                    label.setText("Congratulations, you are the winner!");
+//                    cardBox.getChildren().add(label);
+//                    try {
+//                        Client.sendMessage(gameEnd());
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    uiIsLocked = true;
+//                }
             }
         });
 
@@ -308,7 +333,7 @@ public class Game extends Application {
         cardBoxBase.setId("cardBoxBase");
         cardBoxBase.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
 
-        cardBoxBase.getChildren().addAll(pickUpCards, throwCards, skipTurn, stateLabel);
+        cardBoxBase.getChildren().addAll(pickUpCards, throwCards, skipTurn);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
         gameStackPane.getChildren().addAll(avatarPage, gameFields, cardBoxBase, cardBoxScroll, menu);
@@ -324,31 +349,47 @@ public class Game extends Application {
         waitForMyTurnService = new WaitForMyTurnService();
         waitForMyTurnService.setPlayerId(playerId);
 
-        waitForMyTurnService.setOnSucceeded(workerStateEvent -> {
-            GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
-            updateAttackDefButtons(game);
-            doGameAction(game);
+        waitForMyTurnService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+                updateAttackDefButtons(game);
+                doGameAction(game);
+            }
         });
 
         // Service for waiting for game start
         WaitForGameStartService gameStartService = new WaitForGameStartService();
         gameStartService.setPlayerId(playerId);
 
-        gameStartService.setOnSucceeded(workerStateEvent -> {
-            System.out.println(playerId + "Starting game");
-            GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+        gameStartService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent workerStateEvent) {
+                System.out.println(playerId + "Starting game");
+                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
 
-            if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
-                showFirstAttackBtn();
+                if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
+                    showFirstAttackBtn();
+                }
+
+                doGameAction(game);
             }
-
-            doGameAction(game);
         });
 
 
         for (int i = 1; i <= 6; i++) {
             Button attack = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(0);
+            attack.setId("Attack");
+            attack.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+            attack.setVisible(false);
+
+            attack.setTranslateX(cardUnitSize);
+            attack.setTranslateY(cardUnitSize);
+
             Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
+            defence.setId("Defence");
+            defence.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+            defence.setVisible(false);
 
             if (i < 4) {
                 upperLayer.getChildren().addAll(playFieldButtons.get(i));
@@ -372,7 +413,7 @@ public class Game extends Application {
                         }
                         cardBox.getChildren().remove(activeCard);
                         attack.setDisable(true);
-                        attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1;");
+                        attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
                         waitForMyTurn();
                     } else {
                         // Check that I have cards with same value that are on table
@@ -386,7 +427,7 @@ public class Game extends Application {
                             }
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
-                            attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1;");
+                            attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
                             waitForMyTurn();
                         }
 
@@ -411,10 +452,10 @@ public class Game extends Application {
 
                             cardBox.getChildren().remove(activeCard);
                             defence.setDisable(true);
-                            defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1;");
+                            defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
                             waitForMyTurn();
                         } else {
-                            activeCard.setStyle(activeCard.getStyle() + " -fx-opacity: 1; -fx-border-color: null;");
+                            activeCard.setStyle(activeCard.getStyle() + " -fx-opacity: 1; -fx-border-color: null");
                         }
                         activeCard = null;
                     } else if (defenseCard.getSuit().equals(gameInfo.getTrump().getSuit())) {
@@ -426,7 +467,7 @@ public class Game extends Application {
                         }
                         cardBox.getChildren().remove(activeCard);
                         defence.setDisable(true);
-                        defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1;");
+                        defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
                         activeCard = null;
                         waitForMyTurn();
                     }
@@ -442,14 +483,14 @@ public class Game extends Application {
             for (int i = 0; i < 2; i++) {
                 Button button = (Button) attackDefPairs.getChildrenUnmodifiable().get(i);
                 button.setDisable(false);
-                button.setStyle("-fx-background-image: null;");
+                button.setStyle("-fx-background-image: null");
                 button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
                 button.setVisible(false);
             }
         }
     }
 
-    private void showFirstAttackBtn() {
+    private void showFirstAttackBtn(){
         HBox pair = playFieldButtons.get(1);
         pair.setVisible(true);
         Node attackBtn = pair.getChildrenUnmodifiable().get(0);
@@ -457,11 +498,16 @@ public class Game extends Application {
     }
 
     private void waitForMyTurn() {
-        uiIsLocked = true;
-        if (waitForMyTurnService.getState() == SUCCEEDED) {
-            waitForMyTurnService.reset();
+        if (currentGameState.getFool().equals(playerId)) {
+            gameEnd();
+        } else {
+            uiIsLocked = true;
+            if (waitForMyTurnService.getState() == SUCCEEDED) {
+                waitForMyTurnService.reset();
+            }
+            waitForMyTurnService.start();
         }
-        waitForMyTurnService.start();
+
     }
 
     private void updateAttackDefButtons(GameInfo game) {
@@ -470,7 +516,7 @@ public class Game extends Application {
         List<Card> cardsOnTable = game.getCardsOnTable();
         if (cardsOnTable.isEmpty()) {
             resetAttackDefButtons();
-            if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
+            if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
                 showFirstAttackBtn();
             }
         } else {
@@ -488,7 +534,7 @@ public class Game extends Application {
                 }
                 node.setDisable(true);
                 node.setVisible(true);
-                node.setStyle(card.getStyleForButton() + " -fx-opacity: 1;");
+                node.setStyle(card.getStyleForButton() + " -fx-opacity: 1");
 
                 cardCounter++;
                 if (cardCounter % 2 == 0) {
@@ -499,12 +545,19 @@ public class Game extends Application {
             attackCard = cardsOnTable.get(cardsOnTable.size() - 1);
 
 
-            if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
+            if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
-                attackDefPair.setVisible(true);
-                Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
-                attackBtn.setVisible(true);
-            } else if (game.getPlayerState(playerId) == PlayerState.DEFENSE) {
+                // TODO These if and else if do nothing, but placing 6 cards only works with them
+                if (pairCounter < 6) {
+                    attackDefPair.setVisible(true);
+                    Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
+                    attackBtn.setVisible(true);
+                } else if (pairCounter == 6) {
+                    attackDefPair.setVisible(true);
+                    Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
+                    attackBtn.setVisible(true);
+                }
+            } else if(game.getPlayerState(playerId) == PlayerState.DEFENSE) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
                 Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
                 Node defButton = attackDefPair.getChildrenUnmodifiable().get(1);
@@ -520,76 +573,111 @@ public class Game extends Application {
     }
 
 
+
     private void doGameAction(GameInfo gameInfo) {
         PlayerState state = gameInfo.getPlayerState(playerId);
+//        boolean gameIsGoing = true;
 
         // Set first gameInfo when game starts
         if (currentGameState == null) {
             currentGameState = gameInfo;
         }
+        if (gameInfo.getEndTheGame()) {
+            if (gameInfo.getFool().equals(playerId)) {
+                Label label = new Label();
+                label.setText("I AM THE FOOL!");
+                loseLabel.setVisible(true);
+
+//                System.out.println("I AM THE FOOL!");
+                gameEnd();
+                state = PlayerState.SKIP;
+                uiIsLocked = true;
+//                gameIsGoing = false;
+            } else {
+                Label label = new Label();
+                label.setText("I AM THE WINNER!");
+                winLabel.setVisible(true);
+//                System.out.println("I AM THE WINNER");
+//                gameIsGoing = false;
+                gameEnd();
+                state = PlayerState.SKIP;
+                uiIsLocked = true;
+            }
+        }
 
         if (currentGameState.getTurnCounter() != gameInfo.getTurnCounter()) {
             replenishHand();
-        }
-
-        if (state == PlayerState.ATTACK) {
-
-            //todo show in UI that I am attacking
-            if (gameInfo.isPlayersTurn(playerId)) {
-                // unlock UI to do attack move
-                uiIsLocked = false;
-                System.out.println(playerId + " I am attacking");
-            } else {
+            if (cardsInHand.size() == 0) {
+                Label label = new Label();
+                label.setText("I AM THE WINNER");
+                label.setTranslateX(100);
+                label.setTranslateY(100);
+                gameEnd();
                 uiIsLocked = true;
-                System.out.println(playerId + " I am attacking and waiting for other player turn");
-                waitForMyTurn();
-                // wait for other player move
             }
-            stateLabel.setStyle("-fx-background-image: url(icons/black/swords.png); -fx-background-size: cover;" +
-                    "-fx-background-color: rgba(139,69,19,0.5);");
-        } else if (state == PlayerState.DEFENSE) {
+//            if (cardsInHand.size() == 0) {
+            // TODO this has to end the game
 
-            //todo show in UI that I am defending
-            if (gameInfo.isPlayersTurn(playerId)) {
-                // unlock UI to do defense move
-                uiIsLocked = false;
-                System.out.println(playerId + " I am defending");
-            } else {
-                System.out.println(playerId + "  I am defending and waiting for other player turn");
+//                endTheGame();
+//                gameInfo.endTheGame();
+//                uiIsLocked = true;
+//
+//                System.out.println("LOCK THIS ");
+////                goHere = true;
+//
+////                uiIsLocked = true;
+//                // Make the game end
+////                stop();
+//                Label label = new Label();
+//                label.setText("Congratulations, you are the winner!");
+//                cardBox.getChildren().add(label);
+////                uiIsLocked = true;
+//                try {
+//                    Client.sendMessage(gameEnd());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                uiIsLocked = true;
+//                labe
+//                uiIsLocked = true;
+//            }
+        }
+
+
+            if (state == PlayerState.ATTACK) {
+                //todo show in UI that I am attacking
+                if (gameInfo.isPlayersTurn(playerId)) {
+                    // unlock UI to do attack move
+                    uiIsLocked = false;
+                    System.out.println(playerId + " I am attacking");
+                } else {
+                    uiIsLocked = true;
+                    System.out.println(playerId + " I am attacking and waiting for other player turn");
+                    waitForMyTurn();
+                    // wait for other player move
+                }
+            } else if (state == PlayerState.DEFENSE) {
+                //todo show in UI that I am defending
+                if (gameInfo.isPlayersTurn(playerId)) {
+                    // unlock UI to do defense move
+                    uiIsLocked = false;
+                    System.out.println(playerId + " I am defending");
+                } else {
+                    System.out.println(playerId + "  I am defending and waiting for other player turn");
+                    uiIsLocked = true;
+                    waitForMyTurn();
+                    // wait for other player move
+                }
+            } else if (state == PlayerState.WAITING) {
+                //todo show in UI that I am waiting
+                // ui is locked
+                System.out.println(playerId + " I am waiting for my turn");
+                waitForMyTurn();
                 uiIsLocked = true;
-                waitForMyTurn();
-                // wait for other player move
             }
-            stateLabel.setStyle("-fx-background-image: url(icons/black/shield.png); -fx-background-size: cover;" +
-                    "-fx-background-color: rgba(139,69,19,0.5);");
-        } else if (state == PlayerState.WAITING) {
 
-            //todo show in UI that I am waiting
-            // ui is locked
-            System.out.println(playerId + " I am waiting for my turn");
-            waitForMyTurn();
-            uiIsLocked = true;
-            stateLabel.setStyle("-fx-background-image: url(icons/black/waiting.png); -fx-background-size: cover;" +
-                    "-fx-background-color: rgba(139,69,19,0.5);");
-        }
-
-        this.currentGameState = gameInfo;
-        this.cardsOnTable = gameInfo.getCardsOnTable();
-        showPlayerState(gameInfo);
-    }
-
-    private void showPlayerState(GameInfo gameInfo) {
-        PlayerState state = gameInfo.getPlayerState(playerId);
-        String stateString;
-        if (state == PlayerState.ATTACK) {
-            stateString = "swords.png";
-        } else if (state == PlayerState.DEFENSE) {
-            stateString = "shield.png";
-        } else {
-            stateString = "waiting.png";
-        }
-        stateLabel.setStyle("-fx-background-image: url(icons/black/" + stateString + "); -fx-background-size: cover;" +
-                "-fx-background-color: rgba(139,69,19,0.5);");
+            this.currentGameState = gameInfo;
+            this.cardsOnTable = gameInfo.getCardsOnTable();
     }
 
 
@@ -601,18 +689,50 @@ public class Game extends Application {
         return obj;
     }
 
+    public void gameEnd() {
+        JsonObject endGame = new JsonObject();
+        endGame.addProperty("type", "endGame");
+        endGame.addProperty("playerId", playerId);
+        String response = null;
+        try {
+            response = Client.sendMessage(endGame);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        return endGame;
+//        if (response.equals("The game has finished" + "\r\n")) {
+//            if (cardsInHand.size() == 0 ) {
+//                System.out.println("winner");
+//            } else {
+//                System.out.println("loser");
+//            }
+//        }
+    }
+
+//    public void endTheGame() {
+//        Label label = new Label();
+//        if (cardsInHand.size() == 0) {
+////            Label label = new Label();
+//            label.setText("Congratulations, you are the winner!");
+//        } else {
+//            label.setText("Sadly, you have lost, good luck next time! ");
+//        }
+//        cardBox.getChildren().add(label);
+//        Server.playersToGames.remove(playerId);
+//    }
+
     public void replenishHand() {
         double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;
         double cardWidth = cardHeight / 90 * 59;
         JsonObject obj = gameCardsReplenish(cardBox.getChildren().size());
-        String response;
+        String response = null;
         try {
             response = Client.sendMessage(obj);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>() {
-        }.getType());
+        List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
+
         for (Card card : cards) {
             cardsInHand.add(card);
             cardToButton(card, cardBox, cardWidth, cardHeight);

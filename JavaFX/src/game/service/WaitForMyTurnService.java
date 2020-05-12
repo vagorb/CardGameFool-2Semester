@@ -26,7 +26,7 @@ public class WaitForMyTurnService extends Service<GameInfo> {
                 while (true) {
                     try {
                         GameInfo updatedInfo = getGameInfo();
-                        if (updatedInfo.isPlayersTurn(playerId)) {
+                        if (updatedInfo.isPlayersTurn(playerId) || updatedInfo.getEndTheGame()) {
                             System.out.println(playerId + " Opponent made his move");
                             return updatedInfo;
                         } else {
