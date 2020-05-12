@@ -38,6 +38,7 @@ public class Server {
                 // todo add players to other games
                 game = games.get(0);
                 game.addPlayers(player);
+                games.remove(game);
             }
             playersToGames.put(player, game);
             return game;
@@ -49,7 +50,12 @@ public class Server {
             GameInfo game = playersToGames.get(player);
             List<Card> replenishedCards = new ArrayList<>();
             for (int i = cardsInHand; i < 6; i++) {
-                replenishedCards.add(game.replenishCard());
+                Card card = game.replenishCard();
+                if (card == null) {
+                    break;
+                } else {
+                    replenishedCards.add(card);
+                }
             }
             return replenishedCards;
         }
@@ -74,22 +80,28 @@ public class Server {
         }
     }
 
+    public static void endGame(String player) {
+        synchronized (games) {
+            GameInfo game = playersToGames.get(player);
+            // TODO finish this
+            game.getCardsOnTable().clear();
+            if (game.getPlayers().size() > 1) {
+                game.getPlayers().remove(player);
+            }
+            if (game.getPlayers().size() == 1) {
+                game.setEndTheGame();
+                game.setFool(game.getPlayers().get(0));
+            }
+
+
+
+//            game
+        }
+    }
+
 
 
     public static void runServer() throws InterruptedException {
-        System.out.println("LONG LINE OF TEXT THAT WE CAN SEE ??????????");
-//        Server.makeTrump();
-//
-//        GameHlder = nbew GameHolder;
-//        gameholder.addPlayer(1)
-//        gameholder.addPlayer(2)
-//                Deck deck11 = new Deck()
-//        gameholder.addDeck(deck11)
-//         gameHolder.startGame();
-//        games.add(game1);
-//
-//        GameHlder game2
-
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {

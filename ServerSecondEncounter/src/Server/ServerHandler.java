@@ -9,6 +9,7 @@ import com.google.gson.JsonParser;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import javafx.scene.control.Label;
 
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +52,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         } else if (messageType.equalsIgnoreCase("throwCardsToPile")){
             Server.cardsToPile(player);
             ctx.writeAndFlush("\r\n");
+        } else if (messageType.equalsIgnoreCase("endGame")) {
+            Server.endGame(player);
+//            Label label = new Label();
+//            label.setText("The game has finished");
+            ctx.writeAndFlush("The game has finished" + "\r\n");
         }
 
 

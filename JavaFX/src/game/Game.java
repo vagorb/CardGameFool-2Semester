@@ -2,6 +2,7 @@ package game;
 
 import Client.Client;
 import Server.GameInfo;
+import Server.Server;
 import Server.model.NewPlayer;
 import com.card.game.fool.AI.Ai;
 import com.card.game.fool.cards.Card;
@@ -26,6 +27,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -53,6 +55,9 @@ public class Game extends Application {
     private boolean invertScroll;
     private Resolution resolution;
     private String playerId = UUID.randomUUID().toString();
+    private boolean goHere = false;
+    private Label winLabel = new Label();
+    private Label loseLabel = new Label();
 
     private boolean uiIsLocked = true;
     private Map<Integer, HBox> playFieldButtons;
@@ -122,6 +127,12 @@ public class Game extends Application {
 
 
     public void start(Stage window) throws IOException {
+        winLabel.setVisible(false);
+        winLabel.setTranslateX(100);
+        winLabel.setTranslateY(100);
+        loseLabel.setVisible(false);
+        loseLabel.setTranslateX(100);
+        loseLabel.setTranslateY(100);
         GameInfo gameInfo = sendNewPlayerMsg();
         window.setResizable(false);
 
@@ -229,7 +240,7 @@ public class Game extends Application {
 
         /// When unable to beat, pick all cards
         pickUpCards.setOnAction(actionEvent -> {
-            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0) {
+            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0 && !cardsOnTable.isEmpty()) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("type", "pickCardsFromTable");
                 msg.addProperty("playerId", playerId);
@@ -243,8 +254,12 @@ public class Game extends Application {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                resetAttackDefButtons();
-                waitForMyTurn();
+                if (gameInfo.getDeckIsEmpty() && gameInfo.getEndTheGame()) {
+                    gameEnd();
+                } else {
+                    resetAttackDefButtons();
+                    waitForMyTurn();
+                }
             }
         });
 
@@ -262,7 +277,31 @@ public class Game extends Application {
                 resetAttackDefButtons();
                 cardsOnTable.clear();
                 replenishHand();
-                waitForMyTurn();
+                if (cardsInHand.size() == 0 || !currentGameState.getFool().equals("")) {
+                    gameEnd();
+                } else {
+                    waitForMyTurn();
+                }
+//                if (cardsInHand.size() == 0) {
+//
+//                }
+                // TODO this has to end the game
+//                if (cardsInHand.size() == 0) {
+//                    System.out.println("LOCK THIS ");
+////                    goHere = true;
+////                uiIsLocked = true;
+//                    // Make the game end
+////                stop();
+//                    Label label = new Label();
+//                    label.setText("Congratulations, you are the winner!");
+//                    cardBox.getChildren().add(label);
+//                    try {
+//                        Client.sendMessage(gameEnd());
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    uiIsLocked = true;
+//                }
             }
         });
 
@@ -459,11 +498,16 @@ public class Game extends Application {
     }
 
     private void waitForMyTurn() {
-        uiIsLocked = true;
-        if (waitForMyTurnService.getState() == SUCCEEDED) {
-            waitForMyTurnService.reset();
+        if (currentGameState.getFool().equals(playerId)) {
+            gameEnd();
+        } else {
+            uiIsLocked = true;
+            if (waitForMyTurnService.getState() == SUCCEEDED) {
+                waitForMyTurnService.reset();
+            }
+            waitForMyTurnService.start();
         }
-        waitForMyTurnService.start();
+
     }
 
     private void updateAttackDefButtons(GameInfo game) {
@@ -503,9 +547,16 @@ public class Game extends Application {
 
             if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
-                attackDefPair.setVisible(true);
-                Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
-                attackBtn.setVisible(true);
+                // TODO These if and else if do nothing, but placing 6 cards only works with them
+                if (pairCounter < 6) {
+                    attackDefPair.setVisible(true);
+                    Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
+                    attackBtn.setVisible(true);
+                } else if (pairCounter == 6) {
+                    attackDefPair.setVisible(true);
+                    Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
+                    attackBtn.setVisible(true);
+                }
             } else if(game.getPlayerState(playerId) == PlayerState.DEFENSE) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
                 Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
@@ -525,51 +576,108 @@ public class Game extends Application {
 
     private void doGameAction(GameInfo gameInfo) {
         PlayerState state = gameInfo.getPlayerState(playerId);
+//        boolean gameIsGoing = true;
 
         // Set first gameInfo when game starts
         if (currentGameState == null) {
             currentGameState = gameInfo;
         }
+        if (gameInfo.getEndTheGame()) {
+            if (gameInfo.getFool().equals(playerId)) {
+                Label label = new Label();
+                label.setText("I AM THE FOOL!");
+                loseLabel.setVisible(true);
+
+//                System.out.println("I AM THE FOOL!");
+                gameEnd();
+                state = PlayerState.SKIP;
+                uiIsLocked = true;
+//                gameIsGoing = false;
+            } else {
+                Label label = new Label();
+                label.setText("I AM THE WINNER!");
+                winLabel.setVisible(true);
+//                System.out.println("I AM THE WINNER");
+//                gameIsGoing = false;
+                gameEnd();
+                state = PlayerState.SKIP;
+                uiIsLocked = true;
+            }
+        }
 
         if (currentGameState.getTurnCounter() != gameInfo.getTurnCounter()) {
             replenishHand();
+            if (cardsInHand.size() == 0) {
+                Label label = new Label();
+                label.setText("I AM THE WINNER");
+                label.setTranslateX(100);
+                label.setTranslateY(100);
+                gameEnd();
+                uiIsLocked = true;
+            }
+//            if (cardsInHand.size() == 0) {
+            // TODO this has to end the game
+
+//                endTheGame();
+//                gameInfo.endTheGame();
+//                uiIsLocked = true;
+//
+//                System.out.println("LOCK THIS ");
+////                goHere = true;
+//
+////                uiIsLocked = true;
+//                // Make the game end
+////                stop();
+//                Label label = new Label();
+//                label.setText("Congratulations, you are the winner!");
+//                cardBox.getChildren().add(label);
+////                uiIsLocked = true;
+//                try {
+//                    Client.sendMessage(gameEnd());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                uiIsLocked = true;
+//                labe
+//                uiIsLocked = true;
+//            }
         }
 
-        if (state == PlayerState.ATTACK) {
-            //todo show in UI that I am attacking
-            if (gameInfo.isPlayersTurn(playerId)) {
-                // unlock UI to do attack move
-                uiIsLocked = false;
-                System.out.println(playerId + " I am attacking");
-            } else {
-                uiIsLocked = true;
-                System.out.println(playerId + " I am attacking and waiting for other player turn");
-                waitForMyTurn();
-                // wait for other player move
-            }
-        } else if (state == PlayerState.DEFENSE) {
-            //todo show in UI that I am defending
-            if (gameInfo.isPlayersTurn(playerId)) {
-                // unlock UI to do defense move
-                uiIsLocked = false;
-                System.out.println(playerId + " I am defending");
-            } else {
-                System.out.println(playerId + "  I am defending and waiting for other player turn");
-                uiIsLocked = true;
-                waitForMyTurn();
-                // wait for other player move
-            }
-        } else if (state == PlayerState.WAITING) {
-            //todo show in UI that I am waiting
-            // ui is locked
-            System.out.println(playerId + " I am waiting for my turn");
-            waitForMyTurn();
-            uiIsLocked = true;
-        }
 
-        this.currentGameState = gameInfo;
-        this.cardsOnTable = gameInfo.getCardsOnTable();
+            if (state == PlayerState.ATTACK) {
+                //todo show in UI that I am attacking
+                if (gameInfo.isPlayersTurn(playerId)) {
+                    // unlock UI to do attack move
+                    uiIsLocked = false;
+                    System.out.println(playerId + " I am attacking");
+                } else {
+                    uiIsLocked = true;
+                    System.out.println(playerId + " I am attacking and waiting for other player turn");
+                    waitForMyTurn();
+                    // wait for other player move
+                }
+            } else if (state == PlayerState.DEFENSE) {
+                //todo show in UI that I am defending
+                if (gameInfo.isPlayersTurn(playerId)) {
+                    // unlock UI to do defense move
+                    uiIsLocked = false;
+                    System.out.println(playerId + " I am defending");
+                } else {
+                    System.out.println(playerId + "  I am defending and waiting for other player turn");
+                    uiIsLocked = true;
+                    waitForMyTurn();
+                    // wait for other player move
+                }
+            } else if (state == PlayerState.WAITING) {
+                //todo show in UI that I am waiting
+                // ui is locked
+                System.out.println(playerId + " I am waiting for my turn");
+                waitForMyTurn();
+                uiIsLocked = true;
+            }
 
+            this.currentGameState = gameInfo;
+            this.cardsOnTable = gameInfo.getCardsOnTable();
     }
 
 
@@ -580,6 +688,38 @@ public class Game extends Application {
         obj.addProperty("cardsInHand", cardsInHand);
         return obj;
     }
+
+    public void gameEnd() {
+        JsonObject endGame = new JsonObject();
+        endGame.addProperty("type", "endGame");
+        endGame.addProperty("playerId", playerId);
+        String response = null;
+        try {
+            response = Client.sendMessage(endGame);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        return endGame;
+//        if (response.equals("The game has finished" + "\r\n")) {
+//            if (cardsInHand.size() == 0 ) {
+//                System.out.println("winner");
+//            } else {
+//                System.out.println("loser");
+//            }
+//        }
+    }
+
+//    public void endTheGame() {
+//        Label label = new Label();
+//        if (cardsInHand.size() == 0) {
+////            Label label = new Label();
+//            label.setText("Congratulations, you are the winner!");
+//        } else {
+//            label.setText("Sadly, you have lost, good luck next time! ");
+//        }
+//        cardBox.getChildren().add(label);
+//        Server.playersToGames.remove(playerId);
+//    }
 
     public void replenishHand() {
         double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;
@@ -592,6 +732,7 @@ public class Game extends Application {
             throw new RuntimeException(e);
         }
         List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
+
         for (Card card : cards) {
             cardsInHand.add(card);
             cardToButton(card, cardBox, cardWidth, cardHeight);

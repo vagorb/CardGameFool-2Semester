@@ -20,6 +20,8 @@ public class AvatarBox {
     private final VBox leftVerticalPlace = new VBox();
     private final VBox rightVerticalPlace = new VBox();
     private final List<VBox> avatarList = new ArrayList<>();
+    public Label cardsRemaining;
+
 
     public AvatarBox(int playerCount, double screenWidth) {
         this.playerCount = playerCount;
@@ -45,7 +47,9 @@ public class AvatarBox {
             Label name = new Label(gamer.getName());
             HBox nameBox = new HBox(name);
             nameBox.setAlignment(Pos.CENTER);
-            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().size()));
+            // TODO This line of code below gives us the amount of cards the opponent has ( Should have )
+//            Label cardsRemaining = new Label(String.valueOf(gamer.getHand().size()));
+            cardsRemaining = new Label(String.valueOf(6));
             HBox cardBack = new HBox(cardsRemaining);
 //            ImageView avatarImage = new ImageView(image);
             ImageView avatarImage = new ImageView(String.valueOf(getClass().getResource("/images/avatar.png")));

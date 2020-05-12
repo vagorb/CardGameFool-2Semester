@@ -17,10 +17,15 @@ public class GameInfo {
     private List<Card> cards = new ArrayList<>();
     private String currentPlayerTurn;
     private String attackingPlayer;
+//    public int attackPlayerHandSize;
+//    public int defensePlayerHandSize;
     private String defendingPlayer;
     // Cards on table that attacked and defender are putting
     private List<Card> cardsOnTable = new ArrayList<>();
     private int turnCounter;
+    private boolean deckIsEmpty = false;
+    private boolean endTheGame = false;
+    private String fool = "";
 
 
     public GameInfo(Deck deck, List<String> players) {
@@ -71,6 +76,18 @@ public class GameInfo {
         }
     }
 
+    public boolean getDeckIsEmpty() {
+        return deckIsEmpty;
+    }
+//
+    public void setEndTheGame() {
+        endTheGame = true;
+    }
+
+    public boolean getEndTheGame() {
+        return endTheGame;
+    }
+
     public boolean isPlayersTurn(String player) {
         return currentPlayerTurn.equals(player);
     }
@@ -96,9 +113,15 @@ public class GameInfo {
     }
 
     public Card replenishCard() {
-        Card card = deck.getDeck().get(0);
-        deck.getDeck().remove(card);
-        return card;
+        if (deck.getDeck().size() > 0) {
+            Card card = deck.getDeck().get(0);
+            deck.getDeck().remove(card);
+            return card;
+        } else {
+            deckIsEmpty = true;
+            return null;
+        }
+
     }
 
     public synchronized Card getTrump() {
@@ -147,5 +170,13 @@ public class GameInfo {
 
     public void increaseTurnCounter() {
         this.turnCounter++;
+    }
+
+    public void setFool(String fool) {
+        this.fool = fool;
+    }
+
+    public String getFool() {
+        return fool;
     }
 }
