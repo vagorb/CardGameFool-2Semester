@@ -23,7 +23,7 @@ public class GameController {
     private Player player2;
     private Scanner input;
 
-    public GameController() {}
+
     /**
      * Getter
      * @return table object
@@ -58,12 +58,12 @@ public class GameController {
         input = new Scanner(System.in);
         System.out.println("Please enter your name : ");
         String s = input.next();
-        Player player1 = new Player();
+        Player player1 = new Player(s, 0);
         this.player1 = player1;
 
         System.out.println("Please enter your name : ");
         String x = input.next();
-        Player player2 = new Player();
+        Player player2 = new Player(x, 0);
         this.player2 = player2;
 
         Table table = new Table(player1, player2);
