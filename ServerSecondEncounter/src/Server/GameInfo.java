@@ -11,27 +11,29 @@ import java.util.List;
 
 public class GameInfo {
 
-    private int ROFl;
-    private Ai ai = null;
-    private List<String> players;
-    private Deck deck;
-    private Card trump;
-    private boolean gameStarted;
-    //    private List<Card> cards = new ArrayList<>();
-    private String currentPlayerTurn;
-    private String attackingPlayer;
-    private String defendingPlayer;
-    // Cards on table that attacked and defender are putting
-    private List<Card> cardsOnTable = new ArrayList<>();
-    private int turnCounter;
-    private Pile pile;
+    private boolean deckIsEmpty = false;
+    private boolean endTheGame = false;
+    private String fool = "";
 
-    public int getROFl() {
-        return ROFl;
+    public boolean getDeckIsEmpty() {
+        return deckIsEmpty;
+    }
+    //
+    public void setEndTheGame() {
+        endTheGame = true;
     }
 
-    public void setROFl(int ROFl) {
-        this.ROFl = ROFl;
+    public boolean getEndTheGame() {
+        return endTheGame;
+    }
+
+    private int firstMessage;
+    public int getFirstMessage() {
+        return firstMessage;
+    }
+
+    public void setFirstMessage(int firstMessage) {
+        this.firstMessage = firstMessage;
     }
 
     public Ai getAi() {
@@ -42,8 +44,22 @@ public class GameInfo {
         return pile;
     }
 
+    private Ai ai = null;
+    private final List<String> players;
+    private final Deck deck;
+    private final Card trump;
+    private boolean gameStarted;
+    //    private List<Card> cards = new ArrayList<>();
+    private String currentPlayerTurn;
+    private String attackingPlayer;
+    private String defendingPlayer;
+    // Cards on table that attacked and defender are putting
+    private final List<Card> cardsOnTable = new ArrayList<>();
+    private int turnCounter;
+    private final Pile pile;
+
     public GameInfo(Deck deck, List<String> players) {
-        this.ROFl = 0;
+        this.firstMessage = 0;
         this.deck = deck;
         this.players = players;
 
@@ -142,10 +158,10 @@ public class GameInfo {
             deck.getDeck().remove(card);
             return card;
         } else {
+            deckIsEmpty = true;
             return null;
         }
     }
-
 
     public synchronized Card getTrump() {
         return trump;
@@ -189,6 +205,14 @@ public class GameInfo {
 
     public int getTurnCounter() {
         return turnCounter;
+    }
+
+    public void setFool(String fool) {
+        this.fool = fool;
+    }
+
+    public String getFool() {
+        return fool;
     }
 
     public void increaseTurnCounter() {

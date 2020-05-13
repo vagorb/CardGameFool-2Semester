@@ -7,20 +7,8 @@ import java.util.List;
 
 public class Player implements gamerInterface{
     private final List<Card> cardsInHand = new LinkedList<>();
-    private final String name;
-    private Integer score;
+    private String name = "player";
     private PlayerState playerState;
-
-    /**
-     * com.card.game.fool.players.Player class constructor
-     * @param name of the player ( String )
-     * @param score of the player ( Integer )
-     */
-    public Player(String name, Integer score) { //PlayerState playerState) {
-        //this.playerState = playerState;
-        this.name = name;
-        this.score = score;
-    }
 
     /**
      * Getter
@@ -39,23 +27,11 @@ public class Player implements gamerInterface{
     }
 
     /**
-     * Getter
-     * @return score of this player
+     * Setter
+     * @param name real name of player
      */
-    public Integer getScore() {
-        return score;
-    }
-
-    /**
-     * Method that adds score to the player
-     * @param score to add
-     */
-    public void addScore(int score) {
-        if (this.score + score > 0) {
-            this.score += score;
-        } else {
-            this.score = 0;
-        }
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
