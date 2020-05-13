@@ -67,7 +67,7 @@ class AiTest {
         cardPile4 = new Card("Clubs", 6, false);
         cardPile5 = new Card("Clubs", 9, false);
         cardPile6 = new Card("Clubs", 10, false);
-        player1 = new Player("pl", 0);
+        player1 = new Player();
         ai = new Ai();
         ai.getHand().add(card3);
         ai.getHand().add(card2);

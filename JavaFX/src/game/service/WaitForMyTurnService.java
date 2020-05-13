@@ -3,6 +3,7 @@ package game.service;
 import Server.GameInfo;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import game.Game;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import Client.Client;

@@ -30,6 +30,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 game.startGame();
             }
         } else if (messageType.equalsIgnoreCase("endGame")) {
+            int size = message.get("Size").getAsInt();
+            if (size == 0) {
+                GameInfo game = Server.playersToGames.get(player);
+                for (String players : game.getPlayers()) {
+                    if (!players.equals(player)) {
+                        game.setFool(players);
+                        game.setEndTheGame();
+                    }
+                }
+            }
             Server.endGame(player);
 //            Label label = new Label();
 //            label.setText("The game has finished");
@@ -51,6 +61,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 Optional<Card> card = game.getAi().getAiMove(game.getPlayerState(player),  game.getDeck(), game.getCardsOnTable(), game.getTrump(), game.getPile());
                 if (game.getDeck().getDeck().size() == 0 && game.getAi().getHand().size() == 0) {
                     game.setEndTheGame();
+                    game.setFool(player);
                     ctx.writeAndFlush(gson.toJson(game) + "\r\n");
                 } else if (card.isPresent() && game.getCardsOnTable().size() < 12) {
                     game.addCardToTable(card.get());
