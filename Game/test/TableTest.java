@@ -13,10 +13,10 @@ public class TableTest {
 
     @Test
     public void TestTableCreatedWithDifferentConstructors() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
-        Player player3 = new Player("Hochy", 0);
-        Player player4 = new Player("Kushat", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
+        Player player3 = new Player();
+        Player player4 = new Player();
         Table tableForTwo = new Table(player1, player2);
         assertEquals(2, tableForTwo.getPlayers().size());
         System.out.println(tableForTwo.getGameDeck());
@@ -31,8 +31,8 @@ public class TableTest {
 
     @Test
     public void TestTableGetters() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         System.out.println(tableForTwo.getPlayers());
         assertEquals(2, tableForTwo.getPlayers().size());
@@ -47,8 +47,8 @@ public class TableTest {
 
     @Test
     public void TestAddToPile() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         tableForTwo.getPile().addDiscardedCards(card);
@@ -61,8 +61,8 @@ public class TableTest {
     // Need to make it work
     @Test
     public void getTable() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         tableForTwo.addToPile(card);
@@ -75,8 +75,8 @@ public class TableTest {
 
     @Test
     public void compareCards() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
     }
 }
