@@ -70,6 +70,7 @@ public class AvatarBox {
             cardBack.setAlignment(Pos.CENTER);
             avatarBox.setAlignment(Pos.TOP_CENTER);
             avatarList.add(avatarBox);
+            
         }
     }
 

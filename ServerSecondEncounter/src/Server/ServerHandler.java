@@ -42,7 +42,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
             } else {
-                ctx.writeAndFlush("game is still player" + "\r\n");
+                ctx.writeAndFlush("Game is still played" + "\r\n");
             }
 //            Label label = new Label();
 //            label.setText("The game has finished");
