@@ -47,9 +47,6 @@ public class Resolution {
         });
     }
 
-    public boolean isCustomResolution() {
-        return customResolution.isSelected();
-    }
     public void dragWindow() {
         window.getScene().setOnMousePressed(event -> {
             xOffset = event.getSceneX();

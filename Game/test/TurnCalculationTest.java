@@ -12,8 +12,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestAddToPile() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         Card card2 = new Card("Hearts", 12, false);
@@ -28,8 +28,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestAddToPlayerHand() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         Card card2 = new Card("Hearts", 6, false);
@@ -46,8 +46,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestPutAttackCard() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         TurnCalculation turnCalculation = new TurnCalculation(tableForTwo);
@@ -57,8 +57,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestPutDefenseCard() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         Card card = new Card("Hearts", 9, false);
         Card card2 = new Card("Hearts", 12, false);
@@ -71,8 +71,8 @@ public class TurnCalculationTest {
 
     @Test
     public void TestAttackAndDefenseTurns() {
-        Player player1 = new Player("Ja", 0);
-        Player player2 = new Player("Ochen", 0);
+        Player player1 = new Player();
+        Player player2 = new Player();
         Table tableForTwo = new Table(player1, player2);
         TurnCalculation turnCalculation = new TurnCalculation(tableForTwo);
         Card card1 = new Card("Hearts", 6, false);

@@ -5,7 +5,6 @@ import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.PlayerState;
 import com.card.game.fool.tables.Pile;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ public class GameInfo {
         return endTheGame;
     }
 
-
     private int firstMessage;
     public int getFirstMessage() {
         return firstMessage;
@@ -45,38 +43,38 @@ public class GameInfo {
     public Pile getPile() {
         return pile;
     }
+
     private Ai ai = null;
-    private List<String> players;
-    private Deck deck;
-    private Card trump;
+    private final List<String> players;
+    private final Deck deck;
+    private final Card trump;
     private boolean gameStarted;
     //    private List<Card> cards = new ArrayList<>();
     private String currentPlayerTurn;
     private String attackingPlayer;
     private String defendingPlayer;
     // Cards on table that attacked and defender are putting
-    private List<Card> cardsOnTable = new ArrayList<>();
+    private final List<Card> cardsOnTable = new ArrayList<>();
     private int turnCounter;
-    private Pile pile;
+    private final Pile pile;
 
     public GameInfo(Deck deck, List<String> players) {
         this.firstMessage = 0;
         this.deck = deck;
         this.players = players;
 
+        deck.shuffleDeck();
         this.trump = getDeck().getDeck().get(players.size() * 6);
         trump.setTrump(true);
         deck.removeCard(trump);
         deck.getDeck().add(trump);
         deck.makeCardsTrump(trump.getSuit());
         this.pile = new Pile(new ArrayList<>());
-        deck.shuffleDeck();
     }
 
     public void switchAttackerAndDefender() {
         String prevAtt = this.attackingPlayer;
-        String prevDef = this.defendingPlayer;
-        this.attackingPlayer = prevDef;
+        this.attackingPlayer = this.defendingPlayer;
         this.defendingPlayer = prevAtt;
         this.currentPlayerTurn = this.attackingPlayer;
     }
@@ -165,7 +163,6 @@ public class GameInfo {
         }
     }
 
-
     public synchronized Card getTrump() {
         return trump;
     }
@@ -217,7 +214,6 @@ public class GameInfo {
     public String getFool() {
         return fool;
     }
-
 
     public void increaseTurnCounter() {
         this.turnCounter++;
