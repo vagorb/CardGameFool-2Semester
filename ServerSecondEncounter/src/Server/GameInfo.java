@@ -63,13 +63,13 @@ public class GameInfo {
         this.deck = deck;
         this.players = players;
 
+        deck.shuffleDeck();
         this.trump = getDeck().getDeck().get(players.size() * 6);
         trump.setTrump(true);
         deck.removeCard(trump);
         deck.getDeck().add(trump);
         deck.makeCardsTrump(trump.getSuit());
         this.pile = new Pile(new ArrayList<>());
-        deck.shuffleDeck();
     }
 
     public void switchAttackerAndDefender() {
