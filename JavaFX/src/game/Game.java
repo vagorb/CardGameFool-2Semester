@@ -241,12 +241,61 @@ public class Game extends Application {
             cardBoxScroll.setScaleY(1);
         });
 
-//        skipTurn.setOnAction(actionEvent -> {
+        skipTurn.setOnAction(actionEvent -> {
+            if (cardsInHand.size() == 0) {
+            JsonObject endGame = new JsonObject();
+            endGame.addProperty("type", "endGame");
+            endGame.addProperty("Size", cardsInHand.size());
+            endGame.addProperty("playerId", playerId);
+            String response = null;
+            try {
+                response = Client.sendMessage(endGame);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (response.contains("The game has finished")) {
+                if (cardsInHand.size() == 0) {
+                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
+                            "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
+                    endGameScreen.setVisible(true);
+                    //gameEnd();
+                    //state = PlayerState.SKIP;
+                    uiIsLocked = true;
+                } else {
+                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
+                            "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
+                    endGameScreen.setVisible(true);
+
+                    //gameEnd();
+                    //state = PlayerState.SKIP;
+                    uiIsLocked = true;
+                }
+            }
+            }
 //            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
 //            thePlayer.setPlayerState(PlayerState.SKIP);   // need to send that info to Server as well
 //            cardBoxScroll.setDisable(true);
 //            }
-//        });
+//            if (currentGameState.getEndTheGame()) {
+//                if (cardsInHand.size() == 0) {
+//                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
+//                            "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
+//                    endGameScreen.setVisible(true);
+//                    //gameEnd();
+//                    //state = PlayerState.SKIP;
+//                    uiIsLocked = true;
+//                } else {
+//                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
+//                            "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
+//                    endGameScreen.setVisible(true);
+//
+//                    //gameEnd();
+//                    //state = PlayerState.SKIP;
+//                    uiIsLocked = true;
+//                }
+//            }
+
+        });
 
         /// When unable to beat, pick all cards
         pickUpCards.setOnAction(actionEvent -> {
