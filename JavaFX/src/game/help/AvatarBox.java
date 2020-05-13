@@ -71,7 +71,7 @@ public class AvatarBox {
             avatarBox.setAlignment(Pos.TOP_CENTER);
             avatarList.add(avatarBox);
 
-            
+
         }
     }
 
