@@ -2,7 +2,6 @@ package game;
 
 import Client.Client;
 import Server.GameInfo;
-import Server.Server;
 import Server.model.NewPlayer;
 import Server.model.NewPlayerAI;
 import com.card.game.fool.AI.Ai;
@@ -22,8 +21,6 @@ import game.service.WaitForMyTurnService;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -40,7 +37,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -507,7 +503,7 @@ public class Game extends Application {
     }
 
     private void waitForMyTurn() {
-        if (currentGameState.getFool().equals(playerId)) {
+        if (currentGameState.getFool().equals(playerId) || (currentGameState.getEndTheGame() && cardsInHand.size() == 0)) {
             gameEnd();
         } else {
             uiIsLocked = true;
@@ -704,15 +700,35 @@ public class Game extends Application {
     public void gameEnd() {
         JsonObject endGame = new JsonObject();
         endGame.addProperty("type", "endGame");
+        endGame.addProperty("Size", cardsInHand.size());
         endGame.addProperty("playerId", playerId);
         String response;
         try {
             response = Client.sendMessage(endGame);
+//            String resp = response.toString();
+            if (response.contains("The game has finished")) {
+                if (cardsInHand.size() == 0 ) {
+                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
+                            "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
+                    endGameScreen.setVisible(true);
+                    //gameEnd();
+                    //state = PlayerState.SKIP;
+                    uiIsLocked = true;
+                } else {
+                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
+                            "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
+                    endGameScreen.setVisible(true);
+
+                    //gameEnd();
+                    //state = PlayerState.SKIP;
+                    uiIsLocked = true;
+                }
+
+           }
         } catch (IOException e) {
             e.printStackTrace();
         }
 //        return endGame;
-//        if (response.equals("The game has finished" + "\r\n")) {
 //            if (cardsInHand.size() == 0 ) {
 //                System.out.println("winner");
 //            } else {
