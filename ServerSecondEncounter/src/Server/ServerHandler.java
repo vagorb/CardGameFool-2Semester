@@ -31,19 +31,21 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
         } else if (messageType.equalsIgnoreCase("endGame")) {
             int size = message.get("Size").getAsInt();
-            if (size == 0) {
-                GameInfo game = Server.playersToGames.get(player);
+            GameInfo game = Server.playersToGames.get(player);
+            if (size == 0 && game.getDeck().getDeck().size() == 0) {
                 for (String players : game.getPlayers()) {
                     if (!players.equals(player)) {
                         game.setFool(players);
                         game.setEndTheGame();
+                        Server.endGame(player);
+                        ctx.writeAndFlush("The game has finished" + "\r\n");
                     }
                 }
+            } else {
+                ctx.writeAndFlush("game is still player" + "\r\n");
             }
-            Server.endGame(player);
 //            Label label = new Label();
 //            label.setText("The game has finished");
-            ctx.writeAndFlush("The game has finished" + "\r\n");
         } else if (messageType.equalsIgnoreCase("AIGame")) {
             GameInfo game = Server.newWithAIGame(player);
             ctx.writeAndFlush(gson.toJson(game) + "\r\n");
