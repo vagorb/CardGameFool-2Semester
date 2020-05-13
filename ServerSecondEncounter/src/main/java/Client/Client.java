@@ -12,7 +12,7 @@ import java.net.Socket;
 public class Client {
 
     public static String sendMessage(Object object) throws IOException {
-        String host = "localhost";
+        String host = "193.40.255.14";
         int port = 5200;
         try (Socket socket = new Socket(host, port)) {
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
