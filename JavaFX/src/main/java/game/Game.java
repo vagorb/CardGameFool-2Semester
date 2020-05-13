@@ -256,14 +256,14 @@ public class Game extends Application {
             if (response.contains("The game has finished")) {
                 if (cardsInHand.size() == 0) {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
-                            "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
+                            "-fx-background-image: url('/images/backgrounds/winnerEndGame.png')");
                     endGameScreen.setVisible(true);
                     //gameEnd();
                     //state = PlayerState.SKIP;
                     uiIsLocked = true;
                 } else {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
-                            "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
+                            "-fx-background-image: url('/images/backgrounds/foolEndGame.png')");
                     endGameScreen.setVisible(true);
 
                     //gameEnd();
@@ -635,13 +635,13 @@ public class Game extends Application {
         if (gameInfo.getEndTheGame()) {
             if (gameInfo.getFool().equals(playerId)) {
                 endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
-                        "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
+                        "-fx-background-image: url('/images/backgrounds/foolEndGame.png')");
 
 //                System.out.println("I AM THE FOOL!");
                 //                gameIsGoing = false;
             } else {
                 endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
-                        "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
+                        "-fx-background-image: url('/images/backgrounds/winnerEndGame.png')");
 
 //                System.out.println("I AM THE WINNER");
 //                gameIsGoing = false;
@@ -692,7 +692,7 @@ public class Game extends Application {
 
 
         if (state == PlayerState.ATTACK) {
-            stateLabel.setStyle("-fx-background-image: url(icons/black/swords.png); -fx-background-size: cover;" +
+            stateLabel.setStyle("-fx-background-image: url(/icons/black/swords.png); -fx-background-size: cover;" +
                     "-fx-background-color: rgba(139,69,19,0.5);");
             if (gameInfo.isPlayersTurn(playerId)) {
                 // unlock UI to do attack move
@@ -705,7 +705,7 @@ public class Game extends Application {
                 // wait for other player move
             }
         } else if (state == PlayerState.DEFENSE) {
-            stateLabel.setStyle("-fx-background-image: url(icons/black/shield.png); -fx-background-size: cover;" +
+            stateLabel.setStyle("-fx-background-image: url(/icons/black/shield.png); -fx-background-size: cover;" +
                     "-fx-background-color: rgba(139,69,19,0.5);");
             if (gameInfo.isPlayersTurn(playerId)) {
                 // unlock UI to do defense move
@@ -718,7 +718,7 @@ public class Game extends Application {
                 // wait for other player move
             }
         } else if (state == PlayerState.WAITING) {
-            stateLabel.setStyle("-fx-background-image: url(icons/black/waiting.png); -fx-background-size: cover;" +
+            stateLabel.setStyle("-fx-background-image: url(/icons/black/waiting.png); -fx-background-size: cover;" +
                     "-fx-background-color: rgba(139,69,19,0.5);");
             // ui is locked
             System.out.println(playerId + " I am waiting for my turn");
@@ -758,14 +758,14 @@ public class Game extends Application {
             if (response.contains("The game has finished")) {
                 if (cardsInHand.size() == 0 ) {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
-                            "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
+                            "-fx-background-image: url('/images/backgrounds/winnerEndGame.png')");
                     endGameScreen.setVisible(true);
                     //gameEnd();
                     //state = PlayerState.SKIP;
                     uiIsLocked = true;
                 } else {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
-                            "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
+                            "-fx-background-image: url('/images/backgrounds/foolEndGame.png')");
                     endGameScreen.setVisible(true);
 
                     //gameEnd();

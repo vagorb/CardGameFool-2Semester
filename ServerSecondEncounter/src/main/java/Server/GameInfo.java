@@ -63,7 +63,7 @@ public class GameInfo {
         this.deck = deck;
         this.players = players;
 
-        deck.shuffleDeck();
+//        deck.shuffleDeck();
         this.trump = getDeck().getDeck().get(players.size() * 6);
         trump.setTrump(true);
         deck.removeCard(trump);

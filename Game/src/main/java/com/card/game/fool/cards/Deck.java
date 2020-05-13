@@ -15,7 +15,7 @@ public class Deck {
     public Deck() {
         this.deck = new ArrayList<>();
         ArrayList<String> suits = new ArrayList<>(Arrays.asList("Clubs", "Hearts", "Diamonds", "Spades"));
-        ArrayList<Integer> values = new ArrayList<>(Arrays.asList(6, 7, 8, 9, 10, 11, 12, 13, 14));
+        ArrayList<Integer> values = new ArrayList<>(Arrays.asList(6, 7, 8));
         for (Integer value : values) {
             for (String suit : suits) {
                 Card card = new Card(suit, value, false);
