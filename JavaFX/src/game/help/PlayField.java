@@ -69,4 +69,41 @@ public class PlayField {
 
         return Arrays.asList(playZone, upperLayer, lowerLayer);
     }
+
+    public void setDefault(Map<Integer, HBox> playFieldButtons) {
+        playFieldButtons.forEach((integer, hBox) -> {
+            if (!hBox.getId().equals("firstPair")) {
+                hBox.setVisible(false);
+            }
+            for (int i = 0; i < 2; i++) {
+                Button button = (Button) hBox.getChildrenUnmodifiable().get(i);
+                button.setDisable(false);
+                button.setStyle("-fx-background-image: null;");
+                button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
+                button.setVisible(!button.getId().equals("Defence"));
+            }
+        });
+    }
+
+    public void nextAttackVisible(Button defence) {
+        for (int nr = 1; nr <= 6; nr++) {
+            if (defence == playFieldButtons.get(nr).getChildrenUnmodifiable().get(1)) {
+                playFieldButtons.get(nr + 1).setVisible(true);
+                break;
+            }
+        }
+    }
+
+    public boolean validToThrowCards() {
+        for (Pane pane : playFieldButtons.values()) {
+            ObservableList<Node> x = pane.getChildren();
+            boolean attackPlaced = !x.get(0).getStyle().contains("-fx-background-image: null");
+            boolean defensePlaced = !x.get(1).getStyle().contains("-fx-background-image: null");
+            if ((!attackPlaced && defensePlaced) || (attackPlaced && !defensePlaced)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

@@ -2,11 +2,9 @@ package com.card.game.fool.AI;
 
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
-import com.card.game.fool.players.Player;
 import com.card.game.fool.players.PlayerState;
 import com.card.game.fool.players.gamerInterface;
 import com.card.game.fool.tables.Pile;
-import com.card.game.fool.tables.Table;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -180,11 +178,6 @@ public class Ai implements gamerInterface {
 
 
     public Optional<Card> getAiMove(PlayerState state, Deck deck, List<Card> table, Card trump, Pile pile) {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         if (state.equals(PlayerState.ATTACK)) {
             if (deck.getDeck().size() < 1) {
                 return suitableDefMoveWhenDeckEnds(table, trump, pile);

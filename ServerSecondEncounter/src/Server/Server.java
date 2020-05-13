@@ -69,21 +69,6 @@ public class Server {
         }
     }
 
-    public static void endGame(String player) {
-        synchronized (games) {
-            GameInfo game = playersToGames.get(player);
-            // TODO finish this
-            game.getCardsOnTable().clear();
-            if (game.getPlayers().size() > 1) {
-                game.getPlayers().remove(player);
-            }
-            if (game.getPlayers().size() == 1) {
-                game.setEndTheGame();
-                game.setFool(game.getPlayers().get(0));
-            }
-        }
-    }
-
     public static void playerPicksUpCards(String player) {
         synchronized (games) {
             GameInfo game = playersToGames.get(player);
@@ -114,6 +99,7 @@ public class Server {
             game.switchAttackerAndDefender();
         }
     }
+
 
     public static void runServer() throws InterruptedException {
         EventLoopGroup bossGroup = new NioEventLoopGroup();

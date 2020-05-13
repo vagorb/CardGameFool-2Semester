@@ -13,6 +13,8 @@ public class GameField {
     private final double cardUnit;
     private final double maxWidth;
     private final double maxHeight;
+    private int pileCardsCount = 0;
+    private int deckCardsCount = 36;
     private final HBox pileCards = new HBox();
     private final HBox deckCards = new HBox();
     private final HBox pileField = new HBox(pileCards);
@@ -39,8 +41,8 @@ public class GameField {
         label.setMaxSize(cardUnit * 2, cardUnit * 3);
     }
 
-    private Label oneCard() {
-        Label cardLabel = new Label();
+    private Label oneCard(int nr) {
+        Label cardLabel = new Label(String.valueOf(nr));
         oneSizeOnly(cardLabel);
         cardLabel.setStyle("-fx-background-image: url('/images/cards/back_of_card.png'); -fx-background-size: cover;" +
                 "-fx-text-fill: red; -fx-alignment: center; -fx-font: bold " + 1.2 * cardUnit + "pt Arial;");
@@ -51,10 +53,14 @@ public class GameField {
         Label trumpLabel = new Label();
         oneSizeOnly(trumpLabel);
         trumpLabel.setStyle(String.format("-fx-background-image: url('/images/cards/%s/%s.png');" +
-                "-fx-background-size: cover", trumpCard.getSuit(), trumpCard.getId()) + ';');
+                        "-fx-background-size: cover", trumpCard.getSuit(), trumpCard.getId())+';');
         trumpLabel.setTranslateX(-0.6 * cardUnit);
-        trumpLabel.setRotate(95);
+        trumpLabel.setRotate(100);
         return trumpLabel;
+    }
+
+    public void throwCardToPile() {
+        oneCard(pileCardsCount++);
     }
 
     public HBox addFields(VBox playField, Card trump) {
@@ -62,25 +68,18 @@ public class GameField {
             field.setMinSize(maxWidth, maxHeight);
             field.setMaxSize(maxWidth, maxHeight);
         }
-        deckCards.getChildren().addAll(trumpCard(trump), oneCard());
+        deckCards.getChildren().addAll(trumpCard(trump), oneCard(36));
         deckCards.getChildren().get(1).setTranslateX(-2 * cardUnit);
-        pileCards.getChildren().add(oneCard());
+        pileCards.getChildren().add(oneCard(0));
         pileCards.setVisible(false);
         for (Node label : List.of(deckCards.getChildren().get(1), pileCards.getChildren().get(0))) {
             System.out.println(label);
         }
 
+        ((Label) pileCards.getChildren().get(0)).textProperty().addListener((observableValue, s, t1) ->
+                pileCards.setVisible(pileCards.getChildren().size() > 0));
+
         return new HBox(deckField, playField, pileField);
     }
 
-    public void updateVisualPile(int size) {
-        ((Label) pileCards.getChildren().get(0)).setText(String.valueOf(size));
-        pileCards.setVisible(!((Label) pileCards.getChildren().get(0)).getText().equals("0"));
-    }
-
-    public void updateVisualDeck(int size) {
-        ((Label) deckCards.getChildren().get(1)).setText(String.valueOf(size));
-        deckCards.getChildren().get(1).setVisible(size > 1);
-        deckCards.getChildren().get(0).setVisible(size >= 1);
-    }
 }

@@ -1,6 +1,6 @@
 package Server.model;
 
 public class Message {
-    public String type;
+    public String type = "AIGame";
     public String clientId;
 }
