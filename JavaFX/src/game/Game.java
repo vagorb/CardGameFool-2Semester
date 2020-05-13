@@ -50,23 +50,24 @@ import java.util.stream.Collectors;
 import static javafx.concurrent.Worker.State.SUCCEEDED;
 
 public class Game extends Application {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     private Scene menuScene;
     private boolean fullscreenStatus;
     private boolean invertScroll;
     private Resolution resolution;
-    private String playerId = UUID.randomUUID().toString();
+    private final String playerId = UUID.randomUUID().toString();
+    private final Label stateLabel = new Label();
     private boolean goHere = false;
-    private Label winLabel = new Label();
-    private Label loseLabel = new Label();
 
     private boolean uiIsLocked = true;
     private Map<Integer, HBox> playFieldButtons;
     private GameInfo currentGameState;
+    private GameField gameFieldClass;
     private List<Card> cardsOnTable = new ArrayList<>();
-    private List<Card> cardsInHand = new ArrayList<>();
+    private final List<Card> cardsInHand = new ArrayList<>();
     private HBox cardBox;
     private ScrollPane cardBoxScroll;
+    private VBox endGameScreen;
 
     private double windowHeight;
     private double windowWidth;
@@ -79,7 +80,6 @@ public class Game extends Application {
     private Button activeCard = null;
     private final int AIcount;
     private final int humanCount;
-    private List<Player> players = new ArrayList<>();
     public Ai computer;
 
     public Game(int human, int AI) {
@@ -90,16 +90,19 @@ public class Game extends Application {
         }
     }
 
-    void setMenu(Scene menu) {
-        this.menuScene = menu;
-        windowWidth = menu.getWidth();
-        windowHeight = menu.getHeight();
+    void setMenu(Scene menuScene) {
+        this.menuScene = menuScene;
+        windowWidth = menuScene.getWidth();
+        windowHeight = menuScene.getHeight();
     }
 
     void setSettings(boolean invertScroll, boolean fullscreenStatus, Resolution resolution) {
         this.fullscreenStatus = fullscreenStatus;
         this.invertScroll = invertScroll;
         this.resolution = resolution;
+    }
+
+    public void setPlayerName(String name) {
     }
 
     private Button cardToButton(Card card, HBox destination, double cardWidth, double cardHeight) {
@@ -110,11 +113,11 @@ public class Game extends Application {
         destination.getChildren().add(button);
         button.setOnAction(actionEvent -> {
             if (activeCard != null) {
-                activeCard.setStyle(activeCard.getStyle() + ";-fx-opacity: 1; -fx-border-color: null");
+                activeCard.setStyle(activeCard.getStyle() + "-fx-opacity: 100%; -fx-border-color: null;");
             }
             activeCard = button;
             activeCard.setId(button.getId());
-            activeCard.setStyle(button.getStyle() + ";-fx-opacity: 0.6; -fx-border-color: rgb(255,200,0)");
+            activeCard.setStyle(button.getStyle() + "-fx-opacity: 60%; -fx-border-color: rgb(255,200,0);");
         });
         return button;
     }
@@ -137,15 +140,13 @@ public class Game extends Application {
     }
 
 
-
     public void start(Stage window) throws IOException {
-        winLabel.setVisible(false);
-        winLabel.setTranslateX(100);
-        winLabel.setTranslateY(100);
-        loseLabel.setVisible(false);
-        loseLabel.setTranslateX(100);
-        loseLabel.setTranslateY(100);
-        GameInfo gameInfo = sendNewAIPlayerMsg();
+        GameInfo gameInfo;
+        if (humanCount > 0) {
+            gameInfo = sendNewPlayerMsg();
+        } else {
+            gameInfo = sendNewAIPlayerMsg();
+        }
         window.setResizable(false);
 
         Buttons buttons = new Buttons();
@@ -154,7 +155,6 @@ public class Game extends Application {
         HBox cardBoxBase = new HBox(20);
         cardBox = new HBox(2);
 
-
         cardBoxScroll = new ScrollPane(cardBox);
         cardBoxScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         cardBoxScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -162,7 +162,10 @@ public class Game extends Application {
 
         HBox menu = new HBox(25);
         menu.setVisible(false);
-        menu.setStyle("-fx-background-color: rgba(16,16,16,0.9)");
+        menu.setStyle("-fx-background-color: rgba(16,16,16,0.9);");
+
+        endGameScreen = new VBox();
+        endGameScreen.setVisible(false);
 
         window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         window.setTitle(playerId + "_Play.exe");
@@ -170,6 +173,7 @@ public class Game extends Application {
         window.setScene(playScene);
 
         Button backButton = buttons.back();
+        Button backButton2 = buttons.back();
         Button exitButton = buttons.exit();
         Button throwCards = buttons.throwCards();
         Button pickUpCards = buttons.pickCardsUp();
@@ -180,8 +184,11 @@ public class Game extends Application {
 
         for (Button btn : Arrays.asList(throwCards, pickUpCards, skipTurn)) {
             Buttons.oneSizeOnly(btn, cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
-            btn.setTranslateX(cardBoxBase.getMaxWidth() / 2.5);
+            btn.setTranslateX(cardBoxBase.getMaxWidth() / 2.3);
         }
+        stateLabel.setMinSize(cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
+        stateLabel.setMaxSize(cardBoxBase.getMaxHeight(), cardBoxBase.getMaxHeight());
+        stateLabel.setTranslateX(-cardBoxBase.getMaxWidth() / 2);
 
         cardBoxBase.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
         cardBoxScroll.setTranslateY((windowHeight - cardBoxBase.getMaxHeight()) / 2);
@@ -196,15 +203,10 @@ public class Game extends Application {
             avatars.makeAvatar(new Ai());
         }
         for (int p = 0; p < humanCount; p++) {
-            players.add(new Player("player", 0));
-            avatars.makeAvatar(players.get(players.size() - 1));
+            avatars.makeAvatar(new Player());
         }
         HBox avatarPage = avatars.showAvatars();
 
-//        this.thePlayer = players.get(players.size() - 1);
-
-        cardsInHand = new ArrayList<>();
-        cardsOnTable = new ArrayList<>();
         replenishHand();
 
         /// playfield elements
@@ -215,7 +217,7 @@ public class Game extends Application {
         Map<Integer, HBox> playFieldButtons = playFieldClass.createButtons();
         this.playFieldButtons = playFieldButtons;
 
-        GameField gameFieldClass = new GameField(cardUnitSize, windowWidth);
+        gameFieldClass = new GameField(cardUnitSize, windowWidth);
         HBox gameFields = gameFieldClass.addFields(playField, gameInfo.getTrump());
         gameFields.setTranslateX(windowWidth * 9 / 40);
         gameFields.setTranslateY((windowHeight / 2 - 4 * cardUnitSize));
@@ -243,22 +245,24 @@ public class Game extends Application {
             cardBoxScroll.setScaleY(1);
         });
 
-        skipTurn.setOnAction(actionEvent -> {
+//        skipTurn.setOnAction(actionEvent -> {
 //            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
 //            thePlayer.setPlayerState(PlayerState.SKIP);   // need to send that info to Server as well
 //            cardBoxScroll.setDisable(true);
 //            }
-        });
+//        });
 
         /// When unable to beat, pick all cards
         pickUpCards.setOnAction(actionEvent -> {
-            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0 && !cardsOnTable.isEmpty()) {
+            if (currentGameState.getPlayerState(playerId) == PlayerState.DEFENSE && cardsOnTable.size() % 2 != 0
+                    && !cardsOnTable.isEmpty()) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("type", "pickCardsFromTable");
                 msg.addProperty("playerId", playerId);
                 try {
                     String response = Client.sendMessage(msg);
-                    List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
+                    List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>() {
+                    }.getType());
                     for (Card card : cards) {
                         cardToButton(card, cardBox, cardWidth, cardHeight);
                     }
@@ -277,7 +281,7 @@ public class Game extends Application {
 
         /// throw cards to pile
         throwCards.setOnAction(actionEvent -> {
-            if(currentGameState.getPlayerState(playerId) == PlayerState.ATTACK && cardsOnTable.size() % 2 == 0 && !cardsOnTable.isEmpty()) {
+            if (currentGameState.getPlayerState(playerId) == PlayerState.ATTACK && cardsOnTable.size() % 2 == 0 && !cardsOnTable.isEmpty()) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("type", "throwCardsToPile");
                 msg.addProperty("playerId", playerId);
@@ -287,6 +291,7 @@ public class Game extends Application {
                     e.printStackTrace();
                 }
                 resetAttackDefButtons();
+
                 cardsOnTable.clear();
                 replenishHand();
                 if (cardsInHand.size() == 0 || !currentGameState.getFool().equals("")) {
@@ -323,7 +328,13 @@ public class Game extends Application {
             }
         });
 
-        backButton.setOnAction(actionEvent -> window.setScene(menuScene));
+        for (Button btn : List.of(backButton, backButton2)) {
+            btn.setOnAction(actionEvent -> {
+                window.setScene(menuScene);
+                window.setFullScreen(fullscreenStatus);
+            });
+        }
+
 
         exitButton.setOnAction(actionEvent -> window.close());
 
@@ -345,11 +356,14 @@ public class Game extends Application {
         cardBoxBase.setId("cardBoxBase");
         cardBoxBase.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
 
-        cardBoxBase.getChildren().addAll(pickUpCards, throwCards, skipTurn);
+        cardBoxBase.getChildren().addAll(pickUpCards, throwCards, skipTurn, stateLabel);
         playField.getChildren().addAll(upperLayer, lowerLayer);
         menu.getChildren().addAll(backButton, exitButton);
-        gameStackPane.getChildren().addAll(avatarPage, gameFields, cardBoxBase, cardBoxScroll, menu);
+        endGameScreen.getChildren().add(backButton2);
+        gameStackPane.getChildren().addAll(avatarPage, gameFields, cardBoxBase, cardBoxScroll, menu, endGameScreen);
 
+        backButton2.setTranslateX(windowWidth / 2);
+        backButton2.setTranslateY(windowHeight / 2);
         backButton.prefWidthProperty().bind(Bindings.divide(window.widthProperty(), 50));
         backButton.prefHeightProperty().bind(Bindings.divide(window.heightProperty(), 50));
         exitButton.prefWidthProperty().bind(backButton.prefHeightProperty());
@@ -361,47 +375,31 @@ public class Game extends Application {
         waitForMyTurnService = new WaitForMyTurnService();
         waitForMyTurnService.setPlayerId(playerId);
 
-        waitForMyTurnService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent workerStateEvent) {
-                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
-                updateAttackDefButtons(game);
-                doGameAction(game);
-            }
+        waitForMyTurnService.setOnSucceeded(workerStateEvent -> {
+            GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+            updateAttackDefButtons(game);
+            doGameAction(game);
         });
 
         // Service for waiting for game start
         WaitForGameStartService gameStartService = new WaitForGameStartService();
         gameStartService.setPlayerId(playerId);
 
-        gameStartService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent workerStateEvent) {
-                System.out.println(playerId + "Starting game");
-                GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
+        gameStartService.setOnSucceeded(workerStateEvent -> {
+            System.out.println(playerId + "Starting game");
+            GameInfo game = (GameInfo) workerStateEvent.getSource().getValue();
 
-                if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
-                    showFirstAttackBtn();
-                }
-
-                doGameAction(game);
+            if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
+                showFirstAttackBtn();
             }
+
+            doGameAction(game);
         });
 
 
         for (int i = 1; i <= 6; i++) {
             Button attack = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(0);
-            attack.setId("Attack");
-            attack.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
-            attack.setVisible(false);
-
-            attack.setTranslateX(cardUnitSize);
-            attack.setTranslateY(cardUnitSize);
-
             Button defence = (Button) playFieldButtons.get(i).getChildrenUnmodifiable().get(1);
-            defence.setId("Defence");
-            defence.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
-            defence.setVisible(false);
 
             if (i < 4) {
                 upperLayer.getChildren().addAll(playFieldButtons.get(i));
@@ -425,7 +423,7 @@ public class Game extends Application {
                         }
                         cardBox.getChildren().remove(activeCard);
                         attack.setDisable(true);
-                        attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                        attack.setStyle(activeCard.getStyle() + " -fx-opacity: 100%;");
                         waitForMyTurn();
                     } else {
                         // Check that I have cards with same value that are on table
@@ -439,7 +437,7 @@ public class Game extends Application {
                             }
                             cardBox.getChildren().remove(activeCard);
                             attack.setDisable(true);
-                            attack.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                            attack.setStyle(activeCard.getStyle() + " -fx-opacity: 100%;");
                             waitForMyTurn();
                         }
 
@@ -464,10 +462,10 @@ public class Game extends Application {
 
                             cardBox.getChildren().remove(activeCard);
                             defence.setDisable(true);
-                            defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                            defence.setStyle(activeCard.getStyle() + " -fx-opacity: 100%;");
                             waitForMyTurn();
                         } else {
-                            activeCard.setStyle(activeCard.getStyle() + " -fx-opacity: 1; -fx-border-color: null");
+                            activeCard.setStyle(activeCard.getStyle() + " -fx-opacity: 100%; -fx-border-color: null;");
                         }
                         activeCard = null;
                     } else if (defenseCard.getSuit().equals(gameInfo.getTrump().getSuit())) {
@@ -479,14 +477,13 @@ public class Game extends Application {
                         }
                         cardBox.getChildren().remove(activeCard);
                         defence.setDisable(true);
-                        defence.setStyle(activeCard.getStyle() + " -fx-opacity: 1");
+                        defence.setStyle(activeCard.getStyle() + " -fx-opacity: 100%;");
                         activeCard = null;
                         waitForMyTurn();
                     }
                 }
             });
         }
-
         gameStartService.start();
     }
 
@@ -495,14 +492,14 @@ public class Game extends Application {
             for (int i = 0; i < 2; i++) {
                 Button button = (Button) attackDefPairs.getChildrenUnmodifiable().get(i);
                 button.setDisable(false);
-                button.setStyle("-fx-background-image: null");
+                button.setStyle("-fx-background-image: null;");
                 button.getStylesheets().add(getClass().getResource("/css/misc.css").toExternalForm());
                 button.setVisible(false);
             }
         }
     }
 
-    private void showFirstAttackBtn(){
+    private void showFirstAttackBtn() {
         HBox pair = playFieldButtons.get(1);
         pair.setVisible(true);
         Node attackBtn = pair.getChildrenUnmodifiable().get(0);
@@ -519,7 +516,6 @@ public class Game extends Application {
             }
             waitForMyTurnService.start();
         }
-
     }
 
     private void updateAttackDefButtons(GameInfo game) {
@@ -528,7 +524,7 @@ public class Game extends Application {
         List<Card> cardsOnTable = game.getCardsOnTable();
         if (cardsOnTable.isEmpty()) {
             resetAttackDefButtons();
-            if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
+            if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
                 showFirstAttackBtn();
             }
         } else {
@@ -546,7 +542,7 @@ public class Game extends Application {
                 }
                 node.setDisable(true);
                 node.setVisible(true);
-                node.setStyle(card.getStyleForButton() + " -fx-opacity: 1");
+                node.setStyle(card.getStyleForButton() + " -fx-opacity: 100%;");
 
                 cardCounter++;
                 if (cardCounter % 2 == 0) {
@@ -556,8 +552,7 @@ public class Game extends Application {
 
             attackCard = cardsOnTable.get(cardsOnTable.size() - 1);
 
-
-            if(game.getPlayerState(playerId) == PlayerState.ATTACK) {
+            if (game.getPlayerState(playerId) == PlayerState.ATTACK) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
                 // TODO These if and else if do nothing, but placing 6 cards only works with them
                 if (pairCounter < 6) {
@@ -569,7 +564,7 @@ public class Game extends Application {
                     Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
                     attackBtn.setVisible(true);
                 }
-            } else if(game.getPlayerState(playerId) == PlayerState.DEFENSE) {
+            } else if (game.getPlayerState(playerId) == PlayerState.DEFENSE) {
                 HBox attackDefPair = playFieldButtons.get(pairCounter);
                 Node attackBtn = attackDefPair.getChildrenUnmodifiable().get(0);
                 Node defButton = attackDefPair.getChildrenUnmodifiable().get(1);
@@ -584,8 +579,6 @@ public class Game extends Application {
 
     }
 
-
-
     private void doGameAction(GameInfo gameInfo) {
         PlayerState state = gameInfo.getPlayerState(playerId);
 //        boolean gameIsGoing = true;
@@ -596,25 +589,22 @@ public class Game extends Application {
         }
         if (gameInfo.getEndTheGame()) {
             if (gameInfo.getFool().equals(playerId)) {
-                Label label = new Label();
-                label.setText("I AM THE FOOL!");
-                loseLabel.setVisible(true);
+                endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
+                        "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
 
 //                System.out.println("I AM THE FOOL!");
-                gameEnd();
-                state = PlayerState.SKIP;
-                uiIsLocked = true;
-//                gameIsGoing = false;
+                //                gameIsGoing = false;
             } else {
-                Label label = new Label();
-                label.setText("I AM THE WINNER!");
-                winLabel.setVisible(true);
+                endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
+                        "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
+
 //                System.out.println("I AM THE WINNER");
 //                gameIsGoing = false;
-                gameEnd();
-                state = PlayerState.SKIP;
-                uiIsLocked = true;
             }
+            endGameScreen.setVisible(true);
+            gameEnd();
+            state = PlayerState.SKIP;
+            uiIsLocked = true;
         }
 
         if (currentGameState.getTurnCounter() != gameInfo.getTurnCounter()) {
@@ -657,7 +647,8 @@ public class Game extends Application {
 
 
         if (state == PlayerState.ATTACK) {
-            //todo show in UI that I am attacking
+            stateLabel.setStyle("-fx-background-image: url(icons/black/swords.png); -fx-background-size: cover;" +
+                    "-fx-background-color: rgba(139,69,19,0.5);");
             if (gameInfo.isPlayersTurn(playerId)) {
                 // unlock UI to do attack move
                 uiIsLocked = false;
@@ -669,7 +660,8 @@ public class Game extends Application {
                 // wait for other player move
             }
         } else if (state == PlayerState.DEFENSE) {
-            //todo show in UI that I am defending
+            stateLabel.setStyle("-fx-background-image: url(icons/black/shield.png); -fx-background-size: cover;" +
+                    "-fx-background-color: rgba(139,69,19,0.5);");
             if (gameInfo.isPlayersTurn(playerId)) {
                 // unlock UI to do defense move
                 uiIsLocked = false;
@@ -681,7 +673,8 @@ public class Game extends Application {
                 // wait for other player move
             }
         } else if (state == PlayerState.WAITING) {
-            //todo show in UI that I am waiting
+            stateLabel.setStyle("-fx-background-image: url(icons/black/waiting.png); -fx-background-size: cover;" +
+                    "-fx-background-color: rgba(139,69,19,0.5);");
             // ui is locked
             System.out.println(playerId + " I am waiting for my turn");
             waitForMyTurn();
@@ -690,6 +683,13 @@ public class Game extends Application {
 
         this.currentGameState = gameInfo;
         this.cardsOnTable = gameInfo.getCardsOnTable();
+        gameFieldClass.updateVisualPile(currentGameState.getPile().getPile().size());
+        gameFieldClass.updateVisualDeck(currentGameState.getDeck().getDeck().size());
+        for (String player : currentGameState.getPlayers()) {
+            if (!player.equals(playerId)) {
+                System.out.println(player);
+            }
+        }
     }
 
 
@@ -705,7 +705,7 @@ public class Game extends Application {
         JsonObject endGame = new JsonObject();
         endGame.addProperty("type", "endGame");
         endGame.addProperty("playerId", playerId);
-        String response = null;
+        String response;
         try {
             response = Client.sendMessage(endGame);
         } catch (IOException e) {
@@ -737,13 +737,14 @@ public class Game extends Application {
         double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;
         double cardWidth = cardHeight / 90 * 59;
         JsonObject obj = gameCardsReplenish(cardBox.getChildren().size());
-        String response = null;
+        String response;
         try {
             response = Client.sendMessage(obj);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>(){}.getType());
+        List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>() {
+        }.getType());
 
         for (Card card : cards) {
             cardsInHand.add(card);
@@ -763,4 +764,5 @@ public class Game extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }

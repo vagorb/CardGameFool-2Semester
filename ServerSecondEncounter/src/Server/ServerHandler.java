@@ -1,24 +1,19 @@
 package Server;
 
-import Server.model.Message;
 import com.card.game.fool.cards.Card;
-import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.PlayerState;
-import com.card.game.fool.tables.Pile;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import javafx.scene.control.Label;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -40,7 +35,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //            label.setText("The game has finished");
             ctx.writeAndFlush("The game has finished" + "\r\n");
         } else if (messageType.equalsIgnoreCase("AIGame")) {
-
             GameInfo game = Server.newWithAIGame(player);
             ctx.writeAndFlush(gson.toJson(game) + "\r\n");
             game.startGameWithAI();
@@ -112,7 +106,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
         }
     }
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

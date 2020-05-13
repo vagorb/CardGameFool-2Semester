@@ -114,13 +114,24 @@ public class SettingMenu {
         sliderHuman.setSnapToTicks(true);
         sliderHuman.getStylesheets().add(getClass().getResource("/css/slider.css").toString());
 
-        sliderHuman.setOnMouseExited(mouseEvent -> {
+        sliderHuman.setOnMouseReleased(mouseEvent -> {
             if (!checkBoxAI.isSelected() && sliderHuman.getValue() == 0) {
                 sliderHuman.setValue(1);
             }
-            playerHumanCount = (int) sliderHuman.getValue();
         });
 
+        checkBoxAI.selectedProperty().addListener((observable) -> {
+            sliderHuman.setDisable(checkBoxAI.isSelected());
+            if (!checkBoxAI.isSelected()) {
+                sliderHuman.setValue(1);
+                playerAI = 0;
+            } else {
+                sliderHuman.setValue(0);
+                playerAI = 1;
+            }
+        });
+
+        sliderHuman.valueProperty().addListener((observable -> playerHumanCount = (int) sliderHuman.getValue()));
 
         VBox playerChoosingMenu = new VBox(25);
         playerChoosingMenu.getChildren().addAll(nameEnteringVbox, checkBoxAI, humanCountLabel, sliderHuman, playButton);

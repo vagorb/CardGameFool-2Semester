@@ -2,7 +2,6 @@ package Server;
 
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
-import com.card.game.fool.players.Player;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -85,9 +84,7 @@ public class Server {
         }
     }
 
-
-
-            public static void playerPicksUpCards(String player) {
+    public static void playerPicksUpCards(String player) {
         synchronized (games) {
             GameInfo game = playersToGames.get(player);
             game.getCardsOnTable().clear();
@@ -118,8 +115,6 @@ public class Server {
         }
     }
 
-
-
     public static void runServer() throws InterruptedException {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -149,4 +144,3 @@ public class Server {
         Server.runServer();
     }
 }
-
