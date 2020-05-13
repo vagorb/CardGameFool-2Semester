@@ -42,6 +42,7 @@ public class Server {
             return game;
         }
     }
+    
 
     public static GameInfo newWithAIGame(String player) {
         GameInfo game;
