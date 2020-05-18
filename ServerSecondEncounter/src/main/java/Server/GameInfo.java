@@ -64,6 +64,7 @@ public class GameInfo {
         this.players = players;
 
         deck.shuffleDeck();
+        deck.shuffleDeck();
         this.trump = getDeck().getDeck().get(players.size() * 6);
         trump.setTrump(true);
         deck.removeCard(trump);
@@ -132,10 +133,6 @@ public class GameInfo {
         return currentPlayerTurn.equals(player);
     }
 
-//    public List<Card> getCards() {
-//        return cards;
-//    }
-
     public void addPlayers(String player) {
         players.add(player);
     }
@@ -166,14 +163,6 @@ public class GameInfo {
     public synchronized Card getTrump() {
         return trump;
     }
-
-//    public Card getMoveCard() {
-//        return cards.get(cards.size() - 1);
-//    }
-//
-//    public synchronized void addMoveCard(Card card) {
-//        cards.add(card);
-//    }
 
     public boolean isGameStarted() {
         return gameStarted;

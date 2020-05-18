@@ -1,19 +1,16 @@
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
 import com.card.game.fool.players.Player;
+import com.card.game.fool.players.PlayerState;
 import com.card.game.fool.tables.Pile;
-import com.card.game.fool.tables.Table;
 import com.card.game.fool.AI.Ai;
-import com.sun.source.tree.Tree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,6 +86,11 @@ class AiTest {
         pile.addDiscardedCards(cardPile5);
         pile.addDiscardedCards(cardPile6);
 
+    }
+
+    @Test
+    void getAiName() {
+        assertEquals("CPU", ai.getName());
     }
 
     @Test
@@ -212,7 +214,46 @@ class AiTest {
     }
 
     @Test
-    void getAiMove() {
+    void getAiDefenceMove() {
+        Card cards = new Card("Spades", 10, true);
+        Deck deck = new Deck();
+        Card cardForDef = new Card("Diamonds", 14, false);
+        player1.getHand().add(cardForDef);
+        for (Card card : deck.getDeck()) {
+            if (!ai.getHand().contains(card) && !pile.getPile().contains(card) && !player1.getHand().contains(card)) {
+                pile.addDiscardedCards(card);
+            }
+        }
+        tableFor.add(cardForDef);
+        assertEquals(Optional.of(card5), ai.getAiMove(PlayerState.ATTACK, deck, tableFor, cards, pile));
+    }
+
+    @Test
+    void getAiAttackMove() {
+        Card cards = new Card("Spades", 10, true);
+        Deck deck = new Deck();
+        for (Card card : deck.getDeck()) {
+            if (!ai.getHand().contains(card) && !pile.getPile().contains(card) && !player1.getHand().contains(card)) {
+                pile.addDiscardedCards(card);
+            }
+        }
+        assertEquals(Optional.of(card1), ai.getAiMove(PlayerState.DEFENSE, deck, tableFor, cards, pile));
+    }
+
+    @Test
+    void getAIAttackMoveAfterDeckEnd() {
+        Ai ai1 = new Ai();
+        ai1.getHand().add(card5);
+        ai1.getHand().add(card3);
+        Card cards = new Card("Spades", 10, true);
+        Deck deck = new Deck();
+        for (Card card : deck.getDeck()) {
+            if (!ai1.getHand().contains(card) && !pile.getPile().contains(card) && !player1.getHand().contains(card)) {
+                pile.addDiscardedCards(card);
+            }
+        }
+        deck.getDeck().clear();
+        assertEquals(Optional.of(card3), ai1.getAiMove(PlayerState.DEFENSE, deck, tableFor, cards, pile));
     }
 }
 
