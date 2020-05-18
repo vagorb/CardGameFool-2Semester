@@ -272,29 +272,6 @@ public class Game extends Application {
                 }
             }
             }
-//            if (thePlayer.getPlayerState() == Player.PlayerState.ATTACK) {
-//            thePlayer.setPlayerState(PlayerState.SKIP);   // need to send that info to Server as well
-//            cardBoxScroll.setDisable(true);
-//            }
-//            if (currentGameState.getEndTheGame()) {
-//                if (cardsInHand.size() == 0) {
-//                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
-//                            "-fx-background-image: url('images/backgrounds/winnerEndGame.png')");
-//                    endGameScreen.setVisible(true);
-//                    //gameEnd();
-//                    //state = PlayerState.SKIP;
-//                    uiIsLocked = true;
-//                } else {
-//                    endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
-//                            "-fx-background-image: url('images/backgrounds/foolEndGame.png')");
-//                    endGameScreen.setVisible(true);
-//
-//                    //gameEnd();
-//                    //state = PlayerState.SKIP;
-//                    uiIsLocked = true;
-//                }
-//            }
-
         });
 
         /// When unable to beat, pick all cards
@@ -344,26 +321,6 @@ public class Game extends Application {
                 } else {
                     waitForMyTurn();
                 }
-//                if (cardsInHand.size() == 0) {
-//
-//                }
-                // TODO this has to end the game
-//                if (cardsInHand.size() == 0) {
-//                    System.out.println("LOCK THIS ");
-////                    goHere = true;
-////                uiIsLocked = true;
-//                    // Make the game end
-////                stop();
-//                    Label label = new Label();
-//                    label.setText("Congratulations, you are the winner!");
-//                    cardBox.getChildren().add(label);
-//                    try {
-//                        Client.sendMessage(gameEnd());
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    uiIsLocked = true;
-//                }
             }
         });
 
@@ -777,26 +734,7 @@ public class Game extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        return endGame;
-//            if (cardsInHand.size() == 0 ) {
-//                System.out.println("winner");
-//            } else {
-//                System.out.println("loser");
-//            }
-//        }
     }
-
-//    public void endTheGame() {
-//        Label label = new Label();
-//        if (cardsInHand.size() == 0) {
-////            Label label = new Label();
-//            label.setText("Congratulations, you are the winner!");
-//        } else {
-//            label.setText("Sadly, you have lost, good luck next time! ");
-//        }
-//        cardBox.getChildren().add(label);
-//        Server.playersToGames.remove(playerId);
-//    }
 
     public void replenishHand() {
         double cardHeight = cardBoxScroll.getMaxHeight() * 0.95;

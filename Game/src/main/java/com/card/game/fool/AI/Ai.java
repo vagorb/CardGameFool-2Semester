@@ -2,11 +2,9 @@ package com.card.game.fool.AI;
 
 import com.card.game.fool.cards.Card;
 import com.card.game.fool.cards.Deck;
-import com.card.game.fool.players.Player;
 import com.card.game.fool.players.PlayerState;
 import com.card.game.fool.players.gamerInterface;
 import com.card.game.fool.tables.Pile;
-import com.card.game.fool.tables.Table;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,30 +14,47 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-// What could be done:
-// AI can watch how many cards of every suit are already in pile and start attack with card with most popular suit in pile
-// Moves after 0 cards in deck
-// method in table getAi move
-
 public class Ai implements gamerInterface {
+    /**
+     * Cards in AI hand
+     */
     private final List<Card> cardsInHand = new LinkedList<>();
 
     public String getName() {
         return "CPU";
     }
 
+    /**
+     *
+     * @return Cards in AI hand
+     */
     public List<Card> getHand() {
         return cardsInHand;
     }
 
+    /**
+     *
+     * @return Map of cards in ai hand where key is cards value and value is list of cards with this value
+     */
     public Map<Integer, List<Card>> mapOfCardsInHand() {
         return cardsInHand.stream().collect(Collectors.groupingBy(Card::getValue));
     }
+
+    /**
+     *
+     * @param table - cards on the table
+     * @return Map of cards on the table where key is cards value and value is list of cards with this value
+     */
 
     public Map<Integer, List<Card>> mapOfCardsInTable(List<Card> table) {
         return table.stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
+    /**
+     *
+     * @param table - cards on the table
+     * @return List of cards what are suitable for defensive move
+     */
     public List<Card> suitableForDefCards(List<Card> table) {
         Card lastCard = table.get(table.size() - 1);
         if (lastCard.getTrump()) {
@@ -51,6 +66,13 @@ public class Ai implements gamerInterface {
                     && card.getValue() > lastCard.getValue())).collect(Collectors.toList());
         }
     }
+
+    /**
+     *
+     * @param table - cards on the table
+     * @param pile - cards what are already out from the game
+     * @return card what are most suitable for def at the moment
+     */
     public Optional<Card> mostSuitableCardForDef(List<Card> table, Pile pile) {
         List<Card> cards = suitableForDefCards(table);
         if (cards.size() < 1) {
@@ -75,6 +97,11 @@ public class Ai implements gamerInterface {
         return cards.stream().min(Comparator.comparingInt(Card::getValue));
     }
 
+    /**
+     *
+     * @return perfect attack card for empty table
+     */
+
     public Optional<Card> firstCardAttackMove() {
         for (Card card : cardsInHand) {
             if (mapOfCardsInHand().get(card.getValue()).size() >= 2 && !card.getTrump()) {
@@ -84,11 +111,21 @@ public class Ai implements gamerInterface {
         return cardsInHand.stream().min(Comparator.comparingInt(Card::getValue));
     }
 
+    /**
+     *
+     * @param table - cards on the table
+     * @return all cards what are suitable for attack
+     */
     public List<Card> suitableCardsForAttackMoves(List<Card> table) {
         return cardsInHand.stream().filter(card -> mapOfCardsInTable(table).containsKey(card.getValue()))
                 .collect(Collectors.toList());
     }
 
+    /**
+     *
+     * @param table - cards on the table
+     * @return perfect attack card for not empty table and not empty deck
+     */
     public Optional<Card> suitableAttackMoveBeforeEndOfDeck(List<Card> table) {
         List<Card> cards = suitableCardsForAttackMoves(table);
         if (cards.size() == 0) {
@@ -102,6 +139,13 @@ public class Ai implements gamerInterface {
         return cards.stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
+    /**
+     *
+     * @param table - cards on the table
+     * @param trump - trump card
+     * @param pile - cards what are already out from the game
+     * @return List of cards what have player when deck size is 0
+     */
     public List<Card> playerCardsInTheEnd(List<Card> table, Card trump, Pile pile) {
         List<Card> playerCards = new ArrayList<>();
         Deck deck = new Deck();
@@ -114,20 +158,38 @@ public class Ai implements gamerInterface {
         return playerCards;
     }
 
+    /**
+     *
+     * @param table - cards on the table
+     * @param trump - trump card
+     * @param pile - cards what are already out from the game
+     * @return Map of cards what have player when deck size is 0 where key is suit
+     */
     public Map<String, List<Card>> playerCardsInTheEndBySuit(List<Card> table, Card trump, Pile pile) {
         List<Card> playerCards = playerCardsInTheEnd(table, trump, pile);
         return playerCards.stream().collect(Collectors.groupingBy(Card::getSuit));
     }
-
+    /**
+     *
+     * @param table - cards on the table
+     * @param trump - trump card
+     * @param pile - cards what are already out from the game
+     * @return Map of cards what have player when deck size is 0 where key is value
+     */
     public Map<Integer, List<Card>> playerCardsInTheEndByValue(List<Card> table, Card trump, Pile pile) {
         List<Card> playerCards = playerCardsInTheEnd(table, trump, pile);
         return playerCards.stream().collect(Collectors.groupingBy(Card::getValue));
     }
 
-
+    /**
+     *
+     * @param table - cards on the table
+     * @param trump - trump card
+     * @param pile - cards what are already out from the game
+     * @return best card for attack move when deck size is 0
+     */
     public Optional<Card> suitableAttackMoveWhenDeckEnds(List<Card> table, Card trump, Pile pile) {
         Map<String, List<Card>> playerCards = playerCardsInTheEndBySuit(table, trump, pile);
-        System.out.println(playerCards);
         for (Card card : cardsInHand) {
             if (!playerCards.containsKey(card.getSuit()) && !card.getTrump()) {
                 return Optional.of(card);
@@ -152,10 +214,25 @@ public class Ai implements gamerInterface {
         return cardsInHand.stream().min(Comparator.comparingInt(Card::getValue).thenComparing(Card::getTrump));
     }
 
+    /**
+     *
+     * @param suit - suit of the card for what you search max value
+     * @param table - cards on the table
+     * @param trump - trump card
+     * @param pile - cards what are already out from the game
+     * @return card with maximum value of given suit in player hand
+     */
     public Optional<Card> maxValueBySuit(List<Card> table, String suit, Card trump, Pile pile) {
         return playerCardsInTheEnd(table, trump, pile).stream().filter(card -> card.getSuit().equals(suit)).max(Comparator.comparing(Card::getSuit).thenComparing(Card::getValue));
     }
 
+    /**
+     *
+     * @param table - cards on the table
+     * @param trump - trump card
+     * @param pile - cards what are already out from the game
+     * @return card which is most suitable for def when deck size is 0
+     */
     public Optional<Card> suitableDefMoveWhenDeckEnds(List<Card> table, Card trump, Pile pile) {
         Map<Integer, List<Card>> playerCards = playerCardsInTheEndByValue(table, trump, pile);
         List<Card> cards = suitableForDefCards(table);
@@ -178,7 +255,15 @@ public class Ai implements gamerInterface {
         return cards.stream().min(Comparator.comparingInt(Card::getValue));
     }
 
-
+    /**
+     *
+     * @param state - state of the player
+     * @param deck - deck of the game
+     * @param table - cards on the table
+     * @param trump - trump card
+     * @param pile - cards what are already out from the game
+     * @return best suitable card for this situation
+     */
     public Optional<Card> getAiMove(PlayerState state, Deck deck, List<Card> table, Card trump, Pile pile) {
         try {
             Thread.sleep(500);
