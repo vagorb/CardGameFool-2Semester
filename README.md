@@ -41,7 +41,7 @@ KASUTATUD TEHNOLOOGIAD:
 * Visuaalne osa oli tehtud JavaFX-iga.
 ***
 ARHITEKTUURILINE JOONIS:
-IN FUTURE!
+![Text](OurGameDiagrammFinalCropped.png)
 ***
 SERVER:
 * Mängu alguses Serverile saadakse sõnumit sellest
