@@ -145,7 +145,6 @@ public class SettingMenu {
             try {
                 window.hide();
                 window.getScene().setRoot(mainStackpane);
-                //play.setPlayerName(nameField.getText());
                 play.setMenu(window.getScene());
                 play.setSettings(invertScroll, window.isFullScreen(), resolution);
                 resolution.change(window.getScene().getWidth(), window.getScene().getHeight());

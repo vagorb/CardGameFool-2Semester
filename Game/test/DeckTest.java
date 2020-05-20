@@ -24,6 +24,7 @@ public class DeckTest {
         assertEquals(34, deck.getDeck().size());
     }
 
+    
     @Test
     public void TestShuffle() {
         // Tested with debugger

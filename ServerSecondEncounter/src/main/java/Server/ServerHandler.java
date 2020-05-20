@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import javafx.scene.control.Label;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (messageType.equalsIgnoreCase("newPlayer")) {
             GameInfo game = Server.addPlayerToGame(player);
             ctx.writeAndFlush(gson.toJson(game) + "\r\n");
-            // todo start game when required amount of players has joined, not only when two
             if (game.getPlayers().size() == 2) {
                 game.startGame();
             }
@@ -90,7 +88,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         } else if (messageType.equalsIgnoreCase("pickCardsFromTable")) {
             GameInfo game = Server.playersToGames.get(player);
             if (game.getAi() == null) {
-                // Cards to string before we clean the list
                 String cardsToPickUp = gson.toJson(game.getCardsOnTable());
                 Server.playerPicksUpCards(player);
                 ctx.writeAndFlush(cardsToPickUp + "\r\n");

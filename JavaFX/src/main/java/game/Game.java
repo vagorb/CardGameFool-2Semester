@@ -258,16 +258,11 @@ public class Game extends Application {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
                             "-fx-background-image: url('/images/backgrounds/winnerEndGame.png')");
                     endGameScreen.setVisible(true);
-                    //gameEnd();
-                    //state = PlayerState.SKIP;
                     uiIsLocked = true;
                 } else {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
                             "-fx-background-image: url('/images/backgrounds/foolEndGame.png')");
                     endGameScreen.setVisible(true);
-
-                    //gameEnd();
-                    //state = PlayerState.SKIP;
                     uiIsLocked = true;
                 }
             }
@@ -283,6 +278,7 @@ public class Game extends Application {
                 msg.addProperty("playerId", playerId);
                 try {
                     String response = Client.sendMessage(msg);
+                    // TypeToken is needed to tell Gson to use List<Card> class
                     List<Card> cards = gson.fromJson(response, new TypeToken<List<Card>>() {
                     }.getType());
                     for (Card card : cards) {
@@ -583,9 +579,6 @@ public class Game extends Application {
 
     private void doGameAction(GameInfo gameInfo) {
         PlayerState state = gameInfo.getPlayerState(playerId);
-//        boolean gameIsGoing = true;
-
-        // Set first gameInfo when game starts
         if (currentGameState == null) {
             currentGameState = gameInfo;
         }
@@ -594,14 +587,10 @@ public class Game extends Application {
                 endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
                         "-fx-background-image: url('/images/backgrounds/foolEndGame.png')");
 
-//                System.out.println("I AM THE FOOL!");
-                //                gameIsGoing = false;
             } else {
                 endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
                         "-fx-background-image: url('/images/backgrounds/winnerEndGame.png')");
 
-//                System.out.println("I AM THE WINNER");
-//                gameIsGoing = false;
             }
             endGameScreen.setVisible(true);
             gameEnd();
@@ -619,32 +608,6 @@ public class Game extends Application {
                 gameEnd();
                 uiIsLocked = true;
             }
-//            if (cardsInHand.size() == 0) {
-            // TODO this has to end the game
-
-//                endTheGame();
-//                gameInfo.endTheGame();
-//                uiIsLocked = true;
-//
-//                System.out.println("LOCK THIS ");
-////                goHere = true;
-//
-////                uiIsLocked = true;
-//                // Make the game end
-////                stop();
-//                Label label = new Label();
-//                label.setText("Congratulations, you are the winner!");
-//                cardBox.getChildren().add(label);
-////                uiIsLocked = true;
-//                try {
-//                    Client.sendMessage(gameEnd());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                uiIsLocked = true;
-//                labe
-//                uiIsLocked = true;
-//            }
         }
 
 
@@ -711,22 +674,17 @@ public class Game extends Application {
         String response;
         try {
             response = Client.sendMessage(endGame);
-//            String resp = response.toString();
             if (response.contains("The game has finished")) {
                 if (cardsInHand.size() == 0 ) {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9); -fx-background-size: cover;" +
                             "-fx-background-image: url('/images/backgrounds/winnerEndGame.png')");
                     endGameScreen.setVisible(true);
-                    //gameEnd();
-                    //state = PlayerState.SKIP;
                     uiIsLocked = true;
                 } else {
                     endGameScreen.setStyle("-fx-background-color: rgba(16,16,16,0.9);-fx-background-size: cover;" +
                             "-fx-background-image: url('/images/backgrounds/foolEndGame.png')");
                     endGameScreen.setVisible(true);
 
-                    //gameEnd();
-                    //state = PlayerState.SKIP;
                     uiIsLocked = true;
                 }
 
