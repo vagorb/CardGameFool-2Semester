@@ -35,9 +35,9 @@ Kaardimäng "Fool".
 * MENU:
 ![GAME MENU](MENU.png)
 * REŽIIMID:
-![]
+![GAME MODES](modes.png)
 * SETTINGS:
-![SETTINGS]()
+![SETTINGS](settings.png)
 ***
 KASUTATUD TEHNOLOOGIAD:
 * Kood on kirjutatud Java keeles.
@@ -49,14 +49,14 @@ ARHITEKTUURILINE JOONIS:
 ![Text](OurGameDiagrammFinalCropped.png)
 ***
 SERVER:
-* Mängu alguses Serverile saadakse sõnumit sellest
-* Server loob Decki mängu jaoks, kaardid millest hakkavad mängijad kasutama selle mängu jaoks. 
-Decki salvestatakse ainult serveri peal.
-* Server saadab igale mängijale 6 kaardi ning milline kaardt on trumbi kaart.
-* Mängijad saadavad oma tehtud käigud(Kaardid) ning oma käe suurust.
-* Server saadab teisele mängijale kaarti, mida pani esimene mängija ja vastupidi.
-* Mängijad saavad veel saada kaks sõnumit serverile kas "SKIP", mis tähendab, et käik on lõpetatud või "TAKE", mis tähendab, et mängija võttis kaarte.
+* Mängu alguses Serverile saadakse sõnumit sellest(JSON).
+* Server loob GameInfo klassi, mis saab meie mänguks. (Selles on Deck, trump, kelle käik on, AI jms.)
+* Ta saadab seda klassi infot mängijatele, kui nad paluvad Update oma mängust. 
+* Iga käigu lõppus saadakse serverile sõnumit, kus mängija palub endale kaardid ning vastavalt sellele kas deckis on veel kaardid või ei, server saadab tagasi listi kaartidest.
+* Kui mägija paneb lauale kaardi, siis serverile saadakse sõnum kaardiga ning server lisab seda kaardi lauale GameInfos ja juba sealt teine mängija saab sellest teada.
+* Mängijad saavad veel saada kolm sõnumit serverile kas "THROW", mis tähendab, et käik on lõpetatud või "TAKE", mis tähendab, et mängija võttis kaarte või "SKIP", mis kontrollib mängu lõpetamist.
 * Edastamiseks on kasutatud TCP protokoll. 
+* Server tuvastab mängijaid vastavalt UUID-le, mida nad saadavad igas oma sõnumis.
 ***
 AI:
 * AI asub serveri peal.
@@ -66,6 +66,11 @@ AI:
 * vastavalt kaartidest, mis on juba väljunud mängust, 
 * vastavalt kaartide omadustest(Nt, kui tal on mitu sama väärtusega kaarti)
 * mängu lõpus ta saab teada inimese kaartid tänu sellele, et ta mäletab kõike kaarte mis on väljunud
+* Suurim miinus:
+* AI loogika jaoks trumbi kaardid pole nii tähtsad võrreldes tavalise mängijaga.
 ***
 Mängu installeerimise juhend:
-IN FUTURE!
+Download https://drive.google.com/file/d/1Z0DfRBqL7MMOZBiAgrQIYqIa-5eVndbI/view?usp=sharing ja klikida selle peale.
+P.S. Mängu jaoks on vajalik java 11(preferably oracle) või kasutage command prompt.
+Avage command prompt -> kirjutage: cd path to the folder, where the file is located -> kirjutage: java -jar fool.game-1.0-SNAPSHOT.jar
+
