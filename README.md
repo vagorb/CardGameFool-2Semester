@@ -70,7 +70,7 @@ AI:
 * AI loogika jaoks trumbi kaardid pole nii tähtsad võrreldes tavalise mängijaga.
 ***
 Mängu installeerimise juhend:
-Download https://drive.google.com/file/d/1Z0DfRBqL7MMOZBiAgrQIYqIa-5eVndbI/view?usp=sharing ja klikida selle peale.
-P.S. Mängu jaoks on vajalik java 11(preferably oracle) või kasutage command prompt.
-Avage command prompt -> kirjutage: cd path to the folder, where the file is located -> kirjutage: java -jar fool.game-1.0-SNAPSHOT.jar
+* Download https://drive.google.com/file/d/1Z0DfRBqL7MMOZBiAgrQIYqIa-5eVndbI/view?usp=sharing ja klikida selle peale.
+* P.S. Mängu jaoks on vajalik java 11(preferably oracle) või kasutage command prompt.
+* Avage command prompt -> kirjutage: cd path to the folder, where the file is located -> kirjutage: java -jar fool.game-1.0-SNAPSHOT.jar
 
