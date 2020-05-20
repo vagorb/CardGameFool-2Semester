@@ -45,12 +45,14 @@ public class Server {
 
 
     public static GameInfo newWithAIGame(String player) {
-        GameInfo game;
-        List<String> playersList = new ArrayList<>();
-        playersList.add(player);
-        game = new GameInfo(new Deck(), playersList);
-        playersToGames.put(player, game);
-        return game;
+        synchronized (games) {
+            GameInfo game;
+            List<String> playersList = new ArrayList<>();
+            playersList.add(player);
+            game = new GameInfo(new Deck(), playersList);
+            playersToGames.put(player, game);
+            return game;
+        }
     }
 
     public static List<Card> replenishPlayerCards(String player, int cardsInHand) {
@@ -73,7 +75,6 @@ public class Server {
     public static void endGame(String player) {
         synchronized (games) {
             GameInfo game = playersToGames.get(player);
-            // TODO finish this
             game.getCardsOnTable().clear();
             if (game.getPlayers().size() > 1) {
                 game.getPlayers().remove(player);

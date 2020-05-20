@@ -18,7 +18,7 @@ public class GameInfo {
     public boolean getDeckIsEmpty() {
         return deckIsEmpty;
     }
-    //
+
     public void setEndTheGame() {
         endTheGame = true;
     }
@@ -49,11 +49,11 @@ public class GameInfo {
     private final Deck deck;
     private final Card trump;
     private boolean gameStarted;
-    //    private List<Card> cards = new ArrayList<>();
+
     private String currentPlayerTurn;
     private String attackingPlayer;
     private String defendingPlayer;
-    // Cards on table that attacked and defender are putting
+
     private final List<Card> cardsOnTable = new ArrayList<>();
     private int turnCounter;
     private final Pile pile;
