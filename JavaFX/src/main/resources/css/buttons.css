@@ -1,0 +1,53 @@
+.button {
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#throwCards.button {
+    -fx-background-size: cover;
+    -fx-background-image: url("/images/backgrounds/throwButton.jpg");
+}
+
+#pickUpCards.button {
+    -fx-background-size: cover;
+    -fx-background-image: url("/images/backgrounds/takeButton.jpg");
+}
+
+#skipTurn.button {
+    -fx-background-size: cover;
+    -fx-background-image: url("/images/backgrounds/skipButton.jpg");
+}
+
+#exit.button {
+    -fx-background-color: #a2000e;
+    -fx-background-image: url("/icons/black/close.png");
+}
+
+#fullscreenEnter.button {
+    -fx-background-color: #b1aeae;
+    -fx-background-position: left;
+    -fx-background-image: url("/icons/black/fullscreen.png");
+}
+
+#fullscreenExit.button {
+    -fx-background-color: #b1aeae;
+    -fx-background-position: left;
+    -fx-background-image: url("/icons/black/fullscreen_exit.png");
+}
+
+#settings.button {
+    -fx-background-color: rgba(28, 55, 72, 0.71);
+    -fx-background-image: url("/icons/black/settings.png");
+}
+
+#back.button {
+    -fx-background-color: #ff7c10;
+    -fx-background-image: url("/icons/black/back.png");
+}
+
+#play.button {
+    -fx-background-color: #71b321;
+    -fx-background-position: left;
+    -fx-background-image: url("/icons/black/play_circle.png");
+}

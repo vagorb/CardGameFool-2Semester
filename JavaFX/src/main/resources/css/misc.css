@@ -1,0 +1,53 @@
+#AIcheck.check-box {
+    -fx-background-color: rgb(21, 201, 60);
+    -fx-background-insets: -10 -15 -10 -15, 0, 0;
+    -fx-background-radius: 2em, 2em, 2em;
+    -fx-font: bold 10pt 'Arial Black';
+}
+
+.check-box {
+    -fx-background-color: rgba(20, 200, 70, 0.5);
+    -fx-background-insets: 0 -5 -2 0, 0, 0;
+    -fx-font: bold 10pt 'Arial Black';
+}
+
+#HumanCount.label {
+    -fx-text-fill: rgb(0, 255, 200);
+    -fx-font: bold 15pt 'Arial';
+}
+
+#EnterYourName.label {
+    -fx-text-fill: rgb(100, 255, 150);
+    -fx-font: bold 13pt 'Arial';
+}
+
+#MenuBar {
+    -fx-background-color: rgba(33, 137, 80, 0.2);
+}
+
+#Attack.button {
+    -fx-background-image: null;
+    -fx-background-color: rgba(255, 0, 0, 0.25);
+    -fx-border-color: rgb(255, 0, 0);
+}
+
+#Defence.button {
+    -fx-background-image: null;
+    -fx-background-color: rgba(0, 255, 0, 0.25);
+    -fx-border-color: rgb(0, 255, 0);
+}
+
+#cardBoxBase {
+    -fx-background-size: cover;
+    -fx-background-image: url('/images/backgrounds/cardBox_bg.jpg');
+}
+
+#gameStackPane {
+    -fx-background-size: cover;
+    -fx-background-image: url('/images/backgrounds/game_bg.jpg');
+}
+
+#menuStackPane {
+    -fx-background-size: cover;
+    -fx-background-image: url('/images/backgrounds/menu_bg.jpg');
+}

@@ -1,0 +1,10 @@
+.slider {
+    -fx-background-color: linear-gradient(#1d9c4e, #b39827);
+    -fx-background-insets: -15 -15 -5 -15, 0, 5;
+    -fx-background-radius: 1em, 1em, 0.5em;
+}
+
+.slider .axis {
+    -fx-tick-label-font: 20px Arial;
+    -fx-tick-label-fill: #000000;
+}
